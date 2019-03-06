@@ -1,0 +1,42 @@
+// Dota Heroes File
+"DOTAAbilities"
+{
+	"Version"		"1"
+
+	"mind_control"
+	{
+		"BaseClass" 					"ability_lua"
+		"ScriptFile"					"mind_control"
+		"AbilityTextureName" 			"life_stealer_infest"
+		"AbilityType" 					"DOTA_ABILITY_TYPE_BASIC"
+		"AbilityBehavior" 				"DOTA_ABILITY_BEHAVIOR_UNIT_TARGET | DOTA_ABILITY_BEHAVIOR_DONT_RESUME_ATTACK | DOTA_ABILITY_BEHAVIOR_IGNORE_BACKSWING"
+		"AbilityUnitTargetTeam"			"DOTA_UNIT_TARGET_TEAM_FRIENDLY"
+		"AbilityUnitTargetType"			"DOTA_UNIT_TARGET_HERO"
+		"SpellImmunityType" 			"SPELL_IMMUNITY_ALLIES_YES"
+		"CastFilterRejectCaster" 		"1"
+		"MaxLevel" 						"1"
+		"AbilityCastPoint"				"0.0"
+		"AbilityDuration" 				"20"
+		"AbilityCooldown"				"30"
+		"AbilityCastRange" 				"150"
+		"AbilityManaCost"				"0"
+		"AbilitySpecial"
+		{
+			"01"
+			{	
+				"var_type"			"FIELD_FLOAT"
+				"duration_tooltip"		"20"
+			}
+			"02"
+			{	
+				"var_type"			"FIELD_INTEGER"
+				"range_tooltip"		"150"
+			}
+			"03"
+			{	
+				"var_type"			"FIELD_INTEGER"
+				"cooldown_tooltip"		"30"
+			}
+		}		
+	}
+}
