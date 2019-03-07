@@ -30,13 +30,8 @@
 			"02"
 			{	
 				"var_type"			"FIELD_INTEGER"
+			}
 				"range_tooltip"		"150"
-			}
-			"03"
-			{	
-				"var_type"			"FIELD_INTEGER"
-				"cooldown_tooltip"		"30"
-			}
 		}		
 	}
 }

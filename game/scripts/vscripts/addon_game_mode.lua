@@ -12,7 +12,10 @@ function Precache( context )
 			PrecacheResource( "particle", "*.vpcf", context )
 			PrecacheResource( "particle_folder", "particles/folder", context )
 	]]
-	PrecacheResource("model", "models/courier/sw_donkey/sw_donkey.vmdl", context)
+	PrecacheResource( "particle", "particles/units/heroes/hero_bane/bane_sap.vpcf", context )
+	PrecacheResource( "particle", "particles/econ/items/pets/pet_frondillo/pet_spawn_dirt_frondillo.vpcf", context )
+	PrecacheResource("soundevents/game_sounds_greevils.vsndevts", "soundevents/game_sounds_creeps.vsndevts", context)
+	PrecacheResource("soundevents/game_sounds_greevils.vsndevts", "soundevents/game_sounds_greevils.vsndevts", context)	
 
 end
 
@@ -111,19 +114,18 @@ function CCouriers:OnNPCSpawned( event )
 			end
 		end)
 	end
-	if string.find(spawnedUnit:GetUnitName(), "courier") then		
+	--when the courier/leader first spawns:
+	if string.find(spawnedUnit:GetUnitName(), "courier") and spawnedUnit:FindAbilityByName("mind_control") == nil then
 		table.insert(self.courierList, spawnedUnit)
-		local playerID = PlayerResource:GetNthPlayerIDOnTeam(spawnedUnit:GetTeamNumber(), 1)
+		local playerID = PlayerResource:GetNthPlayerIDOnTeam(spawnedUnit:GetTeamNumber(), 1)			
 		PlayerResource:SetOverrideSelectionEntity(playerID, spawnedUnit)
-		if spawnedUnit:FindAbilityByName("mind_control") == nil then
-			local abil = spawnedUnit:AddAbility("mind_control")
-			abil:SetLevel(abil:GetMaxLevel())
-			spawnedUnit:SwapAbilities("courier_transfer_items", "mind_control", false, true)
-			--spawnedUnit:FindAbilityByName("courier_take_stash_items"):SetActivated(false)
-			spawnedUnit:FindAbilityByName("courier_take_stash_and_transfer_items"):SetActivated(false)
-			spawnedUnit:FindAbilityByName("courier_return_stash_items"):SetActivated(false)
-			spawnedUnit:FindAbilityByName("courier_transfer_items_to_other_player"):SetActivated(false)
-		end
+		local abil = spawnedUnit:AddAbility("mind_control")
+		abil:SetLevel(abil:GetMaxLevel())
+		spawnedUnit:SwapAbilities("courier_transfer_items", "mind_control", false, true)
+		--spawnedUnit:FindAbilityByName("courier_take_stash_items"):SetActivated(false)
+		spawnedUnit:FindAbilityByName("courier_take_stash_and_transfer_items"):SetActivated(false)
+		spawnedUnit:FindAbilityByName("courier_return_stash_items"):SetActivated(false)
+		spawnedUnit:FindAbilityByName("courier_transfer_items_to_other_player"):SetActivated(false)
 	end
 end
 
