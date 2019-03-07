@@ -14,8 +14,11 @@ function Precache( context )
 	]]
 	PrecacheResource( "particle", "particles/units/heroes/hero_bane/bane_sap.vpcf", context )
 	PrecacheResource( "particle", "particles/econ/items/pets/pet_frondillo/pet_spawn_dirt_frondillo.vpcf", context )
-	PrecacheResource("soundevents/game_sounds_greevils.vsndevts", "soundevents/game_sounds_creeps.vsndevts", context)
-	PrecacheResource("soundevents/game_sounds_greevils.vsndevts", "soundevents/game_sounds_greevils.vsndevts", context)	
+	PrecacheResource("soundfile", "soundevents/game_sounds_creeps.vsndevts", context)
+	PrecacheResource("soundfile", "soundevents/game_sounds_greevils.vsndevts", context)	
+	PrecacheResource("soundfile", "soundevents/game_sounds_heroes/game_sounds_oracle.vsndevts", context)	
+	
+
 
 end
 
@@ -30,7 +33,7 @@ function CCouriers:InitGameMode()
 	GameRules:GetGameModeEntity():SetCustomGameForceHero("npc_dota_hero_wisp")
 	GameRules:GetGameModeEntity():SetRecommendedItemsDisabled(true)
 	GameRules:SetCustomGameSetupAutoLaunchDelay(0)
-	GameRules:SetCustomGameSetupRemainingTime(10)
+	GameRules:SetCustomGameSetupRemainingTime(0)
 	GameRules:SetStartingGold(0)
 	GameRules:SetGoldPerTick(0)
 	self.startGold = 3000

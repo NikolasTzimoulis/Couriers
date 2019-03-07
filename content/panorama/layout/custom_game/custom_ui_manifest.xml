@@ -1,0 +1,13 @@
+<root>
+  <scripts>
+    <include src="file://{resources}/scripts/custom_game/hide_fake_player_heroes.js" />
+	</scripts>
+
+  <script>
+  </script>
+
+  <Panel>
+    <!-- CustomUIElements go here.-->
+
+  </Panel>
+</root>

@@ -23,6 +23,7 @@ function mind_control:OnSpellStart()
 	ParticleManager:SetParticleControlEnt(effect_in, 0, target, PATTACH_ABSORIGIN_FOLLOW, "attach_hitloc", target:GetAbsOrigin(), true)
 	ParticleManager:ReleaseParticleIndex(effect_in)
 	EmitSoundOn( "LootGreevil.Hum", caster )	
+	EmitSoundOn( "Hero_Oracle.PreAttack", caster )	
 	
 	-- Reset everything when duration ends
 	Timers:CreateTimer(duration, function()
