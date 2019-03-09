@@ -44,6 +44,7 @@ function CCouriers:InitGameMode()
 	GameRules:GetGameModeEntity():SetBountyRunePickupFilter(Dynamic_Wrap(CCouriers, "BountyRunePickupFilter"), self)
 	GameRules:GetGameModeEntity():SetExecuteOrderFilter(Dynamic_Wrap(CCouriers,"FilterExecuteOrder"),self)
 	ListenToGameEvent("npc_spawned", Dynamic_Wrap( CCouriers, "OnNPCSpawned" ), self )
+	ListenToGameEvent( "entity_killed", Dynamic_Wrap( CCouriers, 'OnEntityKilled' ), self )
 end
 
 -- Evaluate the state of the game
@@ -118,17 +119,30 @@ function CCouriers:OnNPCSpawned( event )
 		end)
 	end
 	--when the courier/leader first spawns:
-	if string.find(spawnedUnit:GetUnitName(), "courier") and spawnedUnit:FindAbilityByName("mind_control") == nil then
-		table.insert(self.courierList, spawnedUnit)
-		local playerID = PlayerResource:GetNthPlayerIDOnTeam(spawnedUnit:GetTeamNumber(), 1)			
-		PlayerResource:SetOverrideSelectionEntity(playerID, spawnedUnit)
-		local abil = spawnedUnit:AddAbility("mind_control")
-		abil:SetLevel(abil:GetMaxLevel())
-		spawnedUnit:SwapAbilities("courier_transfer_items", "mind_control", false, true)
-		--spawnedUnit:FindAbilityByName("courier_take_stash_items"):SetActivated(false)
-		spawnedUnit:FindAbilityByName("courier_take_stash_and_transfer_items"):SetActivated(false)
-		spawnedUnit:FindAbilityByName("courier_return_stash_items"):SetActivated(false)
-		spawnedUnit:FindAbilityByName("courier_transfer_items_to_other_player"):SetActivated(false)
+	if string.find(spawnedUnit:GetUnitName(), "courier") then
+		spawnedUnit:AddNewModifier(spawnedUnit, nil, "modifier_rune_arcane", {duration = -1}) 
+		if spawnedUnit:FindAbilityByName("mind_control") == nil then
+			table.insert(self.courierList, spawnedUnit)
+			local playerID = PlayerResource:GetNthPlayerIDOnTeam(spawnedUnit:GetTeamNumber(), 1)			
+			PlayerResource:SetOverrideSelectionEntity(playerID, spawnedUnit)
+			local abil = spawnedUnit:AddAbility("mind_control")
+			abil:SetLevel(abil:GetMaxLevel())
+			local abil = spawnedUnit:AddAbility("courier_burst")
+			abil:SetLevel(abil:GetMaxLevel())	
+			spawnedUnit:SwapAbilities("courier_transfer_items", "mind_control", false, true)
+			spawnedUnit:SwapAbilities("courier_return_stash_items", "courier_burst", false, true)		
+			--spawnedUnit:FindAbilityByName("courier_take_stash_items"):SetActivated(false)
+			spawnedUnit:FindAbilityByName("courier_take_stash_and_transfer_items"):SetActivated(false)
+			--spawnedUnit:FindAbilityByName("courier_return_stash_items"):SetActivated(false)
+			spawnedUnit:FindAbilityByName("courier_transfer_items_to_other_player"):SetActivated(false)
+		end
+	end
+end
+
+function CCouriers:OnEntityKilled(event)
+	local killedUnit = EntIndexToHScript( event.entindex_killed )
+	if string.find(killedUnit:GetUnitName(), "courier") then
+		killedUnit:RespawnUnit()
 	end
 end
 
