@@ -1,25 +1,16 @@
 require("libraries/timers")
+require('libraries/selection')
 
 if CCouriers == nil then
 	CCouriers = class({})
 end
 
 function Precache( context )
-	--[[
-		Precache things we know we'll use.  Possible file types include (but not limited to):
-			PrecacheResource( "model", "*.vmdl", context )
-			PrecacheResource( "soundfile", "*.vsndevts", context )
-			PrecacheResource( "particle", "*.vpcf", context )
-			PrecacheResource( "particle_folder", "particles/folder", context )
-	]]
 	PrecacheResource( "particle", "particles/units/heroes/hero_bane/bane_sap.vpcf", context )
 	PrecacheResource( "particle", "particles/econ/items/pets/pet_frondillo/pet_spawn_dirt_frondillo.vpcf", context )
 	PrecacheResource("soundfile", "soundevents/game_sounds_creeps.vsndevts", context)
 	PrecacheResource("soundfile", "soundevents/game_sounds_greevils.vsndevts", context)	
 	PrecacheResource("soundfile", "soundevents/game_sounds_heroes/game_sounds_oracle.vsndevts", context)	
-	
-
-
 end
 
 -- Create the game mode when we activate
@@ -36,6 +27,7 @@ function CCouriers:InitGameMode()
 	GameRules:SetCustomGameSetupRemainingTime(0)
 	GameRules:SetStartingGold(0)
 	GameRules:SetGoldPerTick(0)
+	GameRules:GetGameModeEntity():SetUseDefaultDOTARuneSpawnLogic(true)
 	self.startGold = 3000
 	self.PassiveGoldPerSecond = 10
 	self.onetimethings = false
@@ -60,7 +52,7 @@ function CCouriers:OnThink()
 			end)
 		end
 	elseif GameRules:State_Get() == DOTA_GAMERULES_STATE_GAME_IN_PROGRESS then
-		--print( "Template addon script is running." )
+		
 	elseif GameRules:State_Get() >= DOTA_GAMERULES_STATE_POST_GAME then
 		return nil
 	end
@@ -110,7 +102,6 @@ function CCouriers:OnNPCSpawned( event )
 				spawnedUnit:AddItem(courier_item)
 				spawnedUnit:CastAbilityNoTarget(courier_item, 0)
 				if not PlayerResource:IsFakeClient(spawnedUnit:GetPlayerOwnerID()) then
-					--spawnedUnit:SetAbsOrigin(spawnedUnit:GetAbsOrigin() - Vector(0, 0, 1000))
 					spawnedUnit:AddNewModifier(spawnedUnit, nil, "modifier_tutorial_hide_npc", {duration = -1})
 					spawnedUnit:AddNewModifier(spawnedUnit, nil, "modifier_invulnerable", {duration = -1})
 					spawnedUnit:AddNewModifier(spawnedUnit, nil, "modifier_rooted", {duration = -1})
@@ -118,22 +109,22 @@ function CCouriers:OnNPCSpawned( event )
 			end
 		end)
 	end
-	--when the courier/leader first spawns:
+	--when the courier/leader spawns:
 	if string.find(spawnedUnit:GetUnitName(), "courier") then
-		spawnedUnit:AddNewModifier(spawnedUnit, nil, "modifier_rune_arcane", {duration = -1}) 
+		Timers:CreateTimer(1, function() spawnedUnit:AddNewModifier(spawnedUnit, nil, "modifier_rune_arcane", {duration = -1}) end)
+		--if this is the first time this courier has spawned:
 		if spawnedUnit:FindAbilityByName("mind_control") == nil then
 			table.insert(self.courierList, spawnedUnit)
 			local playerID = PlayerResource:GetNthPlayerIDOnTeam(spawnedUnit:GetTeamNumber(), 1)			
-			PlayerResource:SetOverrideSelectionEntity(playerID, spawnedUnit)
+			PlayerResource:SetDefaultSelectionEntity(playerID, spawnedUnit)
+			PlayerResource:ResetSelection(playerID)
 			local abil = spawnedUnit:AddAbility("mind_control")
 			abil:SetLevel(abil:GetMaxLevel())
 			local abil = spawnedUnit:AddAbility("courier_burst")
 			abil:SetLevel(abil:GetMaxLevel())	
 			spawnedUnit:SwapAbilities("courier_transfer_items", "mind_control", false, true)
 			spawnedUnit:SwapAbilities("courier_return_stash_items", "courier_burst", false, true)		
-			--spawnedUnit:FindAbilityByName("courier_take_stash_items"):SetActivated(false)
 			spawnedUnit:FindAbilityByName("courier_take_stash_and_transfer_items"):SetActivated(false)
-			--spawnedUnit:FindAbilityByName("courier_return_stash_items"):SetActivated(false)
 			spawnedUnit:FindAbilityByName("courier_transfer_items_to_other_player"):SetActivated(false)
 		end
 	end

@@ -4,18 +4,16 @@ function mind_control:OnSpellStart()
     local target = self:GetCursorTarget()
     local caster = self:GetCaster()
 	local duration = self:GetDuration()
-	--local originalOwner  = target:GetOwner()
 	local originalOwnerID  = target:GetPlayerOwnerID()
 	local realplayerID = PlayerResource:GetNthPlayerIDOnTeam(caster:GetTeamNumber(), 1)
 	
     -- Hide the hero 
 	caster:AddNewModifier(spawnedUnit, nil, "modifier_tutorial_hide_npc", {duration = duration})
 	caster:AddNewModifier(spawnedUnit, nil, "modifier_invulnerable", {duration = duration})
-	PlayerResource:SetOverrideSelectionEntity(realplayerID, target)	
+	PlayerResource:SetDefaultSelectionEntity(realplayerID, target)
+	PlayerResource:ResetSelection(realplayerID)
 	target:SetControllableByPlayer(realplayerID, true)	
 	target.isMindControlled = true
-	--target:SetOwner(PlayerResource:GetPlayer(realplayerID))
-	--target:SetPlayerID(realplayerID)
 	
 	-- Play graphical effect and sound for going inside the host
 	local effect_in = ParticleManager:CreateParticle("particles/units/heroes/hero_bane/bane_sap.vpcf", PATTACH_CUSTOMORIGIN_FOLLOW, target)
@@ -28,12 +26,11 @@ function mind_control:OnSpellStart()
 	-- Reset everything when duration ends
 	Timers:CreateTimer(duration, function()
 
-		PlayerResource:SetOverrideSelectionEntity(realplayerID, caster)
+		PlayerResource:SetDefaultSelectionEntity(realplayerID, caster)
+		PlayerResource:ResetSelection(realplayerID)
 		target:SetControllableByPlayer(originalOwnerID, true)	
-		--target:SetOwner(originalOwner)
-		--target:SetPlayerID(originalOwnerID)
 		target.isMindControlled = false
-		caster:SetAbsOrigin(target:GetAbsOrigin())
+		FindClearSpaceForUnit(caster, target:GetAbsOrigin(), true)
 		-- effect and sound for emerging	
 		effect_out = ParticleManager:CreateParticle("particles/econ/items/pets/pet_frondillo/pet_spawn_dirt_frondillo.vpcf", PATTACH_WORLDORIGIN, caster)
 		ParticleManager:SetParticleControl(effect_out,0,target:GetAbsOrigin())
