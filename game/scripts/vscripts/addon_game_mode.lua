@@ -6,8 +6,8 @@ if CCouriers == nil then
 end
 
 function Precache( context )
-	PrecacheResource( "particle", "particles/units/heroes/hero_bane/bane_sap.vpcf", context )
-	PrecacheResource( "particle", "particles/econ/items/pets/pet_frondillo/pet_spawn_dirt_frondillo.vpcf", context )
+	PrecacheResource("particle", "particles/units/heroes/hero_bane/bane_sap.vpcf", context )
+	PrecacheResource("particle", "particles/econ/items/pets/pet_frondillo/pet_spawn_dirt_frondillo.vpcf", context )
 	PrecacheResource("soundfile", "soundevents/game_sounds_creeps.vsndevts", context)
 	PrecacheResource("soundfile", "soundevents/game_sounds_greevils.vsndevts", context)	
 	PrecacheResource("soundfile", "soundevents/game_sounds_heroes/game_sounds_oracle.vsndevts", context)	
@@ -111,6 +111,7 @@ function CCouriers:OnNPCSpawned( event )
 	end
 	--when the courier/leader spawns:
 	if string.find(spawnedUnit:GetUnitName(), "courier") then
+		--give it a permanent arcane rune
 		Timers:CreateTimer(1, function() spawnedUnit:AddNewModifier(spawnedUnit, nil, "modifier_rune_arcane", {duration = -1}) end)
 		--if this is the first time this courier has spawned:
 		if spawnedUnit:FindAbilityByName("mind_control") == nil then
@@ -140,18 +141,18 @@ end
 function CCouriers:SpawnBots()
 	GameRules:SetCustomGameTeamMaxPlayers( DOTA_TEAM_GOODGUYS, 6 )
 	GameRules:SetCustomGameTeamMaxPlayers( DOTA_TEAM_BADGUYS, 6 )
-	for i=1, 5 do
-		Tutorial:AddBot("npc_dota_hero_wisp", "", "", true)
-		Tutorial:AddBot("npc_dota_hero_wisp", "", "", false)
-    end
+	Tutorial:AddBot( "npc_dota_hero_wisp", "top", "hard", true )
+	Tutorial:AddBot( "npc_dota_hero_wisp", "top", "hard", true )
+	Tutorial:AddBot( "npc_dota_hero_wisp", "mid", "hard", true )
+	Tutorial:AddBot( "npc_dota_hero_wisp", "bot", "hard", true )
+	Tutorial:AddBot( "npc_dota_hero_wisp", "bot", "hard", true )
+	Tutorial:AddBot( "npc_dota_hero_wisp", "top", "hard", false )
+	Tutorial:AddBot( "npc_dota_hero_wisp", "top", "hard", false )
+	Tutorial:AddBot( "npc_dota_hero_wisp", "mid", "hard", false )
+	Tutorial:AddBot( "npc_dota_hero_wisp", "bot", "hard", false )
+	Tutorial:AddBot( "npc_dota_hero_wisp", "bot", "hard", false )
 	GameRules:GetGameModeEntity():SetBotThinkingEnabled(true)
 	Tutorial:StartTutorialMode()
-	local heroes = HeroList:GetAllHeroes()
-   	for _,hero in pairs(heroes) do 
-   		if IsValidEntity(hero) and hero:IsRealHero() then 
-			hero:SetBotDifficulty(3)
-		end
-	end
 end
 
 function CCouriers:FilterModifyGold(event)
@@ -197,4 +198,3 @@ function PrintEventData(event)
         print(k .. " " .. tostring(v).." ("..type(v)..")" )
     end
 end
-
