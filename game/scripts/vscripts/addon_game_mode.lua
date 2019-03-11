@@ -23,11 +23,12 @@ function CCouriers:InitGameMode()
 	GameRules:GetGameModeEntity():SetThink( "OnThink", self, "GlobalThink", 2 )
 	GameRules:GetGameModeEntity():SetCustomGameForceHero("npc_dota_hero_wisp")
 	GameRules:GetGameModeEntity():SetRecommendedItemsDisabled(true)
+	GameRules:GetGameModeEntity():SetUseDefaultDOTARuneSpawnLogic(true)
+	GameRules:GetGameModeEntity():SetTowerBackdoorProtectionEnabled(true)
 	GameRules:SetCustomGameSetupAutoLaunchDelay(0)
 	GameRules:SetCustomGameSetupRemainingTime(0)
 	GameRules:SetStartingGold(0)
 	GameRules:SetGoldPerTick(0)
-	GameRules:GetGameModeEntity():SetUseDefaultDOTARuneSpawnLogic(true)
 	self.startGold = 3000
 	self.PassiveGoldPerSecond = 10
 	self.onetimethings = false
@@ -75,13 +76,13 @@ function CCouriers:DoOncePerSecond()
 			end	
    		end
 	end 
-	-- reset ownership of items in courier 
+	-- reset ownership of items on courier
 	for i, courier in pairs(self.courierList) do
 		if IsValidEntity(courier) then 
 			for itemSlot = 0, 11, 1 do 
 				local item = courier:GetItemInSlot( itemSlot ) 
-				if IsValidEntity(item) then 
-					item:SetOwner(nil)
+				if IsValidEntity(item) then
+					item:SetPurchaser(nil)
 				end
 			end	
    		end
