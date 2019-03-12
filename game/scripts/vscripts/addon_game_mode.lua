@@ -22,6 +22,8 @@ end
 function CCouriers:InitGameMode()
 	GameRules:GetGameModeEntity():SetThink( "OnThink", self, "GlobalThink", 2 )
 	GameRules:GetGameModeEntity():SetCustomGameForceHero("npc_dota_hero_wisp")
+	GameRules:SetCustomGameTeamMaxPlayers( DOTA_TEAM_GOODGUYS, 1 )
+	GameRules:SetCustomGameTeamMaxPlayers( DOTA_TEAM_BADGUYS, 1 )
 	GameRules:GetGameModeEntity():SetRecommendedItemsDisabled(true)
 	GameRules:GetGameModeEntity():SetUseDefaultDOTARuneSpawnLogic(true)
 	GameRules:GetGameModeEntity():SetTowerBackdoorProtectionEnabled(true)
@@ -76,12 +78,12 @@ function CCouriers:DoOncePerSecond()
 			end	
    		end
 	end 
-	-- reset ownership of items on courier
+	-- reset ownership of tp scrolls on courier
 	for i, courier in pairs(self.courierList) do
 		if IsValidEntity(courier) then 
 			for itemSlot = 0, 11, 1 do 
 				local item = courier:GetItemInSlot( itemSlot ) 
-				if IsValidEntity(item) then
+				if IsValidEntity(item) and item:GetName() == "item_tpscroll" then
 					item:SetPurchaser(nil)
 				end
 			end	
@@ -139,19 +141,39 @@ function CCouriers:OnEntityKilled(event)
 	end
 end
 
-function CCouriers:SpawnBots()
+function CCouriers:SpawnBots() 
+	local botHeroes = { 'npc_dota_hero_axe', 'npc_dota_hero_bane', 'npc_dota_hero_bounty_hunter', 'npc_dota_hero_bloodseeker', 'npc_dota_hero_bristleback', 'npc_dota_hero_chaos_knight', 'npc_dota_hero_crystal_maiden', 'npc_dota_hero_dazzle', 'npc_dota_hero_death_prophet', 'npc_dota_hero_dragon_knight', 'npc_dota_hero_drow_ranger', 'npc_dota_hero_earthshaker', 'npc_dota_hero_jakiro', 'npc_dota_hero_juggernaut', 'npc_dota_hero_kunkka', 'npc_dota_hero_lina', 'npc_dota_hero_lion', 'npc_dota_hero_luna', 'npc_dota_hero_necrolyte', 'npc_dota_hero_omniknight', 'npc_dota_hero_oracle', 'npc_dota_hero_phantom_assassin', 'npc_dota_hero_pudge', 'npc_dota_hero_sand_king', 'npc_dota_hero_nevermore', 'npc_dota_hero_skywrath_mage', 'npc_dota_hero_sniper', 'npc_dota_hero_sven', 'npc_dota_hero_tiny', 'npc_dota_hero_vengefulspirit', 'npc_dota_hero_viper', 'npc_dota_hero_warlock', 'npc_dota_hero_windrunner', 'npc_dota_hero_witch_doctor', 'npc_dota_hero_skeleton_king', 'npc_dota_hero_zuus'}
 	GameRules:SetCustomGameTeamMaxPlayers( DOTA_TEAM_GOODGUYS, 6 )
 	GameRules:SetCustomGameTeamMaxPlayers( DOTA_TEAM_BADGUYS, 6 )
-	Tutorial:AddBot( "npc_dota_hero_wisp", "top", "hard", true )
-	Tutorial:AddBot( "npc_dota_hero_wisp", "top", "hard", true )
-	Tutorial:AddBot( "npc_dota_hero_wisp", "mid", "hard", true )
-	Tutorial:AddBot( "npc_dota_hero_wisp", "bot", "hard", true )
-	Tutorial:AddBot( "npc_dota_hero_wisp", "bot", "hard", true )
-	Tutorial:AddBot( "npc_dota_hero_wisp", "top", "hard", false )
-	Tutorial:AddBot( "npc_dota_hero_wisp", "top", "hard", false )
-	Tutorial:AddBot( "npc_dota_hero_wisp", "mid", "hard", false )
-	Tutorial:AddBot( "npc_dota_hero_wisp", "bot", "hard", false )
-	Tutorial:AddBot( "npc_dota_hero_wisp", "bot", "hard", false )
+	local heroNumber = RandomInt(1, table.getn(botHeroes))	
+	Tutorial:AddBot( botHeroes[heroNumber], "top", "hard", true )
+	table.remove(botHeroes, heroNumber)
+	heroNumber = RandomInt(1, table.getn(botHeroes))
+	Tutorial:AddBot( botHeroes[heroNumber], "top", "hard", true )
+	table.remove(botHeroes, heroNumber)
+	heroNumber = RandomInt(1, table.getn(botHeroes))
+	Tutorial:AddBot( botHeroes[heroNumber], "mid", "hard", true )
+	table.remove(botHeroes, heroNumber)
+	heroNumber = RandomInt(1, table.getn(botHeroes))
+	Tutorial:AddBot( botHeroes[heroNumber], "bot", "hard", true )
+	table.remove(botHeroes, heroNumber)
+	heroNumber = RandomInt(1, table.getn(botHeroes))
+	Tutorial:AddBot( botHeroes[heroNumber], "bot", "hard", true )
+	table.remove(botHeroes, heroNumber)
+	heroNumber = RandomInt(1, table.getn(botHeroes))
+	Tutorial:AddBot( botHeroes[heroNumber], "top", "hard", false )
+	table.remove(botHeroes, heroNumber)
+	heroNumber = RandomInt(1, table.getn(botHeroes))
+	Tutorial:AddBot( botHeroes[heroNumber], "top", "hard", false )
+	table.remove(botHeroes, heroNumber)
+	heroNumber = RandomInt(1, table.getn(botHeroes))
+	Tutorial:AddBot( botHeroes[heroNumber], "mid", "hard", false )
+	table.remove(botHeroes, heroNumber)
+	heroNumber = RandomInt(1, table.getn(botHeroes))
+	Tutorial:AddBot( botHeroes[heroNumber], "bot", "hard", false )
+	table.remove(botHeroes, heroNumber)
+	heroNumber = RandomInt(1, table.getn(botHeroes))
+	Tutorial:AddBot( botHeroes[heroNumber], "bot", "hard", false )
 	GameRules:GetGameModeEntity():SetBotThinkingEnabled(true)
 	Tutorial:StartTutorialMode()
 end
