@@ -33,8 +33,8 @@ function CCouriers:InitGameMode()
 	GameRules:SetGoldPerTick(0)
 	self.startGold = 3000
 	self.PassiveGoldPerSecond = 10
-	self.onetimethings = false
 	self.courierList = {}
+	self.onetimethings = false
 	GameRules:GetGameModeEntity():SetModifyGoldFilter(Dynamic_Wrap(CCouriers,"FilterModifyGold"),self)
 	GameRules:GetGameModeEntity():SetBountyRunePickupFilter(Dynamic_Wrap(CCouriers, "BountyRunePickupFilter"), self)
 	GameRules:GetGameModeEntity():SetExecuteOrderFilter(Dynamic_Wrap(CCouriers,"FilterExecuteOrder"),self)
@@ -45,7 +45,7 @@ end
 -- Evaluate the state of the game
 function CCouriers:OnThink()
 	if GameRules:State_Get() == DOTA_GAMERULES_STATE_PRE_GAME then
-		if self.onetimethings == false then
+		if not self.onetimethings and HeroList:GetHeroCount() == PlayerResource:GetPlayerCount() then
 			self.onetimethings = true
 			self:SpawnBots()
 			self:StartingGold()
@@ -71,9 +71,11 @@ function CCouriers:DoOncePerSecond()
 				local item = hero:GetItemInSlot( itemSlot ) 
 				if IsValidEntity(item) and item:GetPurchaser() ~= hero then 
 					--print(item:GetName().." "..item:GetOwnerEntity():GetName())
+					local charges = item:GetCurrentCharges()
 					local itemname = item:GetName()
 					item:RemoveSelf()
-					hero:AddItem(CreateItem(itemname, hero, hero))
+					local newItem = hero:AddItem(CreateItem(itemname, hero, hero))
+					newItem:SetCurrentCharges(charges)
 				end
 			end	
    		end
@@ -98,24 +100,23 @@ end
 
 function CCouriers:OnNPCSpawned( event )
 	local spawnedUnit = EntIndexToHScript( event.entindex )
-	if spawnedUnit:IsRealHero() then
+	if spawnedUnit:IsRealHero() and PlayerResource:GetNumCouriersForTeam(spawnedUnit:GetTeamNumber()) == 0 and not PlayerResource:IsFakeClient(spawnedUnit:GetPlayerOwnerID()) then
 		Timers:CreateTimer(1, function()
-			if PlayerResource:GetNumCouriersForTeam(spawnedUnit:GetTeamNumber()) == 0 then
-				local courier_item = CreateItem("item_courier", spawnedUnit, spawnedUnit)
-				spawnedUnit:AddItem(courier_item)
-				spawnedUnit:CastAbilityNoTarget(courier_item, 0)
-				if not PlayerResource:IsFakeClient(spawnedUnit:GetPlayerOwnerID()) then
-					spawnedUnit:AddNewModifier(spawnedUnit, nil, "modifier_tutorial_hide_npc", {duration = -1})
-					spawnedUnit:AddNewModifier(spawnedUnit, nil, "modifier_invulnerable", {duration = -1})
-					spawnedUnit:AddNewModifier(spawnedUnit, nil, "modifier_rooted", {duration = -1})
-				end
-			end
+			local courier_item = CreateItem("item_courier", spawnedUnit, spawnedUnit)
+			spawnedUnit:AddItem(courier_item)
+			spawnedUnit:CastAbilityNoTarget(courier_item, 0)
+			spawnedUnit:AddNewModifier(spawnedUnit, nil, "modifier_tutorial_hide_npc", {duration = -1})
+			spawnedUnit:AddNewModifier(spawnedUnit, nil, "modifier_invulnerable", {duration = -1})
+			spawnedUnit:AddNewModifier(spawnedUnit, nil, "modifier_rooted", {duration = -1})
 		end)
 	end
 	--when the courier/leader spawns:
 	if string.find(spawnedUnit:GetUnitName(), "courier") then
-		--give it a permanent arcane rune
-		Timers:CreateTimer(1, function() spawnedUnit:AddNewModifier(spawnedUnit, nil, "modifier_rune_arcane", {duration = -1}) end)
+		--give it a permanent arcane rune and make it briefly invulnerable
+		Timers:CreateTimer(0.01, function() 
+			spawnedUnit:AddNewModifier(spawnedUnit, nil, "modifier_invulnerable", {duration = 1})
+			spawnedUnit:AddNewModifier(spawnedUnit, nil, "modifier_rune_arcane", {duration = -1}) 
+		end)
 		--if this is the first time this courier has spawned:
 		if spawnedUnit:FindAbilityByName("mind_control") == nil then
 			table.insert(self.courierList, spawnedUnit)
