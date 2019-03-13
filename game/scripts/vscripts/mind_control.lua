@@ -5,7 +5,13 @@ function mind_control:OnSpellStart()
     local caster = self:GetCaster()
 	local duration = self:GetDuration()
 	local originalOwnerID  = target:GetPlayerOwnerID()
-	local realplayerID = PlayerResource:GetNthPlayerIDOnTeam(caster:GetTeamNumber(), 1)
+	local realplayerID = nil
+	for playerid = 0, DOTA_MAX_PLAYERS do
+		if PlayerResource:IsValidPlayer(playerid) and not PlayerResource:IsFakeClient(playerid) and PlayerResource:GetTeam(playerid) == caster:GetTeam() then
+			realplayerID = playerid
+			break
+		end
+	end
 	
     -- Hide the hero 
 	caster:AddNewModifier(spawnedUnit, nil, "modifier_tutorial_hide_npc", {duration = duration})
@@ -25,7 +31,6 @@ function mind_control:OnSpellStart()
 	
 	-- Reset everything when duration ends
 	Timers:CreateTimer(duration, function()
-
 		PlayerResource:SetDefaultSelectionEntity(realplayerID, caster)
 		PlayerResource:ResetSelection(realplayerID)
 		target:SetControllableByPlayer(originalOwnerID, true)	
