@@ -44,16 +44,14 @@ end
 
 -- Evaluate the state of the game
 function CCouriers:OnThink()
-	if GameRules:State_Get() == DOTA_GAMERULES_STATE_PRE_GAME then
-		if not self.onetimethings and HeroList:GetHeroCount() == PlayerResource:GetPlayerCount() then
-			self.onetimethings = true
-			self:SpawnBots()
-			self:StartingGold()
-			Timers:CreateTimer(function()			
-				self:DoOncePerSecond()			
-				return 1
-			end)
-		end
+	if GameRules:State_Get() == DOTA_GAMERULES_STATE_PRE_GAME and not self.onetimethings and HeroList:GetHeroCount() == PlayerResource:GetPlayerCount()then
+		self.onetimethings = true
+		self:SpawnBots()
+		self:StartingGold()
+		Timers:CreateTimer(function()			
+			self:DoOncePerSecond()			
+			return 1
+		end)
 	elseif GameRules:State_Get() == DOTA_GAMERULES_STATE_GAME_IN_PROGRESS then
 		
 	elseif GameRules:State_Get() >= DOTA_GAMERULES_STATE_POST_GAME then
@@ -112,7 +110,7 @@ function CCouriers:OnNPCSpawned( event )
 	end
 	--when the courier/leader spawns:
 	if string.find(spawnedUnit:GetUnitName(), "courier") then
-		--give it a permanent arcane rune and make it briefly invulnerable
+		--give it a cooldown reduction and make it briefly invulnerable
 		Timers:CreateTimer(0.01, function() 
 			spawnedUnit:AddNewModifier(spawnedUnit, nil, "modifier_invulnerable", {duration = 1})
 			spawnedUnit:AddNewModifier(spawnedUnit, nil, "modifier_rune_arcane", {duration = -1}) 
@@ -126,7 +124,7 @@ function CCouriers:OnNPCSpawned( event )
 			local abil = spawnedUnit:AddAbility("mind_control")
 			abil:SetLevel(abil:GetMaxLevel())
 			local abil = spawnedUnit:AddAbility("courier_burst")
-			abil:SetLevel(abil:GetMaxLevel())	
+			abil:SetLevel(abil:GetMaxLevel())
 			spawnedUnit:SwapAbilities("courier_transfer_items", "mind_control", false, true)
 			spawnedUnit:SwapAbilities("courier_return_stash_items", "courier_burst", false, true)		
 			spawnedUnit:FindAbilityByName("courier_take_stash_and_transfer_items"):SetActivated(false)
@@ -143,40 +141,42 @@ function CCouriers:OnEntityKilled(event)
 end
 
 function CCouriers:SpawnBots() 
-	local botHeroes = { 'npc_dota_hero_axe', 'npc_dota_hero_bane', 'npc_dota_hero_bounty_hunter', 'npc_dota_hero_bloodseeker', 'npc_dota_hero_bristleback', 'npc_dota_hero_chaos_knight', 'npc_dota_hero_crystal_maiden', 'npc_dota_hero_dazzle', 'npc_dota_hero_death_prophet', 'npc_dota_hero_dragon_knight', 'npc_dota_hero_drow_ranger', 'npc_dota_hero_earthshaker', 'npc_dota_hero_jakiro', 'npc_dota_hero_juggernaut', 'npc_dota_hero_kunkka', 'npc_dota_hero_lina', 'npc_dota_hero_lion', 'npc_dota_hero_luna', 'npc_dota_hero_necrolyte', 'npc_dota_hero_omniknight', 'npc_dota_hero_oracle', 'npc_dota_hero_phantom_assassin', 'npc_dota_hero_pudge', 'npc_dota_hero_sand_king', 'npc_dota_hero_nevermore', 'npc_dota_hero_skywrath_mage', 'npc_dota_hero_sniper', 'npc_dota_hero_sven', 'npc_dota_hero_tiny', 'npc_dota_hero_vengefulspirit', 'npc_dota_hero_viper', 'npc_dota_hero_warlock', 'npc_dota_hero_windrunner', 'npc_dota_hero_witch_doctor', 'npc_dota_hero_skeleton_king', 'npc_dota_hero_zuus'}
-	GameRules:SetCustomGameTeamMaxPlayers( DOTA_TEAM_GOODGUYS, 6 )
-	GameRules:SetCustomGameTeamMaxPlayers( DOTA_TEAM_BADGUYS, 6 )
-	local heroNumber = RandomInt(1, table.getn(botHeroes))	
-	Tutorial:AddBot( botHeroes[heroNumber], "top", "hard", true )
-	table.remove(botHeroes, heroNumber)
-	heroNumber = RandomInt(1, table.getn(botHeroes))
-	Tutorial:AddBot( botHeroes[heroNumber], "top", "hard", true )
-	table.remove(botHeroes, heroNumber)
-	heroNumber = RandomInt(1, table.getn(botHeroes))
-	Tutorial:AddBot( botHeroes[heroNumber], "mid", "hard", true )
-	table.remove(botHeroes, heroNumber)
-	heroNumber = RandomInt(1, table.getn(botHeroes))
-	Tutorial:AddBot( botHeroes[heroNumber], "bot", "hard", true )
-	table.remove(botHeroes, heroNumber)
-	heroNumber = RandomInt(1, table.getn(botHeroes))
-	Tutorial:AddBot( botHeroes[heroNumber], "bot", "hard", true )
-	table.remove(botHeroes, heroNumber)
-	heroNumber = RandomInt(1, table.getn(botHeroes))
-	Tutorial:AddBot( botHeroes[heroNumber], "top", "hard", false )
-	table.remove(botHeroes, heroNumber)
-	heroNumber = RandomInt(1, table.getn(botHeroes))
-	Tutorial:AddBot( botHeroes[heroNumber], "top", "hard", false )
-	table.remove(botHeroes, heroNumber)
-	heroNumber = RandomInt(1, table.getn(botHeroes))
-	Tutorial:AddBot( botHeroes[heroNumber], "mid", "hard", false )
-	table.remove(botHeroes, heroNumber)
-	heroNumber = RandomInt(1, table.getn(botHeroes))
-	Tutorial:AddBot( botHeroes[heroNumber], "bot", "hard", false )
-	table.remove(botHeroes, heroNumber)
-	heroNumber = RandomInt(1, table.getn(botHeroes))
-	Tutorial:AddBot( botHeroes[heroNumber], "bot", "hard", false )
-	GameRules:GetGameModeEntity():SetBotThinkingEnabled(true)
-	Tutorial:StartTutorialMode()
+	Timers:CreateTimer(10, function() 
+		local botHeroes = { 'npc_dota_hero_axe', 'npc_dota_hero_bane', 'npc_dota_hero_bounty_hunter', 'npc_dota_hero_bloodseeker', 'npc_dota_hero_bristleback', 'npc_dota_hero_chaos_knight', 'npc_dota_hero_crystal_maiden', 'npc_dota_hero_dazzle', 'npc_dota_hero_death_prophet', 'npc_dota_hero_dragon_knight', 'npc_dota_hero_drow_ranger', 'npc_dota_hero_earthshaker', 'npc_dota_hero_jakiro', 'npc_dota_hero_juggernaut', 'npc_dota_hero_kunkka', 'npc_dota_hero_lina', 'npc_dota_hero_lion', 'npc_dota_hero_luna', 'npc_dota_hero_necrolyte', 'npc_dota_hero_omniknight', 'npc_dota_hero_oracle', 'npc_dota_hero_phantom_assassin', 'npc_dota_hero_pudge', 'npc_dota_hero_sand_king', 'npc_dota_hero_nevermore', 'npc_dota_hero_skywrath_mage', 'npc_dota_hero_sniper', 'npc_dota_hero_sven', 'npc_dota_hero_tiny', 'npc_dota_hero_vengefulspirit', 'npc_dota_hero_viper', 'npc_dota_hero_warlock', 'npc_dota_hero_windrunner', 'npc_dota_hero_witch_doctor', 'npc_dota_hero_skeleton_king', 'npc_dota_hero_zuus'}
+		GameRules:SetCustomGameTeamMaxPlayers( DOTA_TEAM_GOODGUYS, 6 )
+		GameRules:SetCustomGameTeamMaxPlayers( DOTA_TEAM_BADGUYS, 6 )
+		local heroNumber = RandomInt(1, table.getn(botHeroes))	
+		Tutorial:AddBot( botHeroes[heroNumber], "top", "hard", true )
+		table.remove(botHeroes, heroNumber)
+		heroNumber = RandomInt(1, table.getn(botHeroes))
+		Tutorial:AddBot( botHeroes[heroNumber], "top", "hard", true )
+		table.remove(botHeroes, heroNumber)
+		heroNumber = RandomInt(1, table.getn(botHeroes))
+		Tutorial:AddBot( botHeroes[heroNumber], "mid", "hard", true )
+		table.remove(botHeroes, heroNumber)
+		heroNumber = RandomInt(1, table.getn(botHeroes))
+		Tutorial:AddBot( botHeroes[heroNumber], "bot", "hard", true )
+		table.remove(botHeroes, heroNumber)
+		heroNumber = RandomInt(1, table.getn(botHeroes))
+		Tutorial:AddBot( botHeroes[heroNumber], "bot", "hard", true )
+		table.remove(botHeroes, heroNumber)
+		heroNumber = RandomInt(1, table.getn(botHeroes))
+		Tutorial:AddBot( botHeroes[heroNumber], "top", "hard", false )
+		table.remove(botHeroes, heroNumber)
+		heroNumber = RandomInt(1, table.getn(botHeroes))
+		Tutorial:AddBot( botHeroes[heroNumber], "top", "hard", false )
+		table.remove(botHeroes, heroNumber)
+		heroNumber = RandomInt(1, table.getn(botHeroes))
+		Tutorial:AddBot( botHeroes[heroNumber], "mid", "hard", false )
+		table.remove(botHeroes, heroNumber)
+		heroNumber = RandomInt(1, table.getn(botHeroes))
+		Tutorial:AddBot( botHeroes[heroNumber], "bot", "hard", false )
+		table.remove(botHeroes, heroNumber)
+		heroNumber = RandomInt(1, table.getn(botHeroes))
+		Tutorial:AddBot( botHeroes[heroNumber], "bot", "hard", false )
+		GameRules:GetGameModeEntity():SetBotThinkingEnabled(true)
+		Tutorial:StartTutorialMode()
+	end)
 end
 
 function CCouriers:FilterModifyGold(event)
