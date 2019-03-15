@@ -117,7 +117,7 @@ function CCouriers:OnNPCSpawned( event )
 		end)
 	end
 	--when the courier/leader spawns:
-	if string.find(spawnedUnit:GetUnitName(), "courier") then
+	if spawnedUnit:IsCourier() then
 		--give it a cooldown reduction and make it briefly invulnerable
 		Timers:CreateTimer(0.01, function() 
 			spawnedUnit:AddNewModifier(spawnedUnit, nil, "modifier_invulnerable", {duration = 1})
@@ -143,7 +143,7 @@ end
 
 function CCouriers:OnEntityKilled(event)
 	local killedUnit = EntIndexToHScript( event.entindex_killed )
-	if string.find(killedUnit:GetUnitName(), "courier") then
+	if killedUnit:IsCourier() then
 		killedUnit:RespawnUnit()
 	end
 end
@@ -153,34 +153,34 @@ function CCouriers:SpawnBots()
 	GameRules:SetCustomGameTeamMaxPlayers( DOTA_TEAM_GOODGUYS, 6 )
 	GameRules:SetCustomGameTeamMaxPlayers( DOTA_TEAM_BADGUYS, 6 )
 	Tutorial:StartTutorialMode()	
-	local heroNumber = RandomInt(1, table.getn(botHeroes))	
+	local heroNumber = RandomInt(1, #botHeroes)	
 	Tutorial:AddBot( botHeroes[heroNumber], "top", "hard", true )
 	table.remove(botHeroes, heroNumber)
-	heroNumber = RandomInt(1, table.getn(botHeroes))
+	heroNumber = RandomInt(1, #botHeroes)
 	Tutorial:AddBot( botHeroes[heroNumber], "top", "hard", false )
 	table.remove(botHeroes, heroNumber)	
-	heroNumber = RandomInt(1, table.getn(botHeroes))
+	heroNumber = RandomInt(1, #botHeroes)
 	Tutorial:AddBot( botHeroes[heroNumber], "top", "hard", true )
 	table.remove(botHeroes, heroNumber)
-	heroNumber = RandomInt(1, table.getn(botHeroes))
+	heroNumber = RandomInt(1, #botHeroes)
 	Tutorial:AddBot( botHeroes[heroNumber], "top", "hard", false )
 	table.remove(botHeroes, heroNumber)	
-	heroNumber = RandomInt(1, table.getn(botHeroes))
+	heroNumber = RandomInt(1, #botHeroes)
 	Tutorial:AddBot( botHeroes[heroNumber], "mid", "hard", true )
 	table.remove(botHeroes, heroNumber)
-	heroNumber = RandomInt(1, table.getn(botHeroes))
+	heroNumber = RandomInt(1, #botHeroes)
 	Tutorial:AddBot( botHeroes[heroNumber], "mid", "hard", false )
 	table.remove(botHeroes, heroNumber)	
-	heroNumber = RandomInt(1, table.getn(botHeroes))
+	heroNumber = RandomInt(1, #botHeroes)
 	Tutorial:AddBot( botHeroes[heroNumber], "bot", "hard", true )
 	table.remove(botHeroes, heroNumber)
-	heroNumber = RandomInt(1, table.getn(botHeroes))
+	heroNumber = RandomInt(1, #botHeroes)
 	Tutorial:AddBot( botHeroes[heroNumber], "bot", "hard", false )
 	table.remove(botHeroes, heroNumber)	
-	heroNumber = RandomInt(1, table.getn(botHeroes))
+	heroNumber = RandomInt(1, #botHeroes)
 	Tutorial:AddBot( botHeroes[heroNumber], "bot", "hard", true )
 	table.remove(botHeroes, heroNumber)	
-	heroNumber = RandomInt(1, table.getn(botHeroes))
+	heroNumber = RandomInt(1, #botHeroes)
 	Tutorial:AddBot( botHeroes[heroNumber], "bot", "hard", false )
 	GameRules:GetGameModeEntity():SetBotThinkingEnabled(true)
 end
@@ -229,6 +229,7 @@ function CCouriers:PlayersFullyLoaded()
 end
 
 function CCouriers:FilterExecuteOrder(event)
+	-- block orders from mind-controlled bots
 	if event.issuer_player_id_const == -1 then
 		for n,unit_index in pairs(event.units) do
 			local unit = EntIndexToHScript(unit_index)	
@@ -237,11 +238,44 @@ function CCouriers:FilterExecuteOrder(event)
 			end
 		end
 	end
+	
+	-- refuse to buy a courier
+	if event.order_type == DOTA_UNIT_ORDER_PURCHASE_ITEM and event.entindex_ability == 45 then
+		EmitSoundOn("General.InvalidTarget_Invulnerable", PlayerResource:GetPlayer(event.issuer_player_id_const))
+		return false
+	end
+	
+	-- use abilities & items when pinged
+	if event.order_type == DOTA_UNIT_ORDER_PING_ABILITY then
+		local ability = EntIndexToHScript(event.entindex_ability)
+		local pingedTeam = ability:GetOwner():GetTeamNumber()
+		if PlayerResource:GetTeam(event.issuer_player_id_const) == pingedTeam and ability:IsFullyCastable() and not ability:GetOwner():IsCourier() then
+			Timers:CreateTimer(1, function()
+				local behaviour = ability:GetBehavior()
+				local targetType = ability:GetAbilityTargetType()			
+				if behaviour % DOTA_ABILITY_BEHAVIOR_UNIT_TARGET > 0 and behaviour % DOTA_ABILITY_BEHAVIOR_POINT > 0 then
+					print("no target")
+					ability:GetOwner():CastAbilityNoTarget(ability, -1)
+				else
+					local targets = FindUnitsInRadius(pingedTeam, ability:GetOwner():GetAbsOrigin(), nil, 1000, ability:GetAbilityTargetTeam(), targetType, DOTA_UNIT_TARGET_FLAG_FOW_VISIBLE, 0, false) 
+					PrintTable(targets)
+					if #targets > 0 then
+						if behaviour % DOTA_ABILITY_BEHAVIOR_UNIT_TARGET == 0 then
+							ability:GetOwner():CastAbilityOnTarget(targets[RandomInt(1, #targets )], ability, -1)
+						else
+							ability:GetOwner():CastAbilityOnPosition(targets[RandomInt(1, #targets )]:GetAbsOrigin(), ability, -1)
+						end
+					end
+				end
+			end)
+		end
+	end
+	
 	return true
 end
 
-function PrintEventData(event)
-	for k, v in pairs( event ) do
+function PrintTable(aTable)
+	for k, v in pairs( aTable ) do
         print(k .. " " .. tostring(v).." ("..type(v)..")" )
     end
 end
