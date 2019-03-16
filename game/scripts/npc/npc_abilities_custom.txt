@@ -17,7 +17,7 @@
 		"MaxLevel" 						"1"
 		"AbilityCastPoint"				"0.0"
 		"AbilityDuration" 				"20"
-		"AbilityCooldown"				"42"
+		"AbilityCooldown"				"30"
 		"AbilityCastRange" 				"150"
 		"AbilityManaCost"				"0"
 		"AbilitySpecial"
@@ -31,7 +31,17 @@
 			{	
 				"var_type"			"FIELD_INTEGER"
 			}
+			"03"
+			{	
+				"var_type"			"FIELD_INTEGER"
 				"range_tooltip"		"150"
+			}			
+			"04"
+			{	
+				"var_type"			"FIELD_INTEGER"
+				"recharge_cooldown"	"150"
+			}
+				
 		}		
 	}
 }

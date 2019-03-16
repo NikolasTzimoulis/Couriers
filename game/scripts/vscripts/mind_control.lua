@@ -1,46 +1,34 @@
 mind_control = class({})
+LinkLuaModifier("modifier_mind_control", "modifier_mind_control.lua", LUA_MODIFIER_MOTION_NONE)
+LinkLuaModifier("modifier_speed_burst_charges", "modifier_speed_burst_charges.lua", LUA_MODIFIER_MOTION_NONE)
+LinkLuaModifier("modifier_hero_no_charges", "modifier_hero_no_charges.lua", LUA_MODIFIER_MOTION_NONE)
 
 function mind_control:OnSpellStart()
-    local target = self:GetCursorTarget()
-    local caster = self:GetCaster()
-	local duration = self:GetDuration()
-	local originalOwnerID  = target:GetPlayerOwnerID()
-	local realplayerID = nil
-	for playerid = 0, DOTA_MAX_PLAYERS do
-		if PlayerResource:IsValidPlayer(playerid) and not PlayerResource:IsFakeClient(playerid) and PlayerResource:GetTeam(playerid) == caster:GetTeam() then
-			realplayerID = playerid
-			break
+	if IsServer() then
+		local caster = self:GetCaster()
+		local host = self:GetCursorTarget()
+		--give the mind control modifier which is what is actually doing all the mind control logic
+		host:AddNewModifier(caster, nil, "modifier_mind_control", {duration = self:GetDuration()})
+		--recharge burst speed 
+		local rechargeCooldown = self:GetSpecialValueFor("recharge_cooldown")
+		local timeNow = GameRules:GetDOTATime(true, true)
+		if not host:HasModifier("modifier_hero_no_charges") then
+			local abil = caster:FindAbilityByName("courier_burst")
+			if abil:IsCooldownReady() then
+				local stackCount = caster:GetModifierStackCount("modifier_speed_burst_charges", caster) 
+				caster:SetModifierStackCount("modifier_speed_burst_charges", caster, stackCount+1)
+			else
+				abil:EndCooldown()
+			end
+			host:AddNewModifier(caster, nil, "modifier_hero_no_charges", {duration = rechargeCooldown})
 		end
 	end
-	
-    -- Hide the hero 
-	caster:AddNewModifier(spawnedUnit, nil, "modifier_tutorial_hide_npc", {duration = duration})
-	caster:AddNewModifier(spawnedUnit, nil, "modifier_invulnerable", {duration = duration})
-	PlayerResource:SetDefaultSelectionEntity(realplayerID, target)
-	PlayerResource:ResetSelection(realplayerID)
-	target:SetControllableByPlayer(realplayerID, true)	
-	target.isMindControlled = true
-	
-	-- Play graphical effect and sound for going inside the host
-	local effect_in = ParticleManager:CreateParticle("particles/units/heroes/hero_bane/bane_sap.vpcf", PATTACH_CUSTOMORIGIN_FOLLOW, target)
-	ParticleManager:SetParticleControlEnt(effect_in, 1, caster, PATTACH_ABSORIGIN_FOLLOW, "attach_hitloc", caster:GetAbsOrigin(), true)
-	ParticleManager:SetParticleControlEnt(effect_in, 0, target, PATTACH_ABSORIGIN_FOLLOW, "attach_hitloc", target:GetAbsOrigin(), true)
-	ParticleManager:ReleaseParticleIndex(effect_in)
-	EmitSoundOn( "LootGreevil.Hum", caster )	
-	EmitSoundOn( "Hero_Oracle.PreAttack", caster )	
-	
-	-- Reset everything when duration ends
-	Timers:CreateTimer(duration, function()
-		PlayerResource:SetDefaultSelectionEntity(realplayerID, caster)
-		PlayerResource:ResetSelection(realplayerID)
-		target:SetControllableByPlayer(originalOwnerID, true)	
-		target.isMindControlled = false
-		FindClearSpaceForUnit(caster, target:GetAbsOrigin(), true)
-		-- effect and sound for emerging	
-		effect_out = ParticleManager:CreateParticle("particles/econ/items/pets/pet_frondillo/pet_spawn_dirt_frondillo.vpcf", PATTACH_WORLDORIGIN, caster)
-		ParticleManager:SetParticleControl(effect_out,0,target:GetAbsOrigin())
-		EmitSoundOn( "Greevil.Attack", caster )	
-	end)	
+end
 
+function mind_control:OnUpgrade()
+	if IsServer() then
+		local caster = self:GetCaster()
+		caster:AddNewModifier(caster, nil, "modifier_speed_burst_charges", {duration = -1})
+	end
 end
 

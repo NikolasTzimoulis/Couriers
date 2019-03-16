@@ -7,10 +7,13 @@ end
 
 function Precache( context )
 	PrecacheResource("particle", "particles/units/heroes/hero_bane/bane_sap.vpcf", context )
-	PrecacheResource("particle", "particles/econ/items/pets/pet_frondillo/pet_spawn_dirt_frondillo.vpcf", context )
+	PrecacheResource("particle", "particles/econ/items/pets/pet_frondillo/pet_spawn_frondillo.vpcf", context )
+	PrecacheResource("particle", "particles/econ/items/pets/pet_frondillo/pet_flee_vapor_frondillo.vpcf", context )
+	PrecacheResource("particle", "particles/units/heroes/hero_monkey_king/monkey_king_quad_tap_stack_number.vpcf", context )
 	PrecacheResource("soundfile", "soundevents/game_sounds_creeps.vsndevts", context)
 	PrecacheResource("soundfile", "soundevents/game_sounds_greevils.vsndevts", context)	
 	PrecacheResource("soundfile", "soundevents/game_sounds_heroes/game_sounds_oracle.vsndevts", context)	
+	PrecacheResource("soundfile", "soundevents/game_sounds_ui_imported.vsndevts", context)	
 end
 
 -- Create the game mode when we activate
@@ -118,10 +121,9 @@ function CCouriers:OnNPCSpawned( event )
 	end
 	--when the courier/leader spawns:
 	if spawnedUnit:IsCourier() then
-		--give it a cooldown reduction and make it briefly invulnerable
+		--make it briefly invulnerable
 		Timers:CreateTimer(0.01, function() 
 			spawnedUnit:AddNewModifier(spawnedUnit, nil, "modifier_invulnerable", {duration = 1})
-			spawnedUnit:AddNewModifier(spawnedUnit, nil, "modifier_rune_arcane", {duration = -1}) 
 		end)
 		--if this is the first time this courier has spawned:
 		if spawnedUnit:FindAbilityByName("mind_control") == nil and self.fakeHero[spawnedUnit:GetTeamNumber()] then
@@ -254,11 +256,9 @@ function CCouriers:FilterExecuteOrder(event)
 				local behaviour = ability:GetBehavior()
 				local targetType = ability:GetAbilityTargetType()			
 				if behaviour % DOTA_ABILITY_BEHAVIOR_UNIT_TARGET > 0 and behaviour % DOTA_ABILITY_BEHAVIOR_POINT > 0 then
-					print("no target")
 					ability:GetOwner():CastAbilityNoTarget(ability, -1)
 				else
 					local targets = FindUnitsInRadius(pingedTeam, ability:GetOwner():GetAbsOrigin(), nil, 1000, ability:GetAbilityTargetTeam(), targetType, DOTA_UNIT_TARGET_FLAG_FOW_VISIBLE, 0, false) 
-					PrintTable(targets)
 					if #targets > 0 then
 						if behaviour % DOTA_ABILITY_BEHAVIOR_UNIT_TARGET == 0 then
 							ability:GetOwner():CastAbilityOnTarget(targets[RandomInt(1, #targets )], ability, -1)
