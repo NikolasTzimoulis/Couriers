@@ -36,7 +36,9 @@ function modifier_mind_control:OnCreated(event)
         -- Hide the courier
         self.hidemod1 = caster:AddNewModifier(nil, nil, "modifier_tutorial_hide_npc", {})
         self.hidemod2 = caster:AddNewModifier(nil, nil, "modifier_invulnerable", {})
-        PlayerResource:SetDefaultSelectionEntity(self.realplayerID, host)
+        
+		-- Switch control to hero from courier
+		PlayerResource:SetDefaultSelectionEntity(self.realplayerID, host)
         PlayerResource:ResetSelection(self.realplayerID)
         host:SetControllableByPlayer(self.realplayerID, true)
         host.isMindControlled = true
@@ -59,6 +61,7 @@ function modifier_mind_control:OnRemoved(event)
     if IsServer() then
         local caster = self:GetCaster()
         local host = self:GetParent()
+		-- Switch control to courier from hero
         PlayerResource:SetDefaultSelectionEntity(self.realplayerID, caster)
         PlayerResource:ResetSelection(self.realplayerID)
         host:SetControllableByPlayer(self.originalOwnerID, true)
@@ -96,8 +99,8 @@ function modifier_mind_control:OnIntervalThink()
 			self.effect_counter = ParticleManager:CreateParticleForTeam("particles/units/heroes/hero_monkey_king/monkey_king_quad_tap_stack_number.vpcf", PATTACH_OVERHEAD_FOLLOW, host, host:GetTeamNumber())
 			ParticleManager:SetParticleControl(self.effect_counter,0,host:GetAbsOrigin())
 			ParticleManager:SetParticleControl(self.effect_counter, 1, Vector(0,self.phase,0))
-			EmitSoundOn( "greevil_courier.grunt_big", host )
-			EmitSoundOn( "Tutorial.TaskProgress", host )
+			EmitSoundOnLocationForAllies(host:GetAbsOrigin(), "greevil_courier.grunt_big", host)
+			EmitSoundOnLocationForAllies(host:GetAbsOrigin(), "Tutorial.TaskProgress", host)
 			self.phase = self.phase - 1
 		end
 	end

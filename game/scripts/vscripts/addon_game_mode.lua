@@ -67,10 +67,10 @@ function CCouriers:OnThink()
 end
 
 function CCouriers:DoOncePerSecond()
-	-- appropriate items in each hero's possession
 	local heroes = HeroList:GetAllHeroes()
    	for _,hero in pairs(heroes) do 
    		if IsValidEntity(hero) and hero:IsRealHero() then 
+			-- appropriate items in each hero's possession
 			for itemSlot = 0, 11, 1 do 
 				local item = hero:GetItemInSlot( itemSlot ) 
 				if IsValidEntity(item) and item:GetPurchaser() ~= hero then 
@@ -83,14 +83,27 @@ function CCouriers:DoOncePerSecond()
 				end
 			end	
    		end
+		self:CheckPassGold(hero)
 	end 
-	-- reset ownership of tp scrolls on courier
+	
+	-- courier items
 	for i, courier in pairs(self.courierList) do
 		if IsValidEntity(courier) then 
+			local fhero = self.fakeHero[courier:GetTeamNumber()]
 			for itemSlot = 0, 11, 1 do 
 				local item = courier:GetItemInSlot( itemSlot ) 
-				if IsValidEntity(item) and item:GetName() == "item_tpscroll" then
-					item:SetPurchaser(nil)
+				if IsValidEntity(item) then
+					-- reset ownership of tp scrolls 
+					if item:GetName() == "item_tpscroll" then
+						item:SetPurchaser(nil)
+					-- appropriate other items on courier
+					elseif item:GetPurchaser() ~= fhero then
+						local charges = item:GetCurrentCharges()
+						local itemname = item:GetName()
+						item:RemoveSelf()
+						local newItem = courier:AddItem(CreateItem(itemname, fhero, fhero))
+						newItem:SetCurrentCharges(charges)
+					end
 				end
 			end	
    		end
@@ -108,6 +121,7 @@ end
 
 function CCouriers:OnNPCSpawned( event )
 	local spawnedUnit = EntIndexToHScript( event.entindex )
+	-- spawn the courier and hide the fakehero
 	if spawnedUnit:IsRealHero() and PlayerResource:GetNumCouriersForTeam(spawnedUnit:GetTeamNumber()) == 0 and not PlayerResource:IsFakeClient(spawnedUnit:GetPlayerOwnerID()) then
 		self.fakeHero[spawnedUnit:GetTeamNumber()] = spawnedUnit
 		Timers:CreateTimer(1, function()
@@ -117,6 +131,7 @@ function CCouriers:OnNPCSpawned( event )
 			spawnedUnit:AddNewModifier(spawnedUnit, nil, "modifier_tutorial_hide_npc", {duration = -1})
 			spawnedUnit:AddNewModifier(spawnedUnit, nil, "modifier_invulnerable", {duration = -1})
 			spawnedUnit:AddNewModifier(spawnedUnit, nil, "modifier_rooted", {duration = -1})
+			spawnedUnit:AddNewModifier(spawnedUnit, nil, "modifier_disarmed", {duration = -1})
 		end)
 	end
 	--when the courier/leader spawns:
@@ -145,8 +160,13 @@ end
 
 function CCouriers:OnEntityKilled(event)
 	local killedUnit = EntIndexToHScript( event.entindex_killed )
+	-- courier instant respawn
 	if killedUnit:IsCourier() then
 		killedUnit:RespawnUnit()
+	end
+	local heroes = HeroList:GetAllHeroes()
+	for _,hero in pairs(heroes) do 
+		self:CheckPassGold(hero)
 	end
 end
 
@@ -272,6 +292,16 @@ function CCouriers:FilterExecuteOrder(event)
 	end
 	
 	return true
+end
+
+function CCouriers:CheckPassGold(hero)
+	-- pass any remaining gold to the leader
+	if IsValidEntity(hero) and hero:IsRealHero() and self.fakeHero[hero:GetTeamNumber()] and hero ~= self.fakeHero[hero:GetTeamNumber()] then
+		local recepient = self.fakeHero[hero:GetTeamNumber()]:GetPlayerOwnerID()
+		PlayerResource:ModifyGold(recepient, hero:GetGold(), false, DOTA_ModifyGold_Unspecified)
+		hero:SetGold(0, false)
+		hero:SetGold(0, true)
+	end
 end
 
 function PrintTable(aTable)
