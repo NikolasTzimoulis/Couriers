@@ -14,6 +14,7 @@ function Precache( context )
 	PrecacheResource("soundfile", "soundevents/game_sounds_greevils.vsndevts", context)	
 	PrecacheResource("soundfile", "soundevents/game_sounds_heroes/game_sounds_oracle.vsndevts", context)	
 	PrecacheResource("soundfile", "soundevents/game_sounds_ui_imported.vsndevts", context)	
+	PrecacheResource("soundfile", "soundevents/voscripts/game_sounds_vo_announcer.vsndevts", context)
 end
 
 -- Create the game mode when we activate
@@ -36,6 +37,7 @@ function CCouriers:InitGameMode()
 	GameRules:SetGoldPerTick(0)
 	self.startGold = 3000
 	self.PassiveGoldPerSecond = 10
+	self.CourierBounty = 500
 	self.courierList = {}
 	self.fakeHero = {}
 	self.oneTimeSetup = 0
@@ -43,7 +45,8 @@ function CCouriers:InitGameMode()
 	GameRules:GetGameModeEntity():SetBountyRunePickupFilter(Dynamic_Wrap(CCouriers, "BountyRunePickupFilter"), self)
 	GameRules:GetGameModeEntity():SetExecuteOrderFilter(Dynamic_Wrap(CCouriers,"FilterExecuteOrder"),self)
 	ListenToGameEvent("npc_spawned", Dynamic_Wrap( CCouriers, "OnNPCSpawned" ), self )
-	ListenToGameEvent( "entity_killed", Dynamic_Wrap( CCouriers, 'OnEntityKilled' ), self )				
+	ListenToGameEvent("entity_killed", Dynamic_Wrap( CCouriers, 'OnEntityKilled' ), self )	
+	ListenToGameEvent( "entity_hurt", Dynamic_Wrap( CCouriers, 'OnEntityHurt' ), self )			
 end
 
 -- Evaluate the state of the game
@@ -124,11 +127,11 @@ function CCouriers:OnNPCSpawned( event )
 	-- spawn the courier and hide the fakehero
 	if spawnedUnit:IsRealHero() and PlayerResource:GetNumCouriersForTeam(spawnedUnit:GetTeamNumber()) == 0 and not PlayerResource:IsFakeClient(spawnedUnit:GetPlayerOwnerID()) then
 		self.fakeHero[spawnedUnit:GetTeamNumber()] = spawnedUnit
+		spawnedUnit:AddNewModifier(spawnedUnit, nil, "modifier_tutorial_hide_npc", {duration = -1})
 		Timers:CreateTimer(1, function()
 			local courier_item = CreateItem("item_courier", spawnedUnit, spawnedUnit)
 			spawnedUnit:AddItem(courier_item)
 			spawnedUnit:CastAbilityNoTarget(courier_item, 0)
-			spawnedUnit:AddNewModifier(spawnedUnit, nil, "modifier_tutorial_hide_npc", {duration = -1})
 			spawnedUnit:AddNewModifier(spawnedUnit, nil, "modifier_invulnerable", {duration = -1})
 			spawnedUnit:AddNewModifier(spawnedUnit, nil, "modifier_rooted", {duration = -1})
 			spawnedUnit:AddNewModifier(spawnedUnit, nil, "modifier_disarmed", {duration = -1})
@@ -160,13 +163,27 @@ end
 
 function CCouriers:OnEntityKilled(event)
 	local killedUnit = EntIndexToHScript( event.entindex_killed )
-	-- courier instant respawn
-	if killedUnit:IsCourier() then
-		killedUnit:RespawnUnit()
+	if killedUnit:IsRealHero() then
+		local heroes = HeroList:GetAllHeroes()
+		for _,hero in pairs(heroes) do 
+			self:CheckPassGold(hero)
+		end
 	end
-	local heroes = HeroList:GetAllHeroes()
-	for _,hero in pairs(heroes) do 
-		self:CheckPassGold(hero)
+end
+
+function CCouriers:OnEntityHurt(event)
+	local hurtUnit = EntIndexToHScript(event.entindex_killed)
+	local damage = event.damagebits
+	if hurtUnit:IsCourier() then
+		if damage >= hurtUnit:GetHealth() then
+			hurtUnit:RespawnUnit()
+			EmitAnnouncerSoundForTeam("announcer_ann_custom_end_09", hurtUnit:GetTeamNumber())
+			if self.fakeHero[hurtUnit:GetOpposingTeamNumber()] then 
+				PlayerResource:ModifyGold(self.fakeHero[hurtUnit:GetOpposingTeamNumber()]:GetPlayerOwnerID(), self.CourierBounty, false,  DOTA_ModifyGold_Unspecified)				
+				EmitSoundOnLocationForAllies(hurtUnit:GetAbsOrigin(), "General.CoinsBig", self.fakeHero[hurtUnit:GetOpposingTeamNumber()])
+			end
+			return false
+		end
 	end
 end
 
