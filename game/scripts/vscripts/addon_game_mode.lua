@@ -14,7 +14,9 @@ function Precache( context )
 	PrecacheResource("soundfile", "soundevents/game_sounds_greevils.vsndevts", context)	
 	PrecacheResource("soundfile", "soundevents/game_sounds_heroes/game_sounds_oracle.vsndevts", context)	
 	PrecacheResource("soundfile", "soundevents/game_sounds_ui_imported.vsndevts", context)	
+	PrecacheResource("soundfile", "soundevents/soundevents_dota_ui.vsndevts", context)
 	PrecacheResource("soundfile", "soundevents/voscripts/game_sounds_vo_announcer.vsndevts", context)
+
 end
 
 -- Create the game mode when we activate
@@ -38,6 +40,7 @@ function CCouriers:InitGameMode()
 	self.startGold = 3000
 	self.PassiveGoldPerSecond = 10
 	self.CourierBounty = 500
+	self.heroBountyMultiplier = 0.01
 	self.courierList = {}
 	self.fakeHero = {}
 	self.oneTimeSetup = 0
@@ -114,10 +117,10 @@ function CCouriers:DoOncePerSecond()
 	-- give passive gold to each team's leader
 	if GameRules:State_Get() == DOTA_GAMERULES_STATE_GAME_IN_PROGRESS then
 		if self.fakeHero[DOTA_TEAM_GOODGUYS] then 
-			PlayerResource:ModifyGold(self.fakeHero[DOTA_TEAM_GOODGUYS]:GetPlayerOwnerID(), self.PassiveGoldPerSecond, false,  DOTA_ModifyGold_Unspecified)
+			PlayerResource:ModifyGold(self.fakeHero[DOTA_TEAM_GOODGUYS]:GetPlayerOwnerID(), self.PassiveGoldPerSecond, false, DOTA_ModifyGold_GameTick)
 		end
 		if self.fakeHero[DOTA_TEAM_BADGUYS] then 
-			PlayerResource:ModifyGold(self.fakeHero[DOTA_TEAM_BADGUYS]:GetPlayerOwnerID(), self.PassiveGoldPerSecond, false,  DOTA_ModifyGold_Unspecified)
+			PlayerResource:ModifyGold(self.fakeHero[DOTA_TEAM_BADGUYS]:GetPlayerOwnerID(), self.PassiveGoldPerSecond, false, DOTA_ModifyGold_GameTick)
 		end
 	end
 end
@@ -164,9 +167,12 @@ end
 function CCouriers:OnEntityKilled(event)
 	local killedUnit = EntIndexToHScript( event.entindex_killed )
 	if killedUnit:IsRealHero() then
+		if self.fakeHero[killedUnit:GetOpposingTeamNumber()] then
+			EmitSoundOnLocationForAllies(killedUnit:GetAbsOrigin(), "General.Coins", self.fakeHero[killedUnit:GetOpposingTeamNumber()])
+		end
 		local heroes = HeroList:GetAllHeroes()
 		for _,hero in pairs(heroes) do 
-			self:CheckPassGold(hero)
+			self:CheckPassGold(hero)		
 		end
 	end
 end
@@ -230,7 +236,11 @@ function CCouriers:FilterModifyGold(event)
     local reason = event.reason_const
 	if self.fakeHero[PlayerResource:GetTeam(playerID)] and playerID ~= self.fakeHero[PlayerResource:GetTeam(playerID)]:GetPlayerOwnerID() then
 		local recepient = self.fakeHero[PlayerResource:GetTeam(playerID)]:GetPlayerOwnerID()
-		PlayerResource:ModifyGold(recepient, gold, false, DOTA_ModifyGold_Unspecified)
+		if reason == DOTA_ModifyGold_HeroKill then
+			gold = gold + self:BonusBounty(playerID)			
+		end
+		EmitSoundOnLocationForAllies(PlayerResource:GetSelectedHeroEntity(playerID):GetAbsOrigin(), "ui.comp_coins_tick", PlayerResource:GetSelectedHeroEntity(playerID))
+		PlayerResource:ModifyGold(recepient, gold, false, reason)
 		--print(gold.."("..reason..") from "..PlayerResource:GetPlayerName(playerID).." to "..PlayerResource:GetPlayerName(recepient))
 		return false		
 	end
@@ -312,7 +322,7 @@ function CCouriers:FilterExecuteOrder(event)
 end
 
 function CCouriers:CheckPassGold(hero)
-	-- pass any remaining gold to the leader
+	-- transfer any remaining gold to the human player
 	if IsValidEntity(hero) and hero:IsRealHero() and self.fakeHero[hero:GetTeamNumber()] and hero ~= self.fakeHero[hero:GetTeamNumber()] then
 		local recepient = self.fakeHero[hero:GetTeamNumber()]:GetPlayerOwnerID()
 		PlayerResource:ModifyGold(recepient, hero:GetGold(), false, DOTA_ModifyGold_Unspecified)
@@ -321,8 +331,35 @@ function CCouriers:CheckPassGold(hero)
 	end
 end
 
+function CCouriers:BonusBounty(playerID)	
+	-- get max net worth of team
+	local killerTeam = PlayerResource:GetSelectedHeroEntity(playerID):GetTeamNumber()
+	local victimTeam = PlayerResource:GetSelectedHeroEntity(playerID):GetOpposingTeamNumber()
+	local maxNetWorth = 0
+	local heroes = HeroList:GetAllHeroes()
+	for _,hero in pairs(heroes) do 
+		if hero:GetTeamNumber() == victimTeam and hero ~= self.fakeHero[victimTeam] then
+			local netWorth = PlayerResource:GetNetWorth(hero:GetPlayerOwnerID())
+			if netWorth > maxNetWorth then
+				maxNetWorth = netWorth
+				--print(hero:GetName().." is max net worth: "..tostring(maxNetWorth))
+			end		
+		end		
+	end	
+
+	-- gold bounty formula
+	if self.fakeHero[killerTeam] then
+		--print("Bonus bounty: "..tostring(maxNetWorth * self.heroBountyMultiplier))
+		return maxNetWorth * self.heroBountyMultiplier
+	else
+		return 0
+	end
+end
+
+
 function PrintTable(aTable)
 	for k, v in pairs( aTable ) do
         print(k .. " " .. tostring(v).." ("..type(v)..")" )
     end
+	print("")
 end
