@@ -237,7 +237,15 @@ function CCouriers:FilterModifyGold(event)
 	if self.fakeHero[PlayerResource:GetTeam(playerID)] and playerID ~= self.fakeHero[PlayerResource:GetTeam(playerID)]:GetPlayerOwnerID() then
 		local recepient = self.fakeHero[PlayerResource:GetTeam(playerID)]:GetPlayerOwnerID()
 		if reason == DOTA_ModifyGold_HeroKill then
-			gold = gold + self:BonusBounty(playerID)			
+			local extra = self:BonusBounty(playerID)
+			gold = gold + extra
+			if extra > 0 then
+				local extraBountyEffect = ParticleManager:CreateParticleForTeam("particles/msg_fx/msg_gold.vpcf", PATTACH_OVERHEAD_FOLLOW, PlayerResource:GetSelectedHeroEntity(playerID), PlayerResource:GetTeam(playerID))
+				ParticleManager:SetParticleControl(extraBountyEffect, 1, Vector(0, extra, 0))
+				ParticleManager:SetParticleControl(extraBountyEffect, 2, Vector(5, #tostring(extra)+1, 0))
+				ParticleManager:SetParticleControl(extraBountyEffect, 3, Vector(255, 200, 33))
+				ParticleManager:ReleaseParticleIndex(extraBountyEffect)
+			end
 		end
 		EmitSoundOnLocationForAllies(PlayerResource:GetSelectedHeroEntity(playerID):GetAbsOrigin(), "ui.comp_coins_tick", PlayerResource:GetSelectedHeroEntity(playerID))
 		PlayerResource:ModifyGold(recepient, gold, false, reason)
@@ -350,7 +358,7 @@ function CCouriers:BonusBounty(playerID)
 	-- gold bounty formula
 	if self.fakeHero[killerTeam] then
 		--print("Bonus bounty: "..tostring(maxNetWorth * self.heroBountyMultiplier))
-		return maxNetWorth * self.heroBountyMultiplier
+		return math.floor(maxNetWorth * self.heroBountyMultiplier)
 	else
 		return 0
 	end
