@@ -44,20 +44,25 @@ function CCouriers:InitGameMode()
 	self.courierList = {}
 	self.fakeHero = {}
 	self.oneTimeSetup = 0
+	CustomNetTables:SetTableValue( "draft", "picked", {[DOTA_TEAM_GOODGUYS] = {}, [DOTA_TEAM_BADGUYS] = {}} )
 	GameRules:GetGameModeEntity():SetModifyGoldFilter(Dynamic_Wrap(CCouriers,"FilterModifyGold"),self)
 	GameRules:GetGameModeEntity():SetBountyRunePickupFilter(Dynamic_Wrap(CCouriers, "BountyRunePickupFilter"), self)
 	GameRules:GetGameModeEntity():SetExecuteOrderFilter(Dynamic_Wrap(CCouriers,"FilterExecuteOrder"),self)
 	ListenToGameEvent("npc_spawned", Dynamic_Wrap( CCouriers, "OnNPCSpawned" ), self )
 	ListenToGameEvent("entity_killed", Dynamic_Wrap( CCouriers, 'OnEntityKilled' ), self )	
-	ListenToGameEvent( "entity_hurt", Dynamic_Wrap( CCouriers, 'OnEntityHurt' ), self )			
+	ListenToGameEvent( "entity_hurt", Dynamic_Wrap( CCouriers, 'OnEntityHurt' ), self )		
+	CustomGameEventManager:RegisterListener("draft", Dynamic_Wrap(CCouriers, 'DoDraft'))
 end
 
 -- Evaluate the state of the game
 function CCouriers:OnThink()
-	if 	self.oneTimeSetup == 0 then	
-		self.oneTimeSetup = 1
-	elseif GameRules:State_Get() == DOTA_GAMERULES_STATE_PRE_GAME and self.oneTimeSetup == 1 and self:PlayersFullyLoaded() then
-		self.oneTimeSetup = 2
+
+	if GameRules:State_Get() < DOTA_GAMERULES_STATE_PRE_GAME then
+		print(GameRules:State_Get())
+	end	
+	
+	if GameRules:State_Get() >= DOTA_GAMERULES_STATE_PRE_GAME and self.oneTimeSetup == 1 and self:PlayersFullyLoaded() then
+		self.oneTimeSetup = 3
 		self:StartingGold()
 		self:SpawnBots()
 		Timers:CreateTimer(function()			
@@ -361,6 +366,12 @@ function CCouriers:BonusBounty(playerID)
 		return math.floor(maxNetWorth * self.heroBountyMultiplier)
 	else
 		return 0
+	end
+end
+
+function CCouriers:DoDraft(event)
+	if event == "" then
+		self.oneTimeSetup = 1
 	end
 end
 

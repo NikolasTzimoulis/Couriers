@@ -1,0 +1,454 @@
+.Root {
+	width: 100%;
+	height: 100%;
+	z-index: -1;
+	//background-color: gradient( linear, 0% 0%, 0% 100%, from( #293032 ), to( #2E373B ) );
+}
+
+#AmbientFXContainer {
+	width: 100%;
+	height: 100%;	
+	opacity: 0.8;
+	transition-property: transform, opacity;
+	transition-duration: 1s;
+	background-position: left center;
+}
+
+#MainAmbient {
+	vertical-align: bottom;
+	background-color: gradient( radial, 50% 100%, 0% 0%, 70% 70%, from( #9B582400 ), color-stop( .15, #5E371100 ), color-stop( .35, #44290800 ), color-stop( .65, #32200100 ), to( #20130100 ) );
+	width: 100%;
+	height: 100%;
+}
+
+
+.AmbientCameraFX {
+	width: 100%;
+	height: 100%;
+	opacity: 1;
+	hue-rotation: 0deg;
+	background-color: gradient( radial, 50% 100%, 0% 0%, 70% 70%, from( #9B582400 ), color-stop( .15, #5E371100 ), color-stop( .35, #44290800 ), color-stop( .65, #32200100 ), to( #20130100 ) );
+	transition-property: hue-rotation, background-color, opacity;
+	transition-duration: 1.5s, 1.5s, 2s;
+	transition-delay: 2.5s, 2.5s, 0s;
+	transition-timing-function: ease-in-out;
+}
+
+
+.HeroesContainer {
+	width: 840px;
+	height: 1020px;
+	background-color: gradient( linear, 0% 100%, 0% 0%, from( #171A25dd  ), to( #171A25dd ) );
+	background-size: contain;
+	background-repeat: no-repeat;
+	background-position: left center;
+	opacity: 1;
+	border-style: solid;
+	border-width: 1px;
+	padding: 4px 10px;
+	border-top-color: #555555;
+	border-left-color: #494949;
+	border-bottom-color: #333333;
+	border-right-color: #404040;
+	transition-property: background-color, opacity;
+	transition-duration: 0.05s;
+	transition-timing-function: linear;
+	box-shadow: #00000055 -2px -2px 4px 4px;
+	margin-top: 50px;
+	margin-left: 270px;
+}
+
+.FirstRow {
+	width: 100%;
+	height: 100%;	
+}
+
+.SecondRow {
+	width: 100%;
+	height: 100%;
+	margin-top: 200px;
+}
+
+.ThirdRow {
+	width: 100%;
+	height: 100%;
+	margin-top: 400px;	
+}
+
+.FourthRow {
+	width: 100%;
+	height: 100%;
+	margin-top: 600px;	
+}
+
+.FifthRow {
+	width: 100%;
+	height: 100%;
+	margin-top: 800px;	
+}
+
+.HeroCard1 {
+	width: 120px;
+	height: 180px;
+	box-shadow: #000000aa -2px -2px 6px 6px;
+	margin-top: 15px;
+	margin-left: 10px;
+}
+
+.HeroCard2 {
+	width: 120px;
+	height: 180px;
+	box-shadow: #000000aa -2px -2px 6px 6px;
+	margin-top: 15px;
+	margin-left: 145px;
+}
+
+.HeroCard3 {
+	width: 120px;
+	height: 180px;
+	box-shadow: #000000aa -2px -2px 6px 6px;
+	margin-top: 15px;
+	margin-left: 280px;
+}
+
+.HeroCard4 {
+	width: 120px;
+	height: 180px;
+	box-shadow: #000000aa -2px -2px 6px 6px;
+	margin-top: 15px;
+	margin-left: 415px;
+}
+
+.HeroCard5 {
+	width: 120px;
+	height: 180px;
+	box-shadow: #000000aa -2px -2px 6px 6px;
+	margin-top: 15px;
+	margin-left: 550px;
+}
+
+.HeroCard6 {
+	width: 120px;
+	height: 180px;
+	box-shadow: #000000aa -2px -2px 6px 6px;
+	margin-top: 15px;
+	margin-left: 685px;
+}
+
+#HeroImage {
+	width: 100%;
+	height: 100%;
+	background-color: #000000de;
+	vertical-align: middle;
+	horizontal-align: center;
+	tooltip-position: bottom;
+	opacity: 0.9;
+}
+
+#HeroImage:hover {
+	opacity: 2;
+}
+
+DOTAHeroCard.Expanded #HeroName
+{
+    opacity: 1.0;
+}
+
+.SelectedHeroContainer {
+	width: 450px;
+	height: 565px;
+	background-color: gradient( linear, 0% 100%, 0% 0%, from( #171A25dd  ), to( #171A25dd ) );
+	background-size: contain;
+	background-repeat: no-repeat;
+	background-position: left center;
+	opacity: 1;
+	border-style: solid;
+	border-width: 1px;
+	padding: 4px 10px;
+	border-top-color: #555555;
+	border-left-color: #494949;
+	border-bottom-color: #333333;
+	border-right-color: #404040;
+	transition-property: background-color, opacity;
+	transition-duration: 0.05s;
+	transition-timing-function: linear;
+	box-shadow: #00000055 -2px -2px 4px 4px;
+	vertical-align: top;
+	horizontal-align: center;
+	margin-top: 50px;
+	margin-left: 760px;
+}
+
+.PlayerContainer1 {
+	width: 350px;
+	height: 66px;
+	border-style: solid;
+	align: center top;
+	border-width: 1px;
+	border-top-color: #555555;
+	border-left-color: #494949;
+	border-bottom-color: #333333;
+	border-right-color: #404040;
+	border-radius: 10px;
+	margin-top: 95px;
+	background-color: gradient( linear, 0% 0%, 0% 100%, from( #404D65dd ), to( #2B3445dd ) );
+}
+
+.PlayerContainer2 {
+	width: 350px;
+	height: 66px;
+	border-style: solid;
+	align: center top;
+	border-width: 1px;
+	border-top-color: #555555;
+	border-left-color: #494949;
+	border-bottom-color: #333333;
+	border-right-color: #404040;
+	border-radius: 10px;
+	margin-top: 340px;
+	background-color: gradient( linear, 0% 0%, 0% 100%, from( #404D65dd ), to( #2B3445dd ) );
+}
+
+.SteamAvatarContainer {
+	width: 64px;
+	height: 64px;	
+	/*background-image: url("file://{images}/custom_game/steam_avatar.jpg");*/
+	background-size: 100%;
+	border-style: solid;
+	border-width: 1px;
+	border-top-color: #555555;
+	border-left-color: #494949;
+	border-bottom-color: #333333;
+	border-right-color: #404040;
+	border-radius: 10px;
+}
+
+.UserAvatar {
+	width: 100%;
+	height: 100%;
+}
+
+
+.PlayerName1 {
+	font-size: 25px;
+	letter-spacing: 2px;
+	color: #ccc;
+	text-transform: uppercase;
+	margin-left: 100px;
+	margin-top: 15px;
+}
+
+.PlayerName2 {
+	font-size: 25px;
+	letter-spacing: 2px;
+	color: #ccc;
+	text-transform: uppercase;
+	margin-left: 100px;
+	margin-top: 15px;
+}
+
+.Divider {
+	width: 500px;
+	height: 3px;
+	padding: 4px 12px 4px 12px;
+	background-color: gradient( linear, 0% 0%, 0% 100%, from( #404D65dd ), to( #2B3445dd ) );
+	border-top: 1px solid #ffffff22;
+	border-left: 1px solid #ffffff11;
+	border-right: 1px solid #00000044;
+	border-bottom: 1px solid #00000088;
+	vertical-align: top;
+	horizontal-align: center;
+	margin-top: 75px;
+}
+
+.Divider2 {
+	width: 500px;
+	height: 3px;
+	padding: 4px 12px 4px 12px;
+	background-color: gradient( linear, 0% 0%, 0% 100%, from( #404D65dd ), to( #2B3445dd ) );
+	border-top: 1px solid #ffffff22;
+	border-left: 1px solid #ffffff11;
+	border-right: 1px solid #00000044;
+	border-bottom: 1px solid #00000088;
+	vertical-align: bottom;
+	horizontal-align: center;
+	margin-bottom: 230px;
+}
+
+.PickedHeroesRow {
+	width: 450px;
+	height: 108px;
+	margin-top: 190px;
+	margin-left: 15px;
+}
+
+.PickedHeroCard1 {
+	width: 70px;
+	height: 100px;
+	box-shadow: #000000aa -2px -2px 6px 6px;
+}
+
+.PickedHeroCard2 {
+	width: 70px;
+	height: 100px;
+	box-shadow: #000000aa -2px -2px 6px 6px;
+	margin-left: 80px;
+}
+
+.PickedHeroCard3 {
+	width: 70px;
+	height: 100px;
+	box-shadow: #000000aa -2px -2px 6px 6px;
+	margin-left: 160px;
+}
+
+.PickedHeroCard4 {
+	width: 70px;
+	height: 100px;
+	box-shadow: #000000aa -2px -2px 6px 6px;
+	margin-left: 240px;
+}
+
+.PickedHeroCard5 {
+	width: 70px;
+	height: 100px;
+	box-shadow: #000000aa -2px -2px 6px 6px;
+	margin-left: 320px;
+}
+
+.PickedHeroesRow2 {
+	width: 450px;
+	height: 108px;
+	margin-top: 430px;
+	margin-left: 15px;
+}
+
+
+#PickHeroButton {
+	width: 190px;
+	height: 48px;
+	padding: 4px 12px 4px 12px;
+	vertical-align: bottom;
+	background-color: gradient( linear, 0% 0%, 0% 100%, from( #3784a6 ), to( #215373 ) );
+	border-top: 1px solid #6F819B;
+	border-left: 1px solid #6F819B22;
+	border-right: 1px solid #6F819B11;
+	border-bottom: 1px solid #3F414B33;
+	box-shadow: #0000008f -5px -5px 5px 7px;
+	margin-bottom: 5px;
+	margin-left: 15px;
+	visibility: collapse;
+}
+
+#SkipDraftButton {
+	width: 230px;
+	height: 55px;
+	padding: 4px 12px 4px 12px;
+	vertical-align: top;
+	horizontal-align: right;
+	background-color: gradient( linear, 0% 0%, 0% 100%, from( #a63737 ), to( #732921 ) );
+	border-top: 1px solid #ffffff22;
+	border-left: 1px solid #ffffff11;
+	border-right: 1px solid #00000044;
+	border-bottom: 1px solid #00000088;
+	box-shadow: #0000008f -5px -5px 5px 7px;
+	margin-top: 5px;
+	margin-right: -3px;
+}
+
+#PickHeroButton:hover {
+	opacity: 2;
+}
+
+#SkipDraftButton:hover {
+	opacity: 2;
+}
+
+#PickHeroText {
+	width: 100%;
+	font-size: 27px;
+	letter-spacing: 2px;
+	text-align: center;
+	vertical-align: center;
+	color: #ccc;
+	text-transform: uppercase;
+	padding-left: 13px;
+	padding-top: 3px;
+}
+
+#SkipDraftText {
+	width: 100%;
+	font-size: 27px;
+	letter-spacing: 2px;
+	horizontal-align: center;
+	text-align: center;
+	vertical-align: center;
+	color: #ccc;
+	text-transform: uppercase;
+	padding-left: 8px;
+	padding-top: 3px;
+}
+
+.MapContainer {
+	width: 450px;
+	height: 450px;
+	background-image: url("file://{images}/custom_game/minimap/minimap.png");
+	background-size: contain;
+	background-repeat: no-repeat;
+	background-position: left center;
+	opacity: 1;
+	padding: 4px 10px;
+	border-style: solid;
+	border-width: 1px;
+	border-top-color: #555555;
+	border-left-color: #494949;
+	border-bottom-color: #333333;
+	border-right-color: #404040;
+	transition-property: background-color, opacity;
+	transition-duration: 0.05s;
+	transition-timing-function: linear;
+	vertical-align: bottom;
+	horizontal-align: center;
+	margin-bottom: 10px;
+	margin-left: 760px;
+}
+
+.TopLane1 {
+	width: 32px;
+	height: 32px;
+	background-image: url("file://{images}/custom_game/miniheroes/pudge.png");
+	margin-top: 115px;
+	margin-left: 20px;
+}
+
+.TopLane2 {
+	width: 32px;
+	height: 32px;
+	background-image: url("file://{images}/custom_game/miniheroes/skywrath_mage.png");
+	margin-top: 150px;
+	margin-left: 20px;
+}
+
+.MidLane {
+	width: 32px;
+	height: 32px;
+	background-image: url("file://{images}/custom_game/miniheroes/sniper.png");
+	margin-top: 235px;
+	margin-left: 160px;
+}
+
+.BotLane1 {
+	width: 32px;
+	height: 32px;
+	background-image: url("file://{images}/custom_game/miniheroes/dazzle.png");
+	margin-top: 373px;
+	margin-left: 310px;
+}
+
+.BotLane2 {
+	width: 32px;
+	height: 32px;
+	background-image: url("file://{images}/custom_game/miniheroes/windrunner.png");
+	margin-top: 373px;
+	margin-left: 345px;
+}
