@@ -2,7 +2,7 @@
 	width: 100%;
 	height: 100%;
 	z-index: -1;
-	//background-color: gradient( linear, 0% 0%, 0% 100%, from( #293032 ), to( #2E373B ) );
+	background-color: gradient( linear, 0% 0%, 0% 100%, from( #293032 ), to( #2E373B ) );
 }
 
 #AmbientFXContainer {
@@ -54,8 +54,8 @@
 	transition-duration: 0.05s;
 	transition-timing-function: linear;
 	box-shadow: #00000055 -2px -2px 4px 4px;
-	margin-top: 50px;
-	margin-left: 270px;
+	margin-top: 0px;
+	margin-left: 100px;
 }
 
 .FirstRow {
@@ -156,7 +156,7 @@ DOTAHeroCard.Expanded #HeroName
 
 .SelectedHeroContainer {
 	width: 450px;
-	height: 565px;
+	height: 1020px;
 	background-color: gradient( linear, 0% 100%, 0% 0%, from( #171A25dd  ), to( #171A25dd ) );
 	background-size: contain;
 	background-repeat: no-repeat;
@@ -175,8 +175,17 @@ DOTAHeroCard.Expanded #HeroName
 	box-shadow: #00000055 -2px -2px 4px 4px;
 	vertical-align: top;
 	horizontal-align: center;
-	margin-top: 50px;
-	margin-left: 760px;
+	margin-top: 0px;
+	margin-left: 950px;
+}
+
+#timer {
+	font-size: 100px;
+	letter-spacing: 10px;
+	color: #ccc;
+	text-transform: uppercase;
+	margin-top: 200px;
+	horizontal-align: center;
 }
 
 .PlayerContainer1 {
@@ -189,9 +198,12 @@ DOTAHeroCard.Expanded #HeroName
 	border-left-color: #494949;
 	border-bottom-color: #333333;
 	border-right-color: #404040;
+	vertical-align: bottom;
+	horizontal-align: left;
 	border-radius: 10px;
-	margin-top: 95px;
+	margin-bottom: 0px;
 	background-color: gradient( linear, 0% 0%, 0% 100%, from( #404D65dd ), to( #2B3445dd ) );
+	z-index: 3;
 }
 
 .PlayerContainer2 {
@@ -204,9 +216,12 @@ DOTAHeroCard.Expanded #HeroName
 	border-left-color: #494949;
 	border-bottom-color: #333333;
 	border-right-color: #404040;
+	horizontal-align: right;
+	vertical-align: bottom;
 	border-radius: 10px;
-	margin-top: 340px;
+	margin-bottom: 512px;
 	background-color: gradient( linear, 0% 0%, 0% 100%, from( #404D65dd ), to( #2B3445dd ) );
+	z-index: 3;
 }
 
 .SteamAvatarContainer {
@@ -233,7 +248,7 @@ DOTAHeroCard.Expanded #HeroName
 	font-size: 25px;
 	letter-spacing: 2px;
 	color: #ccc;
-	text-transform: uppercase;
+	//text-transform: uppercase;
 	margin-left: 100px;
 	margin-top: 15px;
 }
@@ -242,7 +257,7 @@ DOTAHeroCard.Expanded #HeroName
 	font-size: 25px;
 	letter-spacing: 2px;
 	color: #ccc;
-	text-transform: uppercase;
+	//text-transform: uppercase;
 	margin-left: 100px;
 	margin-top: 15px;
 }
@@ -259,6 +274,7 @@ DOTAHeroCard.Expanded #HeroName
 	vertical-align: top;
 	horizontal-align: center;
 	margin-top: 75px;
+	visibility: collapse;
 }
 
 .Divider2 {
@@ -273,6 +289,7 @@ DOTAHeroCard.Expanded #HeroName
 	vertical-align: bottom;
 	horizontal-align: center;
 	margin-bottom: 230px;
+	visibility: collapse;
 }
 
 .PickedHeroesRow {
@@ -280,6 +297,7 @@ DOTAHeroCard.Expanded #HeroName
 	height: 108px;
 	margin-top: 190px;
 	margin-left: 15px;
+	visibility: collapse;
 }
 
 .PickedHeroCard1 {
@@ -321,6 +339,7 @@ DOTAHeroCard.Expanded #HeroName
 	height: 108px;
 	margin-top: 430px;
 	margin-left: 15px;
+	visibility: collapse;
 }
 
 
@@ -409,46 +428,76 @@ DOTAHeroCard.Expanded #HeroName
 	transition-timing-function: linear;
 	vertical-align: bottom;
 	horizontal-align: center;
-	margin-bottom: 10px;
-	margin-left: 760px;
+	margin-bottom: 70px;
+	margin-left: 950px;
+	z-index: 1;
 }
 
-.TopLane1 {
+.heroicon
+{
 	width: 32px;
 	height: 32px;
-	background-image: url("file://{images}/custom_game/miniheroes/pudge.png");
+	border-style: solid;
+	border-width: 1px;
+}
+
+.radiant
+{
+	border-color: #00ff00ff;
+}
+
+.dire
+{
+	border-color: #ff0000ff;
+}	
+
+#R_TopLane1 {
+
 	margin-top: 115px;
 	margin-left: 20px;
 }
 
-.TopLane2 {
-	width: 32px;
-	height: 32px;
-	background-image: url("file://{images}/custom_game/miniheroes/skywrath_mage.png");
+#R_TopLane2 {
 	margin-top: 150px;
 	margin-left: 20px;
 }
 
-.MidLane {
-	width: 32px;
-	height: 32px;
-	background-image: url("file://{images}/custom_game/miniheroes/sniper.png");
+#R_MidLane {
 	margin-top: 235px;
 	margin-left: 160px;
 }
 
-.BotLane1 {
-	width: 32px;
-	height: 32px;
-	background-image: url("file://{images}/custom_game/miniheroes/dazzle.png");
+#R_BotLane1 {
 	margin-top: 373px;
 	margin-left: 310px;
 }
 
-.BotLane2 {
-	width: 32px;
-	height: 32px;
-	background-image: url("file://{images}/custom_game/miniheroes/windrunner.png");
+#R_BotLane2 {
 	margin-top: 373px;
 	margin-left: 345px;
+}
+
+#D_TopLane1 {
+	margin-top: 40px;
+	margin-left: 50px;
+}
+
+#D_TopLane2 {
+	margin-top: 40px;
+	margin-left: 85px;
+}
+
+#D_MidLane {
+	margin-top: 190px;
+	margin-left: 210px;
+}
+
+#D_BotLane1 {
+	margin-top: 260px;
+	margin-left: 375px;
+}
+
+#D_BotLane2 {
+	margin-top: 225px;
+	margin-left: 375px;
 }

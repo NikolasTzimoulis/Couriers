@@ -33,7 +33,7 @@ function CCouriers:InitGameMode()
 	GameRules:GetGameModeEntity():SetRecommendedItemsDisabled(true)
 	GameRules:GetGameModeEntity():SetUseDefaultDOTARuneSpawnLogic(true)
 	GameRules:GetGameModeEntity():SetTowerBackdoorProtectionEnabled(true)
-	GameRules:SetCustomGameSetupAutoLaunchDelay(0)
+	GameRules:SetCustomGameSetupAutoLaunchDelay(30)
 	GameRules:SetCustomGameSetupRemainingTime(0)
 	GameRules:SetStartingGold(0)
 	GameRules:SetGoldPerTick(0)
@@ -44,27 +44,29 @@ function CCouriers:InitGameMode()
 	self.courierList = {}
 	self.fakeHero = {}
 	self.oneTimeSetup = 0
-	CustomNetTables:SetTableValue( "draft", "picked", {[DOTA_TEAM_GOODGUYS] = {}, [DOTA_TEAM_BADGUYS] = {}} )
+	self.draftPicks = {[DOTA_TEAM_GOODGUYS] = {}, [DOTA_TEAM_BADGUYS] = {}}
+	CustomNetTables:SetTableValue( "draft", "picked", self.draftPicks)
 	GameRules:GetGameModeEntity():SetModifyGoldFilter(Dynamic_Wrap(CCouriers,"FilterModifyGold"),self)
 	GameRules:GetGameModeEntity():SetBountyRunePickupFilter(Dynamic_Wrap(CCouriers, "BountyRunePickupFilter"), self)
 	GameRules:GetGameModeEntity():SetExecuteOrderFilter(Dynamic_Wrap(CCouriers,"FilterExecuteOrder"),self)
 	ListenToGameEvent("npc_spawned", Dynamic_Wrap( CCouriers, "OnNPCSpawned" ), self )
 	ListenToGameEvent("entity_killed", Dynamic_Wrap( CCouriers, 'OnEntityKilled' ), self )	
 	ListenToGameEvent( "entity_hurt", Dynamic_Wrap( CCouriers, 'OnEntityHurt' ), self )		
-	CustomGameEventManager:RegisterListener("draft", Dynamic_Wrap(CCouriers, 'DoDraft'))
+	CustomGameEventManager:RegisterListener("draft", function(id, ...) Dynamic_Wrap(self, "DoDraft")(self, ...) end)
 end
 
 -- Evaluate the state of the game
 function CCouriers:OnThink()
 
-	if GameRules:State_Get() < DOTA_GAMERULES_STATE_PRE_GAME then
-		print(GameRules:State_Get())
+	if GameRules:State_Get() < DOTA_GAMERULES_STATE_PRE_GAME and self.oneTimeSetup == 0 then
+		GameRules:LockCustomGameSetupTeamAssignment(true)
+		self.oneTimeSetup = 1
 	end	
 	
 	if GameRules:State_Get() >= DOTA_GAMERULES_STATE_PRE_GAME and self.oneTimeSetup == 1 and self:PlayersFullyLoaded() then
-		self.oneTimeSetup = 3
-		self:StartingGold()
 		self:SpawnBots()
+		self.oneTimeSetup = 2
+		self:StartingGold()
 		Timers:CreateTimer(function()			
 			self:DoOncePerSecond()			
 			return 1
@@ -204,34 +206,79 @@ function CCouriers:SpawnBots()
 	GameRules:SetCustomGameTeamMaxPlayers( DOTA_TEAM_BADGUYS, 6 )
 	Tutorial:StartTutorialMode()	
 	local heroNumber = RandomInt(1, #botHeroes)	
-	Tutorial:AddBot( botHeroes[heroNumber], "top", "hard", true )
-	table.remove(botHeroes, heroNumber)
-	heroNumber = RandomInt(1, #botHeroes)
-	Tutorial:AddBot( botHeroes[heroNumber], "top", "hard", false )
-	table.remove(botHeroes, heroNumber)	
-	heroNumber = RandomInt(1, #botHeroes)
-	Tutorial:AddBot( botHeroes[heroNumber], "top", "hard", true )
-	table.remove(botHeroes, heroNumber)
-	heroNumber = RandomInt(1, #botHeroes)
-	Tutorial:AddBot( botHeroes[heroNumber], "top", "hard", false )
-	table.remove(botHeroes, heroNumber)	
-	heroNumber = RandomInt(1, #botHeroes)
-	Tutorial:AddBot( botHeroes[heroNumber], "mid", "hard", true )
-	table.remove(botHeroes, heroNumber)
-	heroNumber = RandomInt(1, #botHeroes)
-	Tutorial:AddBot( botHeroes[heroNumber], "mid", "hard", false )
-	table.remove(botHeroes, heroNumber)	
-	heroNumber = RandomInt(1, #botHeroes)
-	Tutorial:AddBot( botHeroes[heroNumber], "bot", "hard", true )
-	table.remove(botHeroes, heroNumber)
-	heroNumber = RandomInt(1, #botHeroes)
-	Tutorial:AddBot( botHeroes[heroNumber], "bot", "hard", false )
-	table.remove(botHeroes, heroNumber)	
-	heroNumber = RandomInt(1, #botHeroes)
-	Tutorial:AddBot( botHeroes[heroNumber], "bot", "hard", true )
-	table.remove(botHeroes, heroNumber)	
-	heroNumber = RandomInt(1, #botHeroes)
-	Tutorial:AddBot( botHeroes[heroNumber], "bot", "hard", false )
+	
+	if self.draftPicks[DOTA_TEAM_GOODGUYS][1] then
+		Tutorial:AddBot( self.draftPicks[DOTA_TEAM_GOODGUYS][1], "bot", "hard", true )
+	else
+		Tutorial:AddBot( botHeroes[heroNumber], "bot", "hard", true )
+		table.remove(botHeroes, heroNumber)
+		heroNumber = RandomInt(1, #botHeroes)
+	end
+	if self.draftPicks[DOTA_TEAM_GOODGUYS][2] then
+		Tutorial:AddBot( self.draftPicks[DOTA_TEAM_GOODGUYS][2], "top", "hard", true )
+	else
+		Tutorial:AddBot( botHeroes[heroNumber], "top", "hard", true )
+		table.remove(botHeroes, heroNumber)
+		heroNumber = RandomInt(1, #botHeroes)
+	end
+	if self.draftPicks[DOTA_TEAM_GOODGUYS][3] then
+		Tutorial:AddBot( self.draftPicks[DOTA_TEAM_GOODGUYS][3], "top", "hard", true )
+	else
+		Tutorial:AddBot( botHeroes[heroNumber], "top", "hard", true )
+		table.remove(botHeroes, heroNumber)
+		heroNumber = RandomInt(1, #botHeroes)
+	end
+	if self.draftPicks[DOTA_TEAM_GOODGUYS][4] then
+		Tutorial:AddBot( self.draftPicks[DOTA_TEAM_GOODGUYS][4], "mid", "hard", true )
+	else
+		Tutorial:AddBot( botHeroes[heroNumber], "mid", "hard", true )
+		table.remove(botHeroes, heroNumber)
+		heroNumber = RandomInt(1, #botHeroes)
+	end
+	if self.draftPicks[DOTA_TEAM_GOODGUYS][5] then
+		Tutorial:AddBot( self.draftPicks[DOTA_TEAM_GOODGUYS][5], "bot", "hard", true )
+	else
+		Tutorial:AddBot( botHeroes[heroNumber], "bot", "hard", true )
+		table.remove(botHeroes, heroNumber)
+		heroNumber = RandomInt(1, #botHeroes)
+	end	
+	
+	if self.draftPicks[DOTA_TEAM_BADGUYS][1] then
+		Tutorial:AddBot( self.draftPicks[DOTA_TEAM_BADGUYS][1], "top", "hard", false )
+	else
+		Tutorial:AddBot( botHeroes[heroNumber], "top", "hard", false )
+		table.remove(botHeroes, heroNumber)
+		heroNumber = RandomInt(1, #botHeroes)
+	end
+	if self.draftPicks[DOTA_TEAM_BADGUYS][2] then
+		Tutorial:AddBot( self.draftPicks[DOTA_TEAM_BADGUYS][2], "bot", "hard", false )
+	else
+		Tutorial:AddBot( botHeroes[heroNumber], "bot", "hard", false )
+		table.remove(botHeroes, heroNumber)
+		heroNumber = RandomInt(1, #botHeroes)
+	end
+	if self.draftPicks[DOTA_TEAM_BADGUYS][3] then
+		Tutorial:AddBot( self.draftPicks[DOTA_TEAM_BADGUYS][3], "bot", "hard", false )
+	else
+		Tutorial:AddBot( botHeroes[heroNumber], "bot", "hard", false )
+		table.remove(botHeroes, heroNumber)
+		heroNumber = RandomInt(1, #botHeroes)
+	end
+	if self.draftPicks[DOTA_TEAM_BADGUYS][4] then
+		Tutorial:AddBot( self.draftPicks[DOTA_TEAM_BADGUYS][4], "mid", "hard", false )
+	else
+		Tutorial:AddBot( botHeroes[heroNumber], "mid", "hard", false )
+		table.remove(botHeroes, heroNumber)
+		heroNumber = RandomInt(1, #botHeroes)
+	end			
+	if self.draftPicks[DOTA_TEAM_BADGUYS][5] then
+		Tutorial:AddBot( self.draftPicks[DOTA_TEAM_BADGUYS][5], "top", "hard", false )
+	else
+		Tutorial:AddBot( botHeroes[heroNumber], "top", "hard", false )
+		table.remove(botHeroes, heroNumber)
+		heroNumber = RandomInt(1, #botHeroes)
+	end	
+	
 	GameRules:GetGameModeEntity():SetBotThinkingEnabled(true)
 end
 
@@ -370,15 +417,36 @@ function CCouriers:BonusBounty(playerID)
 end
 
 function CCouriers:DoDraft(event)
-	if event == "" then
-		self.oneTimeSetup = 1
+	if event.done then
+		GameRules:FinishCustomGameSetup()
+	else
+		if not self:HeroAlreadyPicked(event.pick) then	
+			if #self.draftPicks[PlayerResource:GetTeam(event.PlayerID)] < 5 then
+				table.insert(self.draftPicks[PlayerResource:GetTeam(event.PlayerID)], event.pick)
+				CustomNetTables:SetTableValue( "draft", "picked", self.draftPicks)
+			end
+			if #self.draftPicks[DOTA_TEAM_GOODGUYS] >= 5 and #self.draftPicks[DOTA_TEAM_BADGUYS] >=5 then
+				GameRules:FinishCustomGameSetup()
+			end
+		end		
 	end
+end
+
+function CCouriers:HeroAlreadyPicked(heroName)
+	for _, team in ipairs({DOTA_TEAM_GOODGUYS, DOTA_TEAM_BADGUYS}) do
+		for k, v in pairs( self.draftPicks[team] ) do
+			if v == heroName then
+				return true
+			end
+		end
+	end
+	return false
 end
 
 
 function PrintTable(aTable)
 	for k, v in pairs( aTable ) do
-        print(k .. " " .. tostring(v).." ("..type(v)..")" )
+        print(k .. "(" .. type(k) .. ") " .. tostring(v).." ("..type(v)..")" )
     end
 	print("")
 end
