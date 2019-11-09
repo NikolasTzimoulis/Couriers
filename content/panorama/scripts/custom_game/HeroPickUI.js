@@ -2,7 +2,6 @@
 { 
 	//$("#DraftUIContainer").style.visibility = 'visible';
 	Game.AutoAssignPlayersToTeams()
-	drawNamesAndAvatars();
 	CustomNetTables.SubscribeNetTableListener( "draft", OnNettable2Changed );
 	timer();
 })();
@@ -115,4 +114,5 @@ function timer()
 {
 	$("#timer").text = Math.abs(Math.round(Game.GetDOTATime(true, true)));
 	$.Schedule(0.2, timer);
+	drawNamesAndAvatars();
 }

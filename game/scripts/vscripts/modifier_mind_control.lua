@@ -36,6 +36,7 @@ function modifier_mind_control:OnCreated(event)
         -- Hide the courier
         self.hidemod1 = caster:AddNewModifier(nil, nil, "modifier_tutorial_hide_npc", {})
         self.hidemod2 = caster:AddNewModifier(nil, nil, "modifier_invulnerable", {})
+		self.hidemod3 = caster:AddNewModifier(nil, nil, "modifier_silence", {})
         
 		-- Switch control to hero from courier
 		PlayerResource:SetDefaultSelectionEntity(self.realplayerID, host)
@@ -72,6 +73,9 @@ function modifier_mind_control:OnRemoved(event)
         end
         if self.hidemod2 then
             self.hidemod2:Destroy()
+        end
+		if self.hidemod3 then
+            self.hidemod3:Destroy()
         end
         FindClearSpaceForUnit(caster, host:GetAbsOrigin(), true)
         -- effect and sound for emerging
