@@ -36,7 +36,7 @@ function modifier_mind_control:OnCreated(event)
         -- Hide the courier
         self.hidemod1 = caster:AddNewModifier(nil, nil, "modifier_tutorial_hide_npc", {})
         self.hidemod2 = caster:AddNewModifier(nil, nil, "modifier_invulnerable", {})
-		self.hidemod3 = caster:AddNewModifier(nil, nil, "modifier_silence", {})
+		self.hidemod3 = caster:AddNewModifier(nil, nil, "modifier_stunned", { duration = self:GetRemainingTime() + 0.1 })
         
 		-- Switch control to hero from courier
 		PlayerResource:SetDefaultSelectionEntity(self.realplayerID, host)
@@ -68,6 +68,7 @@ function modifier_mind_control:OnRemoved(event)
         host:SetControllableByPlayer(self.originalOwnerID, true)
         host.isMindControlled = false
         --Show the courier
+		caster:Interrupt()
         if self.hidemod1 then
             self.hidemod1:Destroy()
         end

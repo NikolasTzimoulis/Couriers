@@ -209,6 +209,7 @@ function CCouriers:SpawnBots()
 	
 	if self.draftPicks[DOTA_TEAM_GOODGUYS][1] then
 		Tutorial:AddBot( self.draftPicks[DOTA_TEAM_GOODGUYS][1], "bot", "hard", true )
+		table.remove(botHeroes, tablefind(botHeroes, self.draftPicks[DOTA_TEAM_GOODGUYS][1]))
 	else
 		Tutorial:AddBot( botHeroes[heroNumber], "bot", "hard", true )
 		table.remove(botHeroes, heroNumber)
@@ -216,6 +217,7 @@ function CCouriers:SpawnBots()
 	end
 	if self.draftPicks[DOTA_TEAM_GOODGUYS][2] then
 		Tutorial:AddBot( self.draftPicks[DOTA_TEAM_GOODGUYS][2], "top", "hard", true )
+		table.remove(botHeroes, tablefind(botHeroes, self.draftPicks[DOTA_TEAM_GOODGUYS][2]))
 	else
 		Tutorial:AddBot( botHeroes[heroNumber], "top", "hard", true )
 		table.remove(botHeroes, heroNumber)
@@ -223,6 +225,7 @@ function CCouriers:SpawnBots()
 	end
 	if self.draftPicks[DOTA_TEAM_GOODGUYS][3] then
 		Tutorial:AddBot( self.draftPicks[DOTA_TEAM_GOODGUYS][3], "top", "hard", true )
+		table.remove(botHeroes, tablefind(botHeroes, self.draftPicks[DOTA_TEAM_GOODGUYS][3]))
 	else
 		Tutorial:AddBot( botHeroes[heroNumber], "top", "hard", true )
 		table.remove(botHeroes, heroNumber)
@@ -230,6 +233,7 @@ function CCouriers:SpawnBots()
 	end
 	if self.draftPicks[DOTA_TEAM_GOODGUYS][4] then
 		Tutorial:AddBot( self.draftPicks[DOTA_TEAM_GOODGUYS][4], "mid", "hard", true )
+		table.remove(botHeroes, tablefind(botHeroes, self.draftPicks[DOTA_TEAM_GOODGUYS][4]))
 	else
 		Tutorial:AddBot( botHeroes[heroNumber], "mid", "hard", true )
 		table.remove(botHeroes, heroNumber)
@@ -237,6 +241,7 @@ function CCouriers:SpawnBots()
 	end
 	if self.draftPicks[DOTA_TEAM_GOODGUYS][5] then
 		Tutorial:AddBot( self.draftPicks[DOTA_TEAM_GOODGUYS][5], "bot", "hard", true )
+		table.remove(botHeroes, tablefind(botHeroes, self.draftPicks[DOTA_TEAM_GOODGUYS][5]))
 	else
 		Tutorial:AddBot( botHeroes[heroNumber], "bot", "hard", true )
 		table.remove(botHeroes, heroNumber)
@@ -245,6 +250,7 @@ function CCouriers:SpawnBots()
 	
 	if self.draftPicks[DOTA_TEAM_BADGUYS][1] then
 		Tutorial:AddBot( self.draftPicks[DOTA_TEAM_BADGUYS][1], "top", "hard", false )
+		table.remove(botHeroes, tablefind(botHeroes, self.draftPicks[DOTA_TEAM_BADGUYS][1]))
 	else
 		Tutorial:AddBot( botHeroes[heroNumber], "top", "hard", false )
 		table.remove(botHeroes, heroNumber)
@@ -252,6 +258,7 @@ function CCouriers:SpawnBots()
 	end
 	if self.draftPicks[DOTA_TEAM_BADGUYS][2] then
 		Tutorial:AddBot( self.draftPicks[DOTA_TEAM_BADGUYS][2], "bot", "hard", false )
+		table.remove(botHeroes, tablefind(botHeroes, self.draftPicks[DOTA_TEAM_BADGUYS][2]))
 	else
 		Tutorial:AddBot( botHeroes[heroNumber], "bot", "hard", false )
 		table.remove(botHeroes, heroNumber)
@@ -259,6 +266,7 @@ function CCouriers:SpawnBots()
 	end
 	if self.draftPicks[DOTA_TEAM_BADGUYS][3] then
 		Tutorial:AddBot( self.draftPicks[DOTA_TEAM_BADGUYS][3], "bot", "hard", false )
+		table.remove(botHeroes, tablefind(botHeroes, self.draftPicks[DOTA_TEAM_BADGUYS][3]))
 	else
 		Tutorial:AddBot( botHeroes[heroNumber], "bot", "hard", false )
 		table.remove(botHeroes, heroNumber)
@@ -266,6 +274,7 @@ function CCouriers:SpawnBots()
 	end
 	if self.draftPicks[DOTA_TEAM_BADGUYS][4] then
 		Tutorial:AddBot( self.draftPicks[DOTA_TEAM_BADGUYS][4], "mid", "hard", false )
+		table.remove(botHeroes, tablefind(botHeroes, self.draftPicks[DOTA_TEAM_BADGUYS][4]))
 	else
 		Tutorial:AddBot( botHeroes[heroNumber], "mid", "hard", false )
 		table.remove(botHeroes, heroNumber)
@@ -273,6 +282,7 @@ function CCouriers:SpawnBots()
 	end			
 	if self.draftPicks[DOTA_TEAM_BADGUYS][5] then
 		Tutorial:AddBot( self.draftPicks[DOTA_TEAM_BADGUYS][5], "top", "hard", false )
+		table.remove(botHeroes, tablefind(botHeroes, self.draftPicks[DOTA_TEAM_BADGUYS][5]))
 	else
 		Tutorial:AddBot( botHeroes[heroNumber], "top", "hard", false )
 		table.remove(botHeroes, heroNumber)
@@ -449,4 +459,12 @@ function PrintTable(aTable)
         print(k .. "(" .. type(k) .. ") " .. tostring(v).." ("..type(v)..")" )
     end
 	print("")
+end
+
+function tablefind(tab,el)
+    for index, value in pairs(tab) do
+        if value == el then
+            return index
+        end
+    end
 end
