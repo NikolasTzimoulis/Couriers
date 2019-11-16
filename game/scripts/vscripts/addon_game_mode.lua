@@ -149,9 +149,10 @@ function CCouriers:OnNPCSpawned( event )
 	end
 	--when the courier/leader spawns:
 	if spawnedUnit:IsCourier() then
-		--make it briefly invulnerable
+		--make it briefly invulnerable but silenced
 		Timers:CreateTimer(0.01, function() 
 			spawnedUnit:AddNewModifier(spawnedUnit, nil, "modifier_invulnerable", {duration = 1})
+			spawnedUnit:AddNewModifier(spawnedUnit, nil, "modifier_silence", {duration = 1})
 		end)
 		--if this is the first time this courier has spawned:
 		if spawnedUnit:FindAbilityByName("mind_control") == nil and self.fakeHero[spawnedUnit:GetTeamNumber()] then
