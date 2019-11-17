@@ -63,7 +63,7 @@ function CCouriers:OnThink()
 		self.oneTimeSetup = 1
 	end	
 	
-	if GameRules:State_Get() >= DOTA_GAMERULES_STATE_PRE_GAME and self.oneTimeSetup == 1 and self:PlayersFullyLoaded() then
+	if GameRules:State_Get() >= DOTA_GAMERULES_STATE_PRE_GAME and self.oneTimeSetup <= 1 and self:PlayersFullyLoaded() then
 		self:SpawnBots()
 		self.oneTimeSetup = 2
 		self:StartingGold()
@@ -123,12 +123,8 @@ function CCouriers:DoOncePerSecond()
 	end
 	-- give passive gold to each team's leader
 	if GameRules:State_Get() == DOTA_GAMERULES_STATE_GAME_IN_PROGRESS then
-		if self.fakeHero[DOTA_TEAM_GOODGUYS] then 
-			PlayerResource:ModifyGold(self.fakeHero[DOTA_TEAM_GOODGUYS]:GetPlayerOwnerID(), self.PassiveGoldPerSecond, false, DOTA_ModifyGold_GameTick)
-		end
-		if self.fakeHero[DOTA_TEAM_BADGUYS] then 
-			PlayerResource:ModifyGold(self.fakeHero[DOTA_TEAM_BADGUYS]:GetPlayerOwnerID(), self.PassiveGoldPerSecond, false, DOTA_ModifyGold_GameTick)
-		end
+		self:GiveGold(self.PassiveGoldPerSecond, DOTA_TEAM_GOODGUYS, DOTA_ModifyGold_GameTick)
+		self:GiveGold(self.PassiveGoldPerSecond, DOTA_TEAM_BADGUYS, DOTA_ModifyGold_GameTick)
 	end
 end
 
@@ -192,8 +188,8 @@ function CCouriers:OnEntityHurt(event)
 		if damage >= hurtUnit:GetHealth() then
 			hurtUnit:RespawnUnit()
 			EmitAnnouncerSoundForTeam("announcer_ann_custom_end_09", hurtUnit:GetTeamNumber())
-			if self.fakeHero[hurtUnit:GetOpposingTeamNumber()] then 
-				PlayerResource:ModifyGold(self.fakeHero[hurtUnit:GetOpposingTeamNumber()]:GetPlayerOwnerID(), self.CourierBounty, false,  DOTA_ModifyGold_Unspecified)				
+			self:GiveGold(self.CourierBounty, hurtUnit:GetOpposingTeamNumber(), DOTA_ModifyGold_Unspecified)
+			if self.fakeHero[hurtUnit:GetOpposingTeamNumber()] then 				
 				EmitSoundOnLocationForAllies(hurtUnit:GetAbsOrigin(), "General.CoinsBig", self.fakeHero[hurtUnit:GetOpposingTeamNumber()])
 			end
 			return false
@@ -207,7 +203,6 @@ function CCouriers:SpawnBots()
 	GameRules:SetCustomGameTeamMaxPlayers( DOTA_TEAM_BADGUYS, 6 )
 	Tutorial:StartTutorialMode()	
 	local heroNumber = RandomInt(1, #botHeroes)	
-	
 	if self.draftPicks[DOTA_TEAM_GOODGUYS][1] then
 		Tutorial:AddBot( self.draftPicks[DOTA_TEAM_GOODGUYS][1], "bot", "hard", true )
 		table.remove(botHeroes, tablefind(botHeroes, self.draftPicks[DOTA_TEAM_GOODGUYS][1]))
@@ -297,11 +292,12 @@ function CCouriers:FilterModifyGold(event)
 	local gold = event.gold
     local playerID = event.player_id_const
     local reason = event.reason_const
-	if self.fakeHero[PlayerResource:GetTeam(playerID)] and playerID ~= self.fakeHero[PlayerResource:GetTeam(playerID)]:GetPlayerOwnerID() then
-		local recepient = self.fakeHero[PlayerResource:GetTeam(playerID)]:GetPlayerOwnerID()
-		if reason == DOTA_ModifyGold_HeroKill then
-			local extra = self:BonusBounty(playerID)
-			gold = gold + extra
+	if reason == DOTA_ModifyGold_HeroKill then
+		local extra = self:BonusBounty(playerID)
+		--print("bounty = "..gold.."+"..extra)
+		gold = gold + extra
+		if self.fakeHero[PlayerResource:GetTeam(playerID)] and playerID ~= self.fakeHero[PlayerResource:GetTeam(playerID)]:GetPlayerOwnerID() then
+			local recepient = self.fakeHero[PlayerResource:GetTeam(playerID)]:GetPlayerOwnerID()				
 			if extra > 0 then
 				local extraBountyEffect = ParticleManager:CreateParticleForTeam("particles/msg_fx/msg_gold.vpcf", PATTACH_OVERHEAD_FOLLOW, PlayerResource:GetSelectedHeroEntity(playerID), PlayerResource:GetTeam(playerID))
 				ParticleManager:SetParticleControl(extraBountyEffect, 1, Vector(0, extra, 0))
@@ -309,11 +305,11 @@ function CCouriers:FilterModifyGold(event)
 				ParticleManager:SetParticleControl(extraBountyEffect, 3, Vector(255, 200, 33))
 				ParticleManager:ReleaseParticleIndex(extraBountyEffect)
 			end
+			EmitSoundOnLocationForAllies(PlayerResource:GetSelectedHeroEntity(playerID):GetAbsOrigin(), "ui.comp_coins_tick", PlayerResource:GetSelectedHeroEntity(playerID))
+			PlayerResource:ModifyGold(recepient, gold, false, reason)
+			--print(gold.."("..reason..") from "..PlayerResource:GetPlayerName(playerID).." to "..PlayerResource:GetPlayerName(recepient))
+			return false		
 		end
-		EmitSoundOnLocationForAllies(PlayerResource:GetSelectedHeroEntity(playerID):GetAbsOrigin(), "ui.comp_coins_tick", PlayerResource:GetSelectedHeroEntity(playerID))
-		PlayerResource:ModifyGold(recepient, gold, false, reason)
-		--print(gold.."("..reason..") from "..PlayerResource:GetPlayerName(playerID).." to "..PlayerResource:GetPlayerName(recepient))
-		return false		
 	end
 	return true
 end
@@ -328,12 +324,8 @@ function CCouriers:BountyRunePickupFilter(event)
 end
 
 function CCouriers:StartingGold()
-	if self.fakeHero[DOTA_TEAM_GOODGUYS] then 
-		PlayerResource:ModifyGold(self.fakeHero[DOTA_TEAM_GOODGUYS]:GetPlayerOwnerID(), self.startGold, false,  DOTA_ModifyGold_Unspecified ) 
-	end
-	if self.fakeHero[DOTA_TEAM_BADGUYS] then 
-		PlayerResource:ModifyGold(self.fakeHero[DOTA_TEAM_BADGUYS]:GetPlayerOwnerID(), self.startGold, false,  DOTA_ModifyGold_Unspecified )	
-	end
+	self:GiveGold(self.startGold, DOTA_TEAM_GOODGUYS, DOTA_ModifyGold_Unspecified)
+	self:GiveGold(self.startGold, DOTA_TEAM_BADGUYS, DOTA_ModifyGold_Unspecified)
 end
 
 
@@ -419,12 +411,7 @@ function CCouriers:BonusBounty(playerID)
 	end	
 
 	-- gold bounty formula
-	if self.fakeHero[killerTeam] then
-		--print("Bonus bounty: "..tostring(maxNetWorth * self.heroBountyMultiplier))
-		return math.floor(maxNetWorth * self.heroBountyMultiplier)
-	else
-		return 0
-	end
+	return math.floor(maxNetWorth * self.heroBountyMultiplier)
 end
 
 function CCouriers:DoDraft(event)
@@ -452,6 +439,20 @@ function CCouriers:HeroAlreadyPicked(heroName)
 		end
 	end
 	return false
+end
+
+function CCouriers:GiveGold(gold, team, reason)
+	if self.fakeHero[team] then 
+		PlayerResource:ModifyGold(self.fakeHero[team]:GetPlayerOwnerID(), gold, false, reason ) 
+		--print(gold.." to courier "..team)
+	else
+		for playerid = 0, DOTA_MAX_PLAYERS do
+			if PlayerResource:IsValidPlayer(playerid) and PlayerResource:IsFakeClient(playerid) and PlayerResource:GetTeam(playerid) == team then
+				PlayerResource:ModifyGold(playerid, gold/5, false, reason ) 
+				--print((gold/5).." to "..PlayerResource:GetSelectedHeroName(playerid))
+			end
+		end
+	end
 end
 
 

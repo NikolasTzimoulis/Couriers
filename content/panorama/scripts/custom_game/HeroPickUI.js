@@ -32,7 +32,7 @@ function OnSkipDraftButtonPressed()
 	var localPlayer = Players.GetLocalPlayer();
 	var localTeam =  Players.GetTeam(localPlayer);
 	var picked = CustomNetTables.GetTableValue( "draft", "picked");
-	$.Msg( localPlayer, localTeam, picked );
+	//$.Msg( localPlayer, localTeam, picked );
 	if (Object.keys(picked[localTeam]).length == 0)
 	{		
 		GameEvents.SendCustomGameEventToServer("draft", {done:true})
