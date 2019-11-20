@@ -79,6 +79,7 @@ function modifier_mind_control:OnRemoved(event)
             self.hidemod3:Destroy()
         end
         FindClearSpaceForUnit(caster, host:GetAbsOrigin(), true)
+		caster:AddNewModifier(nil, nil, "modifier_silence", { duration = 0.1 })
         -- effect and sound for emerging
         local effect_out = ParticleManager:CreateParticle("particles/econ/items/pets/pet_frondillo/pet_spawn_frondillo.vpcf", PATTACH_WORLDORIGIN, caster)
         ParticleManager:SetParticleControl(effect_out,0,host:GetAbsOrigin())

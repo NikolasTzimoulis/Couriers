@@ -51,7 +51,7 @@ function CCouriers:InitGameMode()
 	GameRules:GetGameModeEntity():SetExecuteOrderFilter(Dynamic_Wrap(CCouriers,"FilterExecuteOrder"),self)
 	ListenToGameEvent("npc_spawned", Dynamic_Wrap( CCouriers, "OnNPCSpawned" ), self )
 	ListenToGameEvent("entity_killed", Dynamic_Wrap( CCouriers, 'OnEntityKilled' ), self )	
-	ListenToGameEvent( "entity_hurt", Dynamic_Wrap( CCouriers, 'OnEntityHurt' ), self )		
+	ListenToGameEvent("entity_hurt", Dynamic_Wrap( CCouriers, 'OnEntityHurt' ), self )		
 	CustomGameEventManager:RegisterListener("draft", function(id, ...) Dynamic_Wrap(self, "DoDraft")(self, ...) end)
 end
 
@@ -121,7 +121,7 @@ function CCouriers:DoOncePerSecond()
 			end	
    		end
 	end
-	-- give passive gold to each team's leader
+	-- give passive gold to each team
 	if GameRules:State_Get() == DOTA_GAMERULES_STATE_GAME_IN_PROGRESS then
 		self:GiveGold(self.PassiveGoldPerSecond, DOTA_TEAM_GOODGUYS, DOTA_ModifyGold_GameTick)
 		self:GiveGold(self.PassiveGoldPerSecond, DOTA_TEAM_BADGUYS, DOTA_ModifyGold_GameTick)
@@ -160,8 +160,11 @@ function CCouriers:OnNPCSpawned( event )
 			abil:SetLevel(abil:GetMaxLevel())
 			local abil = spawnedUnit:AddAbility("courier_burst")
 			abil:SetLevel(abil:GetMaxLevel())
+			local abil = spawnedUnit:AddAbility("targetted_transfer_items")
+			abil:SetLevel(abil:GetMaxLevel())
 			spawnedUnit:SwapAbilities("courier_transfer_items", "mind_control", false, true)
 			spawnedUnit:SwapAbilities("courier_return_stash_items", "courier_burst", false, true)		
+			spawnedUnit:SwapAbilities("courier_go_to_secretshop", "targetted_transfer_items", false, true)		
 			spawnedUnit:FindAbilityByName("courier_take_stash_and_transfer_items"):SetActivated(false)
 			spawnedUnit:FindAbilityByName("courier_transfer_items_to_other_player"):SetActivated(false)
 		end
@@ -296,20 +299,20 @@ function CCouriers:FilterModifyGold(event)
 		local extra = self:BonusBounty(playerID)
 		--print("bounty = "..gold.."+"..extra)
 		gold = gold + extra
-		if self.fakeHero[PlayerResource:GetTeam(playerID)] and playerID ~= self.fakeHero[PlayerResource:GetTeam(playerID)]:GetPlayerOwnerID() then
-			local recepient = self.fakeHero[PlayerResource:GetTeam(playerID)]:GetPlayerOwnerID()				
-			if extra > 0 then
-				local extraBountyEffect = ParticleManager:CreateParticleForTeam("particles/msg_fx/msg_gold.vpcf", PATTACH_OVERHEAD_FOLLOW, PlayerResource:GetSelectedHeroEntity(playerID), PlayerResource:GetTeam(playerID))
-				ParticleManager:SetParticleControl(extraBountyEffect, 1, Vector(0, extra, 0))
-				ParticleManager:SetParticleControl(extraBountyEffect, 2, Vector(5, #tostring(extra)+1, 0))
-				ParticleManager:SetParticleControl(extraBountyEffect, 3, Vector(255, 200, 33))
-				ParticleManager:ReleaseParticleIndex(extraBountyEffect)
-			end
+		if extra > 0 then
+			local extraBountyEffect = ParticleManager:CreateParticleForTeam("particles/msg_fx/msg_gold.vpcf", PATTACH_OVERHEAD_FOLLOW, PlayerResource:GetSelectedHeroEntity(playerID), PlayerResource:GetTeam(playerID))
+			ParticleManager:SetParticleControl(extraBountyEffect, 1, Vector(0, extra, 0))
+			ParticleManager:SetParticleControl(extraBountyEffect, 2, Vector(5, #tostring(extra)+1, 0))
+			ParticleManager:SetParticleControl(extraBountyEffect, 3, Vector(255, 200, 33))
+			ParticleManager:ReleaseParticleIndex(extraBountyEffect)
 			EmitSoundOnLocationForAllies(PlayerResource:GetSelectedHeroEntity(playerID):GetAbsOrigin(), "ui.comp_coins_tick", PlayerResource:GetSelectedHeroEntity(playerID))
-			PlayerResource:ModifyGold(recepient, gold, false, reason)
-			--print(gold.."("..reason..") from "..PlayerResource:GetPlayerName(playerID).." to "..PlayerResource:GetPlayerName(recepient))
-			return false		
 		end
+	end
+	if self.fakeHero[PlayerResource:GetTeam(playerID)] and playerID ~= self.fakeHero[PlayerResource:GetTeam(playerID)]:GetPlayerOwnerID() then
+		local recepient = self.fakeHero[PlayerResource:GetTeam(playerID)]:GetPlayerOwnerID()		
+		PlayerResource:ModifyGold(recepient, gold, false, reason)
+		--print(gold.."("..reason..") from "..PlayerResource:GetPlayerName(playerID).." to "..PlayerResource:GetPlayerName(recepient))
+		return false		
 	end
 	return true
 end
@@ -341,11 +344,15 @@ function CCouriers:PlayersFullyLoaded()
 end
 
 function CCouriers:FilterExecuteOrder(event)
-	-- block orders from mind-controlled bots
 	if event.issuer_player_id_const == -1 then
 		for n,unit_index in pairs(event.units) do
 			local unit = EntIndexToHScript(unit_index)	
+			-- block orders from mind-controlled bots
 			if unit.isMindControlled ~= nil and unit.isMindControlled then	
+				return false
+			end
+			-- block purchases from bots that have a human courier on their team
+			if event.order_type == DOTA_UNIT_ORDER_PURCHASE_ITEM and self.fakeHero[unit:GetTeamNumber()] then
 				return false
 			end
 		end
@@ -442,6 +449,7 @@ function CCouriers:HeroAlreadyPicked(heroName)
 end
 
 function CCouriers:GiveGold(gold, team, reason)
+	--print(tostring(gold).." to team "..tostring(team).." [GiveGold]")
 	if self.fakeHero[team] then 
 		PlayerResource:ModifyGold(self.fakeHero[team]:GetPlayerOwnerID(), gold, false, reason ) 
 		--print(gold.." to courier "..team)

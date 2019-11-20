@@ -3,13 +3,15 @@
 	"Language"		"English"
 	"Tokens"
 	{		
-		"addon_game_name"										"Secret Lives of Couriers"
-		"dota_tooltip_ability_mind_control"						"Mind Control"
-		"dota_tooltip_ability_mind_control_Description"			"Take over control of a hero for a brief amount of time. The courier will enter the body of the host hero and hide there. The effect ends prematurely if the hero dies.\nEvery time you mind control a hero, you gain 1 Speed Burst charge, unless that hero has already recently given you a charge.\nDURATION: 20"
-		"dota_tooltip_modifier_speed_burst_charges"				"Speed Burst Charges"
-		"dota_tooltip_modifier_speed_burst_charges_Description"	"Gaining Speed Burst charges based on mind-controlling heroes."
-		"dota_tooltip_modifier_hero_no_charges"					"No Charges Left"
-		"dota_tooltip_modifier_hero_no_charges_Description"		"This hero cannot dispense any more Speed Burst charges right now."
-		"skip_button"											"Skip Draft >>"
+		"addon_game_name"											"Secret Lives of Couriers"
+		"dota_tooltip_ability_mind_control"							"Mind Control"
+		"dota_tooltip_ability_mind_control_Description"				"Take over control of a hero for a brief amount of time. The courier will enter the body of the host hero and hide there. The effect ends prematurely if the hero dies.\nEvery time you mind control a hero, you gain 1 Speed Burst charge, unless that hero has already recently given you a charge.\nDURATION: 20"
+		"dota_tooltip_modifier_speed_burst_charges"					"Speed Burst Charges"
+		"dota_tooltip_modifier_speed_burst_charges_Description"		"Gaining Speed Burst charges based on mind-controlling heroes."
+		"dota_tooltip_modifier_hero_no_charges"						"No Charges Left"
+		"dota_tooltip_modifier_hero_no_charges_Description"			"This hero cannot dispense any more Speed Burst charges right now."
+		"dota_tooltip_ability_targetted_transfer_items"				"Transfer Items"
+		"dota_tooltip_ability_targetted_transfer_items_Description"	"Transfers as many items on the courier as possible to the target hero."
+		"skip_button"												"Skip Draft >>"
 	}
 }
