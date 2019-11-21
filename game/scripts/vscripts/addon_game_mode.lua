@@ -344,21 +344,20 @@ function CCouriers:PlayersFullyLoaded()
 end
 
 function CCouriers:FilterExecuteOrder(event)
-	if event.issuer_player_id_const == -1 then
-		for n,unit_index in pairs(event.units) do
-			local unit = EntIndexToHScript(unit_index)	
-			-- block orders from mind-controlled bots
-			if unit.isMindControlled ~= nil and unit.isMindControlled then	
-				return false
-			end
-			-- block purchases from bots that have a human courier on their team
-			if event.order_type == DOTA_UNIT_ORDER_PURCHASE_ITEM and self.fakeHero[unit:GetTeamNumber()] then
-				return false
-			end
+	
+	for n,unit_index in pairs(event.units) do
+		local unit = EntIndexToHScript(unit_index)	
+		-- block orders from mind-controlled bots 
+		if event.issuer_player_id_const == -1 and unit.isMindControlled ~= nil and unit.isMindControlled then	
+			return false
+		end
+		-- block orders from bots to human-controlled courier
+		if unit:IsCourier() and self.fakeHero[unit:GetTeamNumber()] and self.fakeHero[unit:GetTeamNumber()]:GetPlayerID() ~= event.issuer_player_id_const then
+			return false
 		end
 	end
 	
-	-- refuse to buy a courier
+	-- refuse to buy another courier
 	if event.order_type == DOTA_UNIT_ORDER_PURCHASE_ITEM and event.entindex_ability == 45 then
 		EmitSoundOn("General.InvalidTarget_Invulnerable", PlayerResource:GetPlayer(event.issuer_player_id_const))
 		return false

@@ -69,7 +69,6 @@ function modifier_mind_control:OnRemoved(event)
         host:SetControllableByPlayer(self.originalOwnerID, true)
         host.isMindControlled = false
         --Show the courier
-		caster:Interrupt()
         if self.hidemod1 then
             self.hidemod1:Destroy()
         end
