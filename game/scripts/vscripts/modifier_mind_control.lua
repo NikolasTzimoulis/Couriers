@@ -36,12 +36,12 @@ function modifier_mind_control:OnCreated(event)
         -- Hide the courier
         self.hidemod1 = caster:AddNewModifier(nil, nil, "modifier_tutorial_hide_npc", {})
         self.hidemod2 = caster:AddNewModifier(nil, nil, "modifier_invulnerable", {})
-		self.hidemod3 = caster:AddNewModifier(nil, nil, "modifier_stunned", { duration = self:GetRemainingTime() + 0.1 })
         
 		-- Switch control to hero from courier
 		PlayerResource:SetDefaultSelectionEntity(self.realplayerID, host)
         PlayerResource:ResetSelection(self.realplayerID)
         host:SetControllableByPlayer(self.realplayerID, true)
+		caster:SetControllableByPlayer(-1, true)
         host.isMindControlled = true
        
         -- Play graphical effect and sound for going inside the host
@@ -63,6 +63,7 @@ function modifier_mind_control:OnRemoved(event)
         local caster = self:GetCaster()
         local host = self:GetParent()
 		-- Switch control to courier from hero
+		caster:SetControllableByPlayer(self.realplayerID, true)
         PlayerResource:SetDefaultSelectionEntity(self.realplayerID, caster)
         PlayerResource:ResetSelection(self.realplayerID)
         host:SetControllableByPlayer(self.originalOwnerID, true)
@@ -75,11 +76,7 @@ function modifier_mind_control:OnRemoved(event)
         if self.hidemod2 then
             self.hidemod2:Destroy()
         end
-		if self.hidemod3 then
-            self.hidemod3:Destroy()
-        end
         FindClearSpaceForUnit(caster, host:GetAbsOrigin(), true)
-		caster:AddNewModifier(nil, nil, "modifier_silence", { duration = 0.1 })
         -- effect and sound for emerging
         local effect_out = ParticleManager:CreateParticle("particles/econ/items/pets/pet_frondillo/pet_spawn_frondillo.vpcf", PATTACH_WORLDORIGIN, caster)
         ParticleManager:SetParticleControl(effect_out,0,host:GetAbsOrigin())
