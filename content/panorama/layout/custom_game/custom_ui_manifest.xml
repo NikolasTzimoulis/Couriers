@@ -8,6 +8,7 @@
 
   <Panel>
      <CustomUIElement type="Hud" layoutfile="file://{resources}/layout/custom_game/selection.xml"/>
-		<CustomUIElement type="GameSetup" layoutfile="file://{resources}/layout/custom_game/HeroPickUI.xml" />
+	 <CustomUIElement type="Hud" layoutfile="file://{resources}/layout/custom_game/statcollection.xml" />
+	 <CustomUIElement type="GameSetup" layoutfile="file://{resources}/layout/custom_game/HeroPickUI.xml" />
 	</Panel>
 </root>

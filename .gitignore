@@ -17,3 +17,5 @@ game/panorama_debugger.cfg
 *.vpk
 *.jpg
 *.zip
+*.idea
+/game/scripts/vscripts/statcollection/settings.kv

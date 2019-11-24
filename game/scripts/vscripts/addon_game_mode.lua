@@ -1,5 +1,6 @@
 require("libraries/timers")
 require('libraries/selection')
+require("statcollection/init")
 
 if CCouriers == nil then
 	CCouriers = class({})
