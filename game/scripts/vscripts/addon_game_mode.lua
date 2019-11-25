@@ -34,7 +34,8 @@ function CCouriers:InitGameMode()
 	GameRules:GetGameModeEntity():SetRecommendedItemsDisabled(true)
 	GameRules:GetGameModeEntity():SetUseDefaultDOTARuneSpawnLogic(true)
 	GameRules:GetGameModeEntity():SetTowerBackdoorProtectionEnabled(true)
-	GameRules:SetCustomGameSetupAutoLaunchDelay(30)
+	self.draftTime = 30
+	GameRules:SetCustomGameSetupAutoLaunchDelay(self.draftTime)
 	GameRules:SetCustomGameSetupRemainingTime(0)
 	GameRules:SetStartingGold(0)
 	GameRules:SetGoldPerTick(0)
@@ -62,6 +63,7 @@ function CCouriers:OnThink()
 	if GameRules:State_Get() < DOTA_GAMERULES_STATE_PRE_GAME and self.oneTimeSetup == 0 then
 		GameRules:LockCustomGameSetupTeamAssignment(true)
 		self.oneTimeSetup = 1
+		self:DraftingCountdown()
 	end	
 	
 	if GameRules:State_Get() >= DOTA_GAMERULES_STATE_PRE_GAME and self.oneTimeSetup <= 1 and self:PlayersFullyLoaded() then
@@ -461,6 +463,23 @@ function CCouriers:GiveGold(gold, team, reason)
 			end
 		end
 	end
+end
+
+function CCouriers:DraftingCountdown()
+	EmitAnnouncerSound("announcer_ann_custom_draft_01")
+	Timers:CreateTimer(1, function()
+		local t = math.floor(GameRules:GetDOTATime(true, true))
+		--print(t)
+		if t == -16 then
+			EmitAnnouncerSound("announcer_ann_custom_timer_sec_15")
+		elseif t == -11 then
+			EmitAnnouncerSound("announcer_ann_custom_timer_sec_10")
+		elseif t == -6 then
+			EmitAnnouncerSound("announcer_ann_custom_timer_sec_05")
+			return nil
+		end
+		return 1
+	end)
 end
 
 
