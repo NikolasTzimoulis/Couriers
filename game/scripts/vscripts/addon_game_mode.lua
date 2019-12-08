@@ -59,7 +59,6 @@ end
 
 -- Evaluate the state of the game
 function CCouriers:OnThink()
-
 	if GameRules:State_Get() < DOTA_GAMERULES_STATE_PRE_GAME and self.oneTimeSetup == 0 then
 		GameRules:LockCustomGameSetupTeamAssignment(true)
 		self.oneTimeSetup = 1
@@ -138,9 +137,7 @@ function CCouriers:OnNPCSpawned( event )
 		self.fakeHero[spawnedUnit:GetTeamNumber()] = spawnedUnit
 		spawnedUnit:AddNewModifier(spawnedUnit, nil, "modifier_tutorial_hide_npc", {duration = -1})
 		Timers:CreateTimer(1, function()
-			local courier_item = CreateItem("item_courier", spawnedUnit, spawnedUnit)
-			spawnedUnit:AddItem(courier_item)
-			spawnedUnit:CastAbilityNoTarget(courier_item, 0)
+			CreateUnitByName("npc_dota_courier", spawnedUnit:GetAbsOrigin(), true, spawnedUnit, spawnedUnit, spawnedUnit:GetTeamNumber())
 			spawnedUnit:AddNewModifier(spawnedUnit, nil, "modifier_invulnerable", {duration = -1})
 			spawnedUnit:AddNewModifier(spawnedUnit, nil, "modifier_rooted", {duration = -1})
 			spawnedUnit:AddNewModifier(spawnedUnit, nil, "modifier_disarmed", {duration = -1})
@@ -157,19 +154,21 @@ function CCouriers:OnNPCSpawned( event )
 		if spawnedUnit:FindAbilityByName("mind_control") == nil and self.fakeHero[spawnedUnit:GetTeamNumber()] then
 			table.insert(self.courierList, spawnedUnit)
 			local playerID = self.fakeHero[spawnedUnit:GetTeamNumber()]:GetPlayerOwnerID()
+			spawnedUnit:SetControllableByPlayer(playerID, true)
 			PlayerResource:SetDefaultSelectionEntity(playerID, spawnedUnit)
 			PlayerResource:ResetSelection(playerID)
 			local abil = spawnedUnit:AddAbility("mind_control")
 			abil:SetLevel(abil:GetMaxLevel())
-			local abil = spawnedUnit:AddAbility("courier_burst")
-			abil:SetLevel(abil:GetMaxLevel())
+			--local abil = spawnedUnit:AddAbility("courier_burst")
+			--abil:SetLevel(abil:GetMaxLevel())
 			local abil = spawnedUnit:AddAbility("targetted_transfer_items")
 			abil:SetLevel(abil:GetMaxLevel())
 			spawnedUnit:SwapAbilities("courier_transfer_items", "mind_control", false, true)
-			spawnedUnit:SwapAbilities("courier_return_stash_items", "courier_burst", false, true)		
-			spawnedUnit:SwapAbilities("courier_go_to_secretshop", "targetted_transfer_items", false, true)		
+			--spawnedUnit:SwapAbilities("courier_go_to_secretshop", "courier_burst", false, true)		
+			spawnedUnit:SwapAbilities("courier_return_stash_items", "targetted_transfer_items", false, true)		
 			spawnedUnit:FindAbilityByName("courier_take_stash_and_transfer_items"):SetActivated(false)
 			spawnedUnit:FindAbilityByName("courier_transfer_items_to_other_player"):SetActivated(false)
+			--self.fakeHero[spawnedUnit:GetTeamNumber()]:AddExperience(1000, 0, false, true)
 		end
 	end
 end
