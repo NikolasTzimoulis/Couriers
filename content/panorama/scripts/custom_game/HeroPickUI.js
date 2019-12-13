@@ -1,6 +1,8 @@
 (function() 
 { 
 	//$("#DraftUIContainer").style.visibility = 'visible';
+	$("#R_BotLane1").style.visibility = 'visible';
+	$("#D_TopLane1").style.visibility = 'visible';
 	Game.AutoAssignPlayersToTeams()
 	CustomNetTables.SubscribeNetTableListener( "draft", OnNettable2Changed );
 	timer();
@@ -60,17 +62,25 @@ function OnNettable2Changed( table_name, key, data )
 		}
 	}
 	
-	$("#R_BotLane1").heroname = data[ DOTATeam_t.DOTA_TEAM_GOODGUYS ][1];
-	$("#R_TopLane1").heroname = data[ DOTATeam_t.DOTA_TEAM_GOODGUYS ][2];
-	$("#R_TopLane2").heroname = data[ DOTATeam_t.DOTA_TEAM_GOODGUYS ][3];
-	$("#R_MidLane").heroname = data[ DOTATeam_t.DOTA_TEAM_GOODGUYS ][4];
-	$("#R_BotLane2").heroname = data[ DOTATeam_t.DOTA_TEAM_GOODGUYS ][5];
+	var rList = ["#R_BotLane1", "#R_TopLane1", "#R_TopLane2", "#R_MidLane", "#R_BotLane2"];
+	var dList = ["#D_TopLane1", "#D_BotLane1", "#D_BotLane2", "#D_MidLane", "#D_TopLane2"];
+	var rPicksLength = Object.keys(data[DOTATeam_t.DOTA_TEAM_GOODGUYS]).length;
+	var dPicksLength = Object.keys(data[DOTATeam_t.DOTA_TEAM_BADGUYS]).length;
 	
-	$("#D_TopLane1").heroname = data[ DOTATeam_t.DOTA_TEAM_BADGUYS ][1];
-	$("#D_BotLane1").heroname = data[ DOTATeam_t.DOTA_TEAM_BADGUYS ][2];
-	$("#D_BotLane2").heroname = data[ DOTATeam_t.DOTA_TEAM_BADGUYS ][3];
-	$("#D_MidLane").heroname = data[ DOTATeam_t.DOTA_TEAM_BADGUYS ][4];
-	$("#D_TopLane2").heroname = data[ DOTATeam_t.DOTA_TEAM_BADGUYS ][5];	
+	for (var i = 0; i < rPicksLength; i++) 
+	{
+		$(rList[i]).heroname = data[ DOTATeam_t.DOTA_TEAM_GOODGUYS ][i+1];
+		if (i+1 < 5)
+			$(rList[i+1]).style.visibility = 'visible';
+	}
+	
+	for (var i = 0; i < dPicksLength; i++) 
+	{
+		$(rList[i]).heroname = data[ DOTATeam_t.DOTA_TEAM_BADGUYS ][i+1];
+		if (i+1 < 5)
+			$(rList[i+1]).style.visibility = 'visible';
+	}
+
 }
 
 function HeroSelected(hero_name)

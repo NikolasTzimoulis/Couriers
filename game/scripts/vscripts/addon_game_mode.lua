@@ -159,16 +159,16 @@ function CCouriers:OnNPCSpawned( event )
 			PlayerResource:ResetSelection(playerID)
 			local abil = spawnedUnit:AddAbility("mind_control")
 			abil:SetLevel(abil:GetMaxLevel())
-			--local abil = spawnedUnit:AddAbility("courier_burst")
-			--abil:SetLevel(abil:GetMaxLevel())
 			local abil = spawnedUnit:AddAbility("targetted_transfer_items")
 			abil:SetLevel(abil:GetMaxLevel())
 			spawnedUnit:SwapAbilities("courier_transfer_items", "mind_control", false, true)
-			--spawnedUnit:SwapAbilities("courier_go_to_secretshop", "courier_burst", false, true)		
-			spawnedUnit:SwapAbilities("courier_return_stash_items", "targetted_transfer_items", false, true)		
-			spawnedUnit:FindAbilityByName("courier_take_stash_and_transfer_items"):SetActivated(false)
-			spawnedUnit:FindAbilityByName("courier_transfer_items_to_other_player"):SetActivated(false)
-			--self.fakeHero[spawnedUnit:GetTeamNumber()]:AddExperience(1000, 0, false, true)
+			spawnedUnit:SwapAbilities("courier_take_stash_items", "targetted_transfer_items", false, true)		
+			spawnedUnit:FindAbilityByName("courier_take_stash_items"):SetActivated(false)
+			spawnedUnit:FindAbilityByName("courier_take_stash_items"):SetHidden(true)
+			spawnedUnit:FindAbilityByName("courier_return_stash_items"):SetActivated(false)
+			spawnedUnit:FindAbilityByName("courier_return_stash_items"):SetHidden(true)
+			spawnedUnit:FindAbilityByName("courier_transfer_items"):SetActivated(false)
+			spawnedUnit:FindAbilityByName("courier_transfer_items"):SetHidden(true)
 		end
 	end
 end
@@ -301,6 +301,7 @@ function CCouriers:FilterModifyGold(event)
 		local extra = self:BonusBounty(playerID)
 		--print("bounty = "..gold.."+"..extra)
 		gold = gold + extra
+		event.gold = gold
 		if extra > 0 then
 			local extraBountyEffect = ParticleManager:CreateParticleForTeam("particles/msg_fx/msg_gold.vpcf", PATTACH_OVERHEAD_FOLLOW, PlayerResource:GetSelectedHeroEntity(playerID), PlayerResource:GetTeam(playerID))
 			ParticleManager:SetParticleControl(extraBountyEffect, 1, Vector(0, extra, 0))
@@ -480,7 +481,6 @@ function CCouriers:DraftingCountdown()
 		return 1
 	end)
 end
-
 
 function PrintTable(aTable)
 	for k, v in pairs( aTable ) do

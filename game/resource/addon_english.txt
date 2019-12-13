@@ -5,9 +5,9 @@
 	{		
 		"addon_game_name"											"Secret Lives of Couriers"
 		"dota_tooltip_ability_mind_control"							"Mind Control"
-		"dota_tooltip_ability_mind_control_Description"				"Take over control of a hero for a brief amount of time. The courier will enter the body of the host hero and hide there. The effect ends prematurely if the hero dies.\nEvery time you mind control a hero, you gain 1 Speed Burst charge, unless that hero has already recently given you a charge.\nDURATION: 20"
+		"dota_tooltip_ability_mind_control_Description"				"Take over control of a hero for a brief amount of time. The courier will enter the body of the host hero and hide there. The effect ends prematurely if the hero dies.\nEvery time you mind control a hero, you gain 1 level, unless that hero has already recently given you a level.\nDURATION: 20"
 		"dota_tooltip_modifier_courier_level"						"Level"
-		"dota_tooltip_modifier_courier_level_Description"			"Gain 1 level for each non-exhausted hero you have controlled	."
+		"dota_tooltip_modifier_courier_level_Description"			"Gain 1 level for each non-exhausted hero you have controlled."
 		"dota_tooltip_modifier_hero_exhausted"						"Exhausted"
 		"dota_tooltip_modifier_hero_exhausted_Description"			"Controlling this hero again will not give you another level."
 		"dota_tooltip_ability_targetted_transfer_items"				"Transfer Items"
