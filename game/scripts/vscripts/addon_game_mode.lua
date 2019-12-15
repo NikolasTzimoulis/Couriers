@@ -34,7 +34,7 @@ function CCouriers:InitGameMode()
 	GameRules:GetGameModeEntity():SetRecommendedItemsDisabled(true)
 	GameRules:GetGameModeEntity():SetUseDefaultDOTARuneSpawnLogic(true)
 	GameRules:GetGameModeEntity():SetTowerBackdoorProtectionEnabled(true)
-	self.draftTime = 30
+	self.draftTime = 300
 	GameRules:SetCustomGameSetupAutoLaunchDelay(self.draftTime)
 	GameRules:SetCustomGameSetupRemainingTime(0)
 	GameRules:SetStartingGold(0)

@@ -17,102 +17,102 @@
 			<Panel hittest="false" id="HeroesContainerPanel" class="HeroesContainer">
 				<Panel hittest="false" class="FirstRow">
 					<Panel hittest="false" class="HeroCard1" id="HeroCard_npc_dota_hero_bane">
-						<DOTAHeroImage heroimagestyle="portrait" class="HeroImage" id="HeroImage" heroname="npc_dota_hero_bane" onmouseover="UIShowTextTooltip( Bane )"  onmouseout="UIHideTextTooltip()" onactivate="BaneSelected();" />
+						<DOTAHeroImage heroimagestyle="portrait" class="HeroImage" id="HeroImage" heroname="npc_dota_hero_bane" onmouseover="UIShowTextTooltip(#npc_dota_hero_bane)"  onmouseout="UIHideTextTooltip()" onactivate="BaneSelected();" />
 					</Panel>
 					<Panel hittest="false" class="HeroCard2" id="HeroCard_npc_dota_hero_bounty_hunter">
-						<DOTAHeroImage heroimagestyle="portrait" class="HeroImage" id="HeroImage" heroname="npc_dota_hero_bounty_hunter" onmouseover="UIShowTextTooltip( Bounty Hunter )"  onmouseout="UIHideTextTooltip()" onactivate="BHSelected();" />
+						<DOTAHeroImage heroimagestyle="portrait" class="HeroImage" id="HeroImage" heroname="npc_dota_hero_bounty_hunter" onmouseover="UIShowTextTooltip(#npc_dota_hero_bounty_hunter)"  onmouseout="UIHideTextTooltip()" onactivate="BHSelected();" />
 					</Panel>
 					<Panel hittest="false" class="HeroCard3" id="HeroCard_npc_dota_hero_bloodseeker">
-						<DOTAHeroImage heroimagestyle="portrait" class="HeroImage" id="HeroImage" heroname="npc_dota_hero_bloodseeker" onmouseover="UIShowTextTooltip( Bloodseeker )"  onmouseout="UIHideTextTooltip()" onactivate="BloodSeekerSelected();" />
+						<DOTAHeroImage heroimagestyle="portrait" class="HeroImage" id="HeroImage" heroname="npc_dota_hero_bloodseeker" onmouseover="UIShowTextTooltip(#npc_dota_hero_bloodseeker)"  onmouseout="UIHideTextTooltip()" onactivate="BloodSeekerSelected();" />
 					</Panel>
 					<Panel hittest="false" class="HeroCard4" id="HeroCard_npc_dota_hero_bristleback">
-					<DOTAHeroImage heroimagestyle="portrait" class="HeroImage" id="HeroImage" heroname="npc_dota_hero_bristleback" onmouseover="UIShowTextTooltip( Bristleback )"  onmouseout="UIHideTextTooltip()" onactivate="BristlebackSelected();" />
+					<DOTAHeroImage heroimagestyle="portrait" class="HeroImage" id="HeroImage" heroname="npc_dota_hero_bristleback" onmouseover="UIShowTextTooltip(#npc_dota_hero_bristleback)"  onmouseout="UIHideTextTooltip()" onactivate="BristlebackSelected();" />
 					</Panel>
 					<Panel hittest="false" class="HeroCard5" id="HeroCard_npc_dota_hero_chaos_knight">
-						<DOTAHeroImage heroimagestyle="portrait" class="HeroImage" id="HeroImage" heroname="npc_dota_hero_chaos_knight" onmouseover="UIShowTextTooltip( Chaos Knight )"  onmouseout="UIHideTextTooltip()" onactivate="ChaosKnightSelected();" />
+						<DOTAHeroImage heroimagestyle="portrait" class="HeroImage" id="HeroImage" heroname="npc_dota_hero_chaos_knight" onmouseover="UIShowTextTooltip(#npc_dota_hero_chaos_knight)"  onmouseout="UIHideTextTooltip()" onactivate="ChaosKnightSelected();" />
 					</Panel>
 					<Panel hittest="false" class="HeroCard6" id="HeroCard_npc_dota_hero_crystal_maiden">
-						<DOTAHeroImage heroimagestyle="portrait" class="HeroImage" id="HeroImage" heroname="npc_dota_hero_crystal_maiden" onmouseover="UIShowTextTooltip( Crystal Maiden )"  onmouseout="UIHideTextTooltip()" onactivate="CrystalMaidenSelected();" />
+						<DOTAHeroImage heroimagestyle="portrait" class="HeroImage" id="HeroImage" heroname="npc_dota_hero_crystal_maiden" onmouseover="UIShowTextTooltip(#npc_dota_hero_crystal_maiden)"  onmouseout="UIHideTextTooltip()" onactivate="CrystalMaidenSelected();" />
 					</Panel>
 				</Panel>
 				<Panel hittest="false" class="SecondRow">
 					<Panel hittest="false" class="HeroCard1" id="HeroCard_npc_dota_hero_dazzle">
-						<DOTAHeroImage heroimagestyle="portrait" class="HeroImage" id="HeroImage" heroname="npc_dota_hero_dazzle" onmouseover="UIShowTextTooltip( Dazzle )"  onmouseout="UIHideTextTooltip()" onactivate="DazzleSelected();" />
+						<DOTAHeroImage heroimagestyle="portrait" class="HeroImage" id="HeroImage" heroname="npc_dota_hero_dazzle" onmouseover="UIShowTextTooltip(#npc_dota_hero_dazzle)"  onmouseout="UIHideTextTooltip()" onactivate="DazzleSelected();" />
 					</Panel>
 					<Panel hittest="false" class="HeroCard2" id="HeroCard_npc_dota_hero_death_prophet">
-						<DOTAHeroImage heroimagestyle="portrait" class="HeroImage" id="HeroImage" heroname="npc_dota_hero_death_prophet" onmouseover="UIShowTextTooltip( Death Prophet )"  onmouseout="UIHideTextTooltip()" onactivate="DeathProphetSelected();" />
+						<DOTAHeroImage heroimagestyle="portrait" class="HeroImage" id="HeroImage" heroname="npc_dota_hero_death_prophet" onmouseover="UIShowTextTooltip(#npc_dota_hero_death_prophet)"  onmouseout="UIHideTextTooltip()" onactivate="DeathProphetSelected();" />
 					</Panel>
 					<Panel hittest="false" class="HeroCard3" id="HeroCard_npc_dota_hero_drow_ranger">
-						<DOTAHeroImage heroimagestyle="portrait" class="HeroImage" id="HeroImage" heroname="npc_dota_hero_drow_ranger" onmouseover="UIShowTextTooltip( Drow Ranger )"  onmouseout="UIHideTextTooltip()" onactivate="DrowRangerSelected();" />
+						<DOTAHeroImage heroimagestyle="portrait" class="HeroImage" id="HeroImage" heroname="npc_dota_hero_drow_ranger" onmouseover="UIShowTextTooltip(#npc_dota_hero_drow_ranger)"  onmouseout="UIHideTextTooltip()" onactivate="DrowRangerSelected();" />
 					</Panel>
 					<Panel hittest="false" class="HeroCard4" id="HeroCard_npc_dota_hero_earthshaker">
-						<DOTAHeroImage heroimagestyle="portrait" class="HeroImage" id="HeroImage" heroname="npc_dota_hero_earthshaker" onmouseover="UIShowTextTooltip( Earthshaker )"  onmouseout="UIHideTextTooltip()" onactivate="EarthshakerSelected();" />
+						<DOTAHeroImage heroimagestyle="portrait" class="HeroImage" id="HeroImage" heroname="npc_dota_hero_earthshaker" onmouseover="UIShowTextTooltip(#npc_dota_hero_earthshaker)"  onmouseout="UIHideTextTooltip()" onactivate="EarthshakerSelected();" />
 					</Panel>
 					<Panel hittest="false" class="HeroCard5" id="HeroCard_npc_dota_hero_jakiro">
-						<DOTAHeroImage heroimagestyle="portrait" class="HeroImage" id="HeroImage" heroname="npc_dota_hero_jakiro" onmouseover="UIShowTextTooltip( Jakiro )"  onmouseout="UIHideTextTooltip()" onactivate="JakiroSelected();" />
+						<DOTAHeroImage heroimagestyle="portrait" class="HeroImage" id="HeroImage" heroname="npc_dota_hero_jakiro" onmouseover="UIShowTextTooltip(#npc_dota_hero_jakiro)"  onmouseout="UIHideTextTooltip()" onactivate="JakiroSelected();" />
 					</Panel>
 					<Panel hittest="false" class="HeroCard6" id="HeroCard_npc_dota_hero_kunkka">
-						<DOTAHeroImage heroimagestyle="portrait" class="HeroImage" id="HeroImage" heroname="npc_dota_hero_kunkka" onmouseover="UIShowTextTooltip( Kunkka )"  onmouseout="UIHideTextTooltip()" onactivate="KunkkaSelected();" />
+						<DOTAHeroImage heroimagestyle="portrait" class="HeroImage" id="HeroImage" heroname="npc_dota_hero_kunkka" onmouseover="UIShowTextTooltip(#npc_dota_hero_kunkka)"  onmouseout="UIHideTextTooltip()" onactivate="KunkkaSelected();" />
 					</Panel>
 				</Panel>
 				<Panel hittest="false" class="ThirdRow">
 					<Panel hittest="false" class="HeroCard1" id="HeroCard_npc_dota_hero_lina">
-						<DOTAHeroImage heroimagestyle="portrait" class="HeroImage" id="HeroImage" heroname="npc_dota_hero_lina" onmouseover="UIShowTextTooltip( Lina )"  onmouseout="UIHideTextTooltip()" onactivate="LinaSelected();" />
+						<DOTAHeroImage heroimagestyle="portrait" class="HeroImage" id="HeroImage" heroname="npc_dota_hero_lina" onmouseover="UIShowTextTooltip(#npc_dota_hero_lina)"  onmouseout="UIHideTextTooltip()" onactivate="LinaSelected();" />
 					</Panel>
 					<Panel hittest="false" class="HeroCard2" id="HeroCard_npc_dota_hero_lion">
-						<DOTAHeroImage heroimagestyle="portrait" class="HeroImage" id="HeroImage" heroname="npc_dota_hero_lion" onmouseover="UIShowTextTooltip( Lion )"  onmouseout="UIHideTextTooltip()" onactivate="LionSelected();" />
+						<DOTAHeroImage heroimagestyle="portrait" class="HeroImage" id="HeroImage" heroname="npc_dota_hero_lion" onmouseover="UIShowTextTooltip(#npc_dota_hero_lion)"  onmouseout="UIHideTextTooltip()" onactivate="LionSelected();" />
 					</Panel>
 					<Panel hittest="false" class="HeroCard3" id="HeroCard_npc_dota_hero_luna">
-						<DOTAHeroImage heroimagestyle="portrait" class="HeroImage" id="HeroImage" heroname="npc_dota_hero_luna" onmouseover="UIShowTextTooltip( Luna )"  onmouseout="UIHideTextTooltip()" onactivate="LunaSelected();" />
+						<DOTAHeroImage heroimagestyle="portrait" class="HeroImage" id="HeroImage" heroname="npc_dota_hero_luna" onmouseover="UIShowTextTooltip(#npc_dota_hero_luna)"  onmouseout="UIHideTextTooltip()" onactivate="LunaSelected();" />
 					</Panel>
 					<Panel hittest="false" class="HeroCard4" id="HeroCard_npc_dota_hero_necrolyte">
-						<DOTAHeroImage heroimagestyle="portrait" class="HeroImage" id="HeroImage" heroname="npc_dota_hero_necrolyte" onmouseover="UIShowTextTooltip( Necrophos )"  onmouseout="UIHideTextTooltip()" onactivate="NecrophosSelected();" />
+						<DOTAHeroImage heroimagestyle="portrait" class="HeroImage" id="HeroImage" heroname="npc_dota_hero_necrolyte" onmouseover="UIShowTextTooltip(#npc_dota_hero_necrolyte)"  onmouseout="UIHideTextTooltip()" onactivate="NecrophosSelected();" />
 					</Panel>
 					<Panel hittest="false" class="HeroCard5" id="HeroCard_npc_dota_hero_omniknight">
-						<DOTAHeroImage heroimagestyle="portrait" class="HeroImage" id="HeroImage" heroname="npc_dota_hero_omniknight" onmouseover="UIShowTextTooltip( Omniknight )"  onmouseout="UIHideTextTooltip()" onactivate="OmniknightSelected();" />
+						<DOTAHeroImage heroimagestyle="portrait" class="HeroImage" id="HeroImage" heroname="npc_dota_hero_omniknight" onmouseover="UIShowTextTooltip(#npc_dota_hero_omniknight)"  onmouseout="UIHideTextTooltip()" onactivate="OmniknightSelected();" />
 					</Panel>
 					<Panel hittest="false" class="HeroCard6" id="HeroCard_npc_dota_hero_oracle">
-						<DOTAHeroImage heroimagestyle="portrait" class="HeroImage" id="HeroImage" heroname="npc_dota_hero_oracle" onmouseover="UIShowTextTooltip( Oracle )"  onmouseout="UIHideTextTooltip()" onactivate="OracleSelected();" />
+						<DOTAHeroImage heroimagestyle="portrait" class="HeroImage" id="HeroImage" heroname="npc_dota_hero_oracle" onmouseover="UIShowTextTooltip(#npc_dota_hero_oracle)"  onmouseout="UIHideTextTooltip()" onactivate="OracleSelected();" />
 					</Panel>
 				</Panel>
 				<Panel hittest="false" class="FourthRow">
 					<Panel hittest="false" class="HeroCard1" id="HeroCard_npc_dota_hero_phantom_assassin">
-						<DOTAHeroImage heroimagestyle="portrait" class="HeroImage" id="HeroImage" heroname="npc_dota_hero_phantom_assassin" onmouseover="UIShowTextTooltip( Phantom Assassin )"  onmouseout="UIHideTextTooltip()" onactivate="PhantomAssassinSelected();" />
+						<DOTAHeroImage heroimagestyle="portrait" class="HeroImage" id="HeroImage" heroname="npc_dota_hero_phantom_assassin" onmouseover="UIShowTextTooltip(#npc_dota_hero_phantom_assassin)"  onmouseout="UIHideTextTooltip()" onactivate="PhantomAssassinSelected();" />
 					</Panel>
 					<Panel hittest="false" class="HeroCard2" id="HeroCard_npc_dota_hero_pudge">
-						<DOTAHeroImage heroimagestyle="portrait" class="HeroImage" id="HeroImage" heroname="npc_dota_hero_pudge" onmouseover="UIShowTextTooltip( Pudge )"  onmouseout="UIHideTextTooltip()" onactivate="PudgeSelected();" />
+						<DOTAHeroImage heroimagestyle="portrait" class="HeroImage" id="HeroImage" heroname="npc_dota_hero_pudge" onmouseover="UIShowTextTooltip(#npc_dota_hero_pudge)"  onmouseout="UIHideTextTooltip()" onactivate="PudgeSelected();" />
 					</Panel>
 					<Panel hittest="false" class="HeroCard3" id="HeroCard_npc_dota_hero_sand_king">
-						<DOTAHeroImage heroimagestyle="portrait" class="HeroImage" id="HeroImage" heroname="npc_dota_hero_sand_king" onmouseover="UIShowTextTooltip( Sand King )"  onmouseout="UIHideTextTooltip()" onactivate="SandKingSelected();" />
+						<DOTAHeroImage heroimagestyle="portrait" class="HeroImage" id="HeroImage" heroname="npc_dota_hero_sand_king" onmouseover="UIShowTextTooltip(#npc_dota_hero_sand_king)"  onmouseout="UIHideTextTooltip()" onactivate="SandKingSelected();" />
 					</Panel>
 					<Panel hittest="false" class="HeroCard4" id="HeroCard_npc_dota_hero_nevermore">
-						<DOTAHeroImage heroimagestyle="portrait" class="HeroImage" id="HeroImage" heroname="npc_dota_hero_nevermore" onmouseover="UIShowTextTooltip( Shadow Fiend )"  onmouseout="UIHideTextTooltip()" onactivate="SFSelected();" />
+						<DOTAHeroImage heroimagestyle="portrait" class="HeroImage" id="HeroImage" heroname="npc_dota_hero_nevermore" onmouseover="UIShowTextTooltip(#npc_dota_hero_nevermore)"  onmouseout="UIHideTextTooltip()" onactivate="SFSelected();" />
 					</Panel>
 					<Panel hittest="false" class="HeroCard5" id="HeroCard_npc_dota_hero_skywrath_mage">
-						<DOTAHeroImage heroimagestyle="portrait" class="HeroImage" id="HeroImage" heroname="npc_dota_hero_skywrath_mage" onmouseover="UIShowTextTooltip( Skywrath Mage )"  onmouseout="UIHideTextTooltip()" onactivate="SkywrathSelected();" />
+						<DOTAHeroImage heroimagestyle="portrait" class="HeroImage" id="HeroImage" heroname="npc_dota_hero_skywrath_mage" onmouseover="UIShowTextTooltip(#npc_dota_hero_skywrath_mage)"  onmouseout="UIHideTextTooltip()" onactivate="SkywrathSelected();" />
 					</Panel>
 					<Panel hittest="false" class="HeroCard6" id="HeroCard_npc_dota_hero_sniper">
-						<DOTAHeroImage heroimagestyle="portrait" class="HeroImage" id="HeroImage" heroname="npc_dota_hero_sniper" onmouseover="UIShowTextTooltip( Sniper )"  onmouseout="UIHideTextTooltip()" onactivate="SniperSelected();" />
+						<DOTAHeroImage heroimagestyle="portrait" class="HeroImage" id="HeroImage" heroname="npc_dota_hero_sniper" onmouseover="UIShowTextTooltip(#npc_dota_hero_sniper)"  onmouseout="UIHideTextTooltip()" onactivate="SniperSelected();" />
 					</Panel>
 				</Panel>
 				<Panel hittest="false" class="FifthRow">
 					<Panel hittest="false" class="HeroCard1" id="HeroCard_npc_dota_hero_sven">
-						<DOTAHeroImage heroimagestyle="portrait" class="HeroImage" id="HeroImage" heroname="npc_dota_hero_sven" onmouseover="UIShowTextTooltip( Sven )"  onmouseout="UIHideTextTooltip()" onactivate="SvenSelected();" />
+						<DOTAHeroImage heroimagestyle="portrait" class="HeroImage" id="HeroImage" heroname="npc_dota_hero_sven" onmouseover="UIShowTextTooltip(#npc_dota_hero_sven)"  onmouseout="UIHideTextTooltip()" onactivate="SvenSelected();" />
 					</Panel>
 					<Panel hittest="false" class="HeroCard2" id="HeroCard_npc_dota_hero_tiny">
-						<DOTAHeroImage heroimagestyle="portrait" class="HeroImage" id="HeroImage" heroname="npc_dota_hero_tiny" onmouseover="UIShowTextTooltip( Tiny )"  onmouseout="UIHideTextTooltip()" onactivate="TinySelected();" />
+						<DOTAHeroImage heroimagestyle="portrait" class="HeroImage" id="HeroImage" heroname="npc_dota_hero_tiny" onmouseover="UIShowTextTooltip(#npc_dota_hero_tiny)"  onmouseout="UIHideTextTooltip()" onactivate="TinySelected();" />
 					</Panel>
 					<Panel hittest="false" class="HeroCard3" id="HeroCard_npc_dota_hero_viper">
-						<DOTAHeroImage heroimagestyle="portrait" class="HeroImage" id="HeroImage" heroname="npc_dota_hero_viper" onmouseover="UIShowTextTooltip( Viper )"  onmouseout="UIHideTextTooltip()" onactivate="ViperSelected();" />
+						<DOTAHeroImage heroimagestyle="portrait" class="HeroImage" id="HeroImage" heroname="npc_dota_hero_viper" onmouseover="UIShowTextTooltip(#npc_dota_hero_viper)"  onmouseout="UIHideTextTooltip()" onactivate="ViperSelected();" />
 					</Panel>
 					<Panel hittest="false" class="HeroCard4" id="HeroCard_npc_dota_hero_warlock">
-						<DOTAHeroImage heroimagestyle="portrait" class="HeroImage" id="HeroImage" heroname="npc_dota_hero_warlock" onmouseover="UIShowTextTooltip( Warlock )"  onmouseout="UIHideTextTooltip()" onactivate="WarlockSelected();" />
+						<DOTAHeroImage heroimagestyle="portrait" class="HeroImage" id="HeroImage" heroname="npc_dota_hero_warlock" onmouseover="UIShowTextTooltip(#npc_dota_hero_warlock)"  onmouseout="UIHideTextTooltip()" onactivate="WarlockSelected();" />
 					</Panel>
 					<Panel hittest="false" class="HeroCard5" id="HeroCard_npc_dota_hero_windrunner">
-						<DOTAHeroImage heroimagestyle="portrait" class="HeroImage" id="HeroImage" heroname="npc_dota_hero_windrunner" onmouseover="UIShowTextTooltip( Windranger )"  onmouseout="UIHideTextTooltip()" onactivate="WindrangerSelected();" />
+						<DOTAHeroImage heroimagestyle="portrait" class="HeroImage" id="HeroImage" heroname="npc_dota_hero_windrunner" onmouseover="UIShowTextTooltip(#npc_dota_hero_windrunner)"  onmouseout="UIHideTextTooltip()" onactivate="WindrangerSelected();" />
 					</Panel>
 					<Panel hittest="false" class="HeroCard6" id="HeroCard_npc_dota_hero_zuus">
-						<DOTAHeroImage heroimagestyle="portrait" class="HeroImage" id="HeroImage" heroname="npc_dota_hero_zuus" onmouseover="UIShowTextTooltip( Zeus )"  onmouseout="UIHideTextTooltip()" onactivate="ZeusSelected();" />
+						<DOTAHeroImage heroimagestyle="portrait" class="HeroImage" id="HeroImage" heroname="npc_dota_hero_zuus" onmouseover="UIShowTextTooltip(#npc_dota_hero_zuus)"  onmouseout="UIHideTextTooltip()" onactivate="ZeusSelected();" />
 					</Panel>
 				</Panel>
 			</Panel>
@@ -123,6 +123,7 @@
 				<Panel hittest="false" class="SteamAvatarContainer" id="SteamAvatar1" />
 				<Label id="PlayerName1" class="PlayerName1" text="Player_Name1"/>
 			</Panel>
+			<ToggleButton checked="true" text="mind_control" id="MindControlToggle1"/>
 			<Panel hittest="false" class="PickedHeroesRow">
 				<Panel hittest="false" class="PickedHeroCard1">
 					<MoviePanel class="HeroImage" id="HeroImage21" src="file://{resources}/videos/heroes/npc_dota_hero_sven.webm" repeat="true" autoplay="onload"  />
@@ -146,6 +147,7 @@
 				<Panel hittest="false" class="SteamAvatarContainer" id="SteamAvatar2" />
 				<Label id="PlayerName2" class="PlayerName2" text="Player_Name2"/>	
 			</Panel>
+			<ToggleButton checked="true" text="mind_control" id="MindControlToggle2" />
 			
 			<Panel hittest="false" class="PickedHeroesRow2">
 				<Panel hittest="false" class="PickedHeroCard1">

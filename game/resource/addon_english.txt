@@ -13,5 +13,6 @@
 		"dota_tooltip_ability_targetted_transfer_items"				"Transfer Items"
 		"dota_tooltip_ability_targetted_transfer_items_Description"	"Transfers as many items on the courier as possible to the target hero."
 		"skip_button"												"Skip Draft >>"
+		"mind_control"												"Allow mind control"
 	}
 }

@@ -201,7 +201,7 @@ DOTAHeroCard.Expanded #HeroName
 	vertical-align: bottom;
 	horizontal-align: left;
 	border-radius: 10px;
-	margin-bottom: 0px;
+	margin-bottom: 20px;
 	background-color: gradient( linear, 0% 0%, 0% 100%, from( #404D65dd ), to( #2B3445dd ) );
 	z-index: 3;
 }
@@ -219,9 +219,23 @@ DOTAHeroCard.Expanded #HeroName
 	horizontal-align: right;
 	vertical-align: bottom;
 	border-radius: 10px;
-	margin-bottom: 512px;
+	margin-bottom: 532px;
 	background-color: gradient( linear, 0% 0%, 0% 100%, from( #404D65dd ), to( #2B3445dd ) );
 	z-index: 3;
+}
+
+#MindControlToggle1 {
+	horizontal-align: right;
+	vertical-align: bottom;
+	horizontal-align: left;
+	border-bottom: -5px;
+}
+
+#MindControlToggle2 {
+	margin-bottom: 598px;
+	horizontal-align: right;
+	vertical-align: bottom;
+	
 }
 
 .SteamAvatarContainer {
@@ -428,7 +442,7 @@ DOTAHeroCard.Expanded #HeroName
 	transition-timing-function: linear;
 	vertical-align: bottom;
 	horizontal-align: center;
-	margin-bottom: 70px;
+	margin-bottom: 90px;
 	margin-left: 950px;
 	z-index: 1;
 }

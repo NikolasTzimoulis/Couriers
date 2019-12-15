@@ -3,6 +3,8 @@
 	//$("#DraftUIContainer").style.visibility = 'visible';
 	$("#R_BotLane1").style.visibility = 'visible';
 	$("#D_TopLane1").style.visibility = 'visible';
+	$("#MindControlToggle1").checked = true;
+	$("#MindControlToggle2").checked = true;
 	Game.AutoAssignPlayersToTeams()
 	CustomNetTables.SubscribeNetTableListener( "draft", OnNettable2Changed );
 	timer();
@@ -76,9 +78,9 @@ function OnNettable2Changed( table_name, key, data )
 	
 	for (var i = 0; i < dPicksLength; i++) 
 	{
-		$(rList[i]).heroname = data[ DOTATeam_t.DOTA_TEAM_BADGUYS ][i+1];
+		$(dList[i]).heroname = data[ DOTATeam_t.DOTA_TEAM_BADGUYS ][i+1];
 		if (i+1 < 5)
-			$(rList[i+1]).style.visibility = 'visible';
+			$(dList[i+1]).style.visibility = 'visible';
 	}
 
 }
