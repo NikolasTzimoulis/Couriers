@@ -431,8 +431,10 @@ function CCouriers:BonusBounty(playerID)
 end
 
 function CCouriers:LevelUp(event)
+	local playerID = EntIndexToHScript(event.player):GetPlayerID()
+	--print(event.player, playerID, PlayerResource:GetPlayerName(playerID), PlayerResource:GetTeam(playerID), event.level)
 	for i, courier in pairs(self.courierList) do
-		if IsValidEntity(courier) and courier:GetTeamNumber() == PlayerResource:GetTeam(event.player) and not courier:FindAbilityByName("mind_control"):IsActivated() then 
+		if IsValidEntity(courier) and courier:GetTeamNumber() == PlayerResource:GetTeam(playerID) and not courier:FindAbilityByName("mind_control"):IsActivated() then 
 			EmitAnnouncerSoundForTeam("announcer_ann_custom_adventure_alerts_01", courier:GetTeamNumber())
 			local level = courier:GetModifierStackCount("modifier_courier_level", courier) 
 			courier:SetModifierStackCount("modifier_courier_level", courier, level+1)
