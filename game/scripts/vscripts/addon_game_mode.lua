@@ -34,7 +34,7 @@ function CCouriers:InitGameMode()
 	GameRules:GetGameModeEntity():SetRecommendedItemsDisabled(true)
 	GameRules:GetGameModeEntity():SetUseDefaultDOTARuneSpawnLogic(true)
 	GameRules:GetGameModeEntity():SetTowerBackdoorProtectionEnabled(true)
-	self.draftTime = 300
+	self.draftTime = 30
 	GameRules:SetCustomGameSetupAutoLaunchDelay(self.draftTime)
 	GameRules:SetCustomGameSetupRemainingTime(0)
 	GameRules:SetStartingGold(0)
@@ -47,14 +47,18 @@ function CCouriers:InitGameMode()
 	self.fakeHero = {}
 	self.oneTimeSetup = 0
 	self.draftPicks = {[DOTA_TEAM_GOODGUYS] = {}, [DOTA_TEAM_BADGUYS] = {}}
+	self.draftOptions = {[DOTA_TEAM_GOODGUYS] = true, [DOTA_TEAM_BADGUYS] = true}
 	CustomNetTables:SetTableValue( "draft", "picked", self.draftPicks)
+	CustomNetTables:SetTableValue( "draft", "options", self.draftOptions)
 	GameRules:GetGameModeEntity():SetModifyGoldFilter(Dynamic_Wrap(CCouriers,"FilterModifyGold"),self)
 	GameRules:GetGameModeEntity():SetBountyRunePickupFilter(Dynamic_Wrap(CCouriers, "BountyRunePickupFilter"), self)
 	GameRules:GetGameModeEntity():SetExecuteOrderFilter(Dynamic_Wrap(CCouriers,"FilterExecuteOrder"),self)
 	ListenToGameEvent("npc_spawned", Dynamic_Wrap( CCouriers, "OnNPCSpawned" ), self )
 	ListenToGameEvent("entity_killed", Dynamic_Wrap( CCouriers, 'OnEntityKilled' ), self )	
 	ListenToGameEvent("entity_hurt", Dynamic_Wrap( CCouriers, 'OnEntityHurt' ), self )		
+	ListenToGameEvent("dota_player_gained_level", Dynamic_Wrap( CCouriers, 'LevelUp' ), self )		
 	CustomGameEventManager:RegisterListener("draft", function(id, ...) Dynamic_Wrap(self, "DoDraft")(self, ...) end)
+	CustomGameEventManager:RegisterListener("mind_control_option", function(id, ...) Dynamic_Wrap(self, "OnDraftOptionChanged")(self, ...) end)
 end
 
 -- Evaluate the state of the game
@@ -159,6 +163,9 @@ function CCouriers:OnNPCSpawned( event )
 			PlayerResource:ResetSelection(playerID)
 			local abil = spawnedUnit:AddAbility("mind_control")
 			abil:SetLevel(abil:GetMaxLevel())
+			if self.draftOptions[DOTA_TEAM_GOODGUYS] == 0 and self.draftOptions[DOTA_TEAM_BADGUYS] == 0 then
+				abil:SetActivated(false)
+			end
 			local abil = spawnedUnit:AddAbility("targetted_transfer_items")
 			abil:SetLevel(abil:GetMaxLevel())
 			spawnedUnit:SwapAbilities("courier_transfer_items", "mind_control", false, true)
@@ -423,6 +430,31 @@ function CCouriers:BonusBounty(playerID)
 	return math.floor(maxNetWorth * self.heroBountyMultiplier)
 end
 
+function CCouriers:LevelUp(event)
+	for i, courier in pairs(self.courierList) do
+		if IsValidEntity(courier) and courier:GetTeamNumber() == PlayerResource:GetTeam(event.player) and not courier:FindAbilityByName("mind_control"):IsActivated() then 
+			EmitAnnouncerSoundForTeam("announcer_ann_custom_adventure_alerts_01", courier:GetTeamNumber())
+			local level = courier:GetModifierStackCount("modifier_courier_level", courier) 
+			courier:SetModifierStackCount("modifier_courier_level", courier, level+1)
+			courier:FindAbilityByName("courier_burst"):EndCooldown()
+			courier:FindAbilityByName("courier_shield"):EndCooldown()
+			courier:SetBaseMaxHealth( courier:GetBaseMaxHealth() + courier:FindAbilityByName("mind_control"):GetSpecialValueFor("hp_per_level") )
+			courier:SetBaseMoveSpeed( courier:GetBaseMoveSpeed() + courier:FindAbilityByName("mind_control"):GetSpecialValueFor("speed_per_level") )
+			if level+1 == 5 then			
+				courier:AddNewModifier(caster, nil, "modifier_courier_flying", {duration = -1})				
+			elseif level+1 == 10 then
+				local abil = courier:FindAbilityByName("courier_burst")
+				abil:SetActivated(true)
+				abil:SetLevel(abil:GetMaxLevel())
+			elseif level+1 == 20 then
+				local abil = courier:FindAbilityByName("courier_shield")
+				abil:SetActivated(true)
+				abil:SetLevel(abil:GetMaxLevel())
+			end
+		end
+	end
+end
+
 function CCouriers:DoDraft(event)
 	if event.done then
 		GameRules:FinishCustomGameSetup()
@@ -437,6 +469,18 @@ function CCouriers:DoDraft(event)
 			end
 		end		
 	end
+end
+
+function CCouriers:OnDraftOptionChanged(event)
+	if PlayerResource:GetPlayerCount() == 2 then
+		self.draftOptions[PlayerResource:GetTeam(event.PlayerID)]  = event.checked
+	elseif PlayerResource:GetPlayerCount() == 1 then
+		self.draftOptions[DOTA_TEAM_GOODGUYS]  = event.checked
+		self.draftOptions[DOTA_TEAM_BADGUYS]  = event.checked
+	else
+		print("This should literally never happen")
+	end
+	CustomNetTables:SetTableValue( "draft", "options", self.draftOptions)
 end
 
 function CCouriers:HeroAlreadyPicked(heroName)

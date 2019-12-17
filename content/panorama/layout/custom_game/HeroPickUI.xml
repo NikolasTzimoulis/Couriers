@@ -121,9 +121,9 @@
 			<Label id="timer" text=":XX"/>
 			<Panel hittest="false" class="PlayerContainer1" id="PlayerContainer1" >
 				<Panel hittest="false" class="SteamAvatarContainer" id="SteamAvatar1" />
-				<Label id="PlayerName1" class="PlayerName1" text="Player_Name1"/>
+				<Label id="PlayerName1" class="PlayerName1" text=""/>
 			</Panel>
-			<ToggleButton checked="true" text="mind_control" id="MindControlToggle1"/>
+			<ToggleButton checked="true" text="mind_control" id="MindControlToggle1" onactivate="OnMindControlToggled()"/>
 			<Panel hittest="false" class="PickedHeroesRow">
 				<Panel hittest="false" class="PickedHeroCard1">
 					<MoviePanel class="HeroImage" id="HeroImage21" src="file://{resources}/videos/heroes/npc_dota_hero_sven.webm" repeat="true" autoplay="onload"  />
@@ -145,9 +145,9 @@
 			
 			<Panel hittest="false" class="PlayerContainer2" id="PlayerContainer2" >
 				<Panel hittest="false" class="SteamAvatarContainer" id="SteamAvatar2" />
-				<Label id="PlayerName2" class="PlayerName2" text="Player_Name2"/>	
+				<Label id="PlayerName2" class="PlayerName2" text=""/>	
 			</Panel>
-			<ToggleButton checked="true" text="mind_control" id="MindControlToggle2" />
+			<ToggleButton checked="true" text="mind_control" id="MindControlToggle2" onactivate="OnMindControlToggled()"/>
 			
 			<Panel hittest="false" class="PickedHeroesRow2">
 				<Panel hittest="false" class="PickedHeroCard1">

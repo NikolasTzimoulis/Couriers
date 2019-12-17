@@ -1,14 +1,22 @@
 (function() 
 { 
-	//$("#DraftUIContainer").style.visibility = 'visible';
 	$("#R_BotLane1").style.visibility = 'visible';
 	$("#D_TopLane1").style.visibility = 'visible';
+	$("#MindControlToggle1").enabled = false;
+	$("#MindControlToggle2").enabled = false;
 	$("#MindControlToggle1").checked = true;
 	$("#MindControlToggle2").checked = true;
 	Game.AutoAssignPlayersToTeams()
-	CustomNetTables.SubscribeNetTableListener( "draft", OnNettable2Changed );
+	CustomNetTables.SubscribeNetTableListener( "draft", OnDraftChanged );
 	timer();
+	$.Schedule(1, drawNamesAndAvatars);
 })();
+
+function timer()
+{
+	$("#timer").text = Math.abs(Math.round(Game.GetDOTATime(true, true)));
+	$.Schedule(0.2, timer);
+}
 
 function drawNamesAndAvatars()
 {
@@ -29,58 +37,80 @@ function drawNamesAndAvatars()
 		playerNameLabel = "#PlayerName2";
 		playerAvaLabel = "#SteamAvatar2";
 	}	
+	
+	var localTeam =  Players.GetTeam(Players.GetLocalPlayer());
+	if (localTeam == DOTATeam_t.DOTA_TEAM_GOODGUYS) 
+		$("#MindControlToggle1").enabled = true;
+	else 
+		$("#MindControlToggle2").enabled = true;
+}
+
+function OnMindControlToggled()
+{
+	var localTeam =  Players.GetTeam(Players.GetLocalPlayer());
+	var toggleState = true;
+	if (localTeam == DOTATeam_t.DOTA_TEAM_GOODGUYS)
+		toggleState = $("#MindControlToggle1").checked;
+	else
+		toggleState = $("#MindControlToggle2").checked;	
+	GameEvents.SendCustomGameEventToServer("mind_control_option", {checked:toggleState})
 }
 
 function OnSkipDraftButtonPressed()
 {
-	var localPlayer = Players.GetLocalPlayer();
-	var localTeam =  Players.GetTeam(localPlayer);
+	var localTeam =  Players.GetTeam(Players.GetLocalPlayer());
 	var picked = CustomNetTables.GetTableValue( "draft", "picked");
 	//$.Msg( localPlayer, localTeam, picked );
 	if (Object.keys(picked[localTeam]).length == 0)
 	{		
 		GameEvents.SendCustomGameEventToServer("draft", {done:true})
-	}
-	
+	}	
 }
 
-function OnNettable2Changed( table_name, key, data )
+function OnDraftChanged( table_name, key, data )
 {
 	//$.Msg( "Table ", table_name, " changed: '", key, "' = ", data );
-	var localPlayer = Players.GetLocalPlayer();
-	var localTeam =  Players.GetTeam(localPlayer);
-	//show hero as selected and in lane
-	//sound, minimap, picked list portrait, remove skip button
-	if (Object.keys(data[localTeam]).length > 0)
+	var localTeam =  Players.GetTeam(Players.GetLocalPlayer());
+	if (key == "picked")
 	{
-		$("#SkipDraftButton").style.visibility = 'collapse';	
-	}
-	Game.EmitSound("General.SelectAction")
-	for (var t in data)
-	{
-		for (var h in data[t])
+		//show hero as selected and in lane
+		//sound, minimap, picked list portrait, remove skip button
+		if (Object.keys(data[localTeam]).length > 0)
 		{
-			$("#HeroCard_"+data[t][h]).style.visibility = 'collapse';	
+			$("#SkipDraftButton").style.visibility = 'collapse';	
+		}
+		Game.EmitSound("General.SelectAction")
+		for (var t in data)
+		{
+			for (var h in data[t])
+			{
+				$("#HeroCard_"+data[t][h]).style.visibility = 'collapse';	
+			}
+		}
+		
+		var rList = ["#R_BotLane1", "#R_TopLane1", "#R_TopLane2", "#R_MidLane", "#R_BotLane2"];
+		var dList = ["#D_TopLane1", "#D_BotLane1", "#D_BotLane2", "#D_MidLane", "#D_TopLane2"];
+		var rPicksLength = Object.keys(data[DOTATeam_t.DOTA_TEAM_GOODGUYS]).length;
+		var dPicksLength = Object.keys(data[DOTATeam_t.DOTA_TEAM_BADGUYS]).length;
+		
+		for (var i = 0; i < rPicksLength; i++) 
+		{
+			$(rList[i]).heroname = data[ DOTATeam_t.DOTA_TEAM_GOODGUYS ][i+1];
+			if (i+1 < 5)
+				$(rList[i+1]).style.visibility = 'visible';
+		}
+		
+		for (var i = 0; i < dPicksLength; i++) 
+		{
+			$(dList[i]).heroname = data[ DOTATeam_t.DOTA_TEAM_BADGUYS ][i+1];
+			if (i+1 < 5)
+				$(dList[i+1]).style.visibility = 'visible';
 		}
 	}
-	
-	var rList = ["#R_BotLane1", "#R_TopLane1", "#R_TopLane2", "#R_MidLane", "#R_BotLane2"];
-	var dList = ["#D_TopLane1", "#D_BotLane1", "#D_BotLane2", "#D_MidLane", "#D_TopLane2"];
-	var rPicksLength = Object.keys(data[DOTATeam_t.DOTA_TEAM_GOODGUYS]).length;
-	var dPicksLength = Object.keys(data[DOTATeam_t.DOTA_TEAM_BADGUYS]).length;
-	
-	for (var i = 0; i < rPicksLength; i++) 
+	else if (key == "options")
 	{
-		$(rList[i]).heroname = data[ DOTATeam_t.DOTA_TEAM_GOODGUYS ][i+1];
-		if (i+1 < 5)
-			$(rList[i+1]).style.visibility = 'visible';
-	}
-	
-	for (var i = 0; i < dPicksLength; i++) 
-	{
-		$(dList[i]).heroname = data[ DOTATeam_t.DOTA_TEAM_BADGUYS ][i+1];
-		if (i+1 < 5)
-			$(dList[i+1]).style.visibility = 'visible';
+		$("#MindControlToggle1").checked = data[DOTATeam_t.DOTA_TEAM_GOODGUYS];
+		$("#MindControlToggle2").checked = data[DOTATeam_t.DOTA_TEAM_BADGUYS];
 	}
 
 }
@@ -122,9 +152,3 @@ function WindrangerSelected() { HeroSelected("npc_dota_hero_windrunner"); }
 function ZeusSelected() { HeroSelected("npc_dota_hero_zuus"); }
 
 
-function timer()
-{
-	$("#timer").text = Math.abs(Math.round(Game.GetDOTATime(true, true)));
-	$.Schedule(0.2, timer);
-	drawNamesAndAvatars();
-}
