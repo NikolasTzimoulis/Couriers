@@ -4,6 +4,7 @@ require("statcollection/init")
 
 if CCouriers == nil then
 	CCouriers = class({})
+	_G.CCouriers = CCouriers
 end
 
 function Precache( context )
@@ -56,7 +57,7 @@ function CCouriers:InitGameMode()
 	ListenToGameEvent("npc_spawned", Dynamic_Wrap( CCouriers, "OnNPCSpawned" ), self )
 	ListenToGameEvent("entity_killed", Dynamic_Wrap( CCouriers, 'OnEntityKilled' ), self )	
 	ListenToGameEvent("entity_hurt", Dynamic_Wrap( CCouriers, 'OnEntityHurt' ), self )		
-	ListenToGameEvent("dota_player_gained_level", Dynamic_Wrap( CCouriers, 'LevelUp' ), self )		
+	ListenToGameEvent("dota_player_gained_level", Dynamic_Wrap( CCouriers, 'OnHeroLevelUp' ), self )		
 	CustomGameEventManager:RegisterListener("draft", function(id, ...) Dynamic_Wrap(self, "DoDraft")(self, ...) end)
 	CustomGameEventManager:RegisterListener("mind_control_option", function(id, ...) Dynamic_Wrap(self, "OnDraftOptionChanged")(self, ...) end)
 end
@@ -430,30 +431,35 @@ function CCouriers:BonusBounty(playerID)
 	return math.floor(maxNetWorth * self.heroBountyMultiplier)
 end
 
-function CCouriers:LevelUp(event)
+function CCouriers:OnHeroLevelUp(event)
 	local playerID = EntIndexToHScript(event.player):GetPlayerID()
 	--print(event.player, playerID, PlayerResource:GetPlayerName(playerID), PlayerResource:GetTeam(playerID), event.level)
 	for i, courier in pairs(self.courierList) do
-		if IsValidEntity(courier) and courier:GetTeamNumber() == PlayerResource:GetTeam(playerID) and not courier:FindAbilityByName("mind_control"):IsActivated() then 
-			EmitAnnouncerSoundForTeam("announcer_ann_custom_adventure_alerts_01", courier:GetTeamNumber())
-			local level = courier:GetModifierStackCount("modifier_courier_level", courier) 
-			courier:SetModifierStackCount("modifier_courier_level", courier, level+1)
-			courier:FindAbilityByName("courier_burst"):EndCooldown()
-			courier:FindAbilityByName("courier_shield"):EndCooldown()
-			courier:SetBaseMaxHealth( courier:GetBaseMaxHealth() + courier:FindAbilityByName("mind_control"):GetSpecialValueFor("hp_per_level") )
-			courier:SetBaseMoveSpeed( courier:GetBaseMoveSpeed() + courier:FindAbilityByName("mind_control"):GetSpecialValueFor("speed_per_level") )
-			if level+1 == 5 then			
-				courier:AddNewModifier(caster, nil, "modifier_courier_flying", {duration = -1})				
-			elseif level+1 == 10 then
-				local abil = courier:FindAbilityByName("courier_burst")
-				abil:SetActivated(true)
-				abil:SetLevel(abil:GetMaxLevel())
-			elseif level+1 == 20 then
-				local abil = courier:FindAbilityByName("courier_shield")
-				abil:SetActivated(true)
-				abil:SetLevel(abil:GetMaxLevel())
-			end
+		if IsValidEntity(courier) and courier:GetTeamNumber() == PlayerResource:GetTeam(playerID) then
+			self:LevelUp(courier)
 		end
+	end
+end
+
+function CCouriers:LevelUp(courier)
+	--EmitAnnouncerSoundForTeam("announcer_ann_custom_adventure_alerts_01", courier:GetTeamNumber())
+	EmitSoundOn("ui.trophy_levelup", courier:GetPlayerOwner())
+	local level = courier:GetModifierStackCount("modifier_courier_level", courier) 
+	courier:SetModifierStackCount("modifier_courier_level", courier, level+1)
+	courier:FindAbilityByName("courier_burst"):EndCooldown()
+	courier:FindAbilityByName("courier_shield"):EndCooldown()
+	courier:SetBaseMaxHealth( courier:GetBaseMaxHealth() + courier:FindAbilityByName("mind_control"):GetSpecialValueFor("hp_per_level") )
+	courier:SetBaseMoveSpeed( courier:GetBaseMoveSpeed() + courier:FindAbilityByName("mind_control"):GetSpecialValueFor("speed_per_level") )
+	if level+1 == 5 then			
+		courier:AddNewModifier(caster, nil, "modifier_courier_flying", {duration = -1})				
+	elseif level+1 == 10 then
+		local abil = courier:FindAbilityByName("courier_burst")
+		abil:SetActivated(true)
+		abil:SetLevel(abil:GetMaxLevel())
+	elseif level+1 == 20 then
+		local abil = courier:FindAbilityByName("courier_shield")
+		abil:SetActivated(true)
+		abil:SetLevel(abil:GetMaxLevel())
 	end
 end
 

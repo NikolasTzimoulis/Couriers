@@ -11,25 +11,7 @@ function mind_control:OnSpellStart()
 		host:AddNewModifier(caster, nil, "modifier_mind_control", {duration = self:GetDuration()})
 		--level up
 		if not host:HasModifier("modifier_hero_exhausted") then
-			EmitAnnouncerSoundForTeam("announcer_ann_custom_adventure_alerts_01", caster:GetTeamNumber())
-			local level = caster:GetModifierStackCount("modifier_courier_level", caster) 
-			caster:SetModifierStackCount("modifier_courier_level", caster, level+1)
-			caster:FindAbilityByName("courier_burst"):EndCooldown()
-			caster:FindAbilityByName("courier_shield"):EndCooldown()
-			caster:SetBaseMaxHealth( caster:GetBaseMaxHealth() + self:GetSpecialValueFor("hp_per_level") )
-			caster:SetBaseMoveSpeed( caster:GetBaseMoveSpeed() + self:GetSpecialValueFor("speed_per_level") )
-			if level+1 == 5 then
-				--caster:UpgradeToFlyingCourier()				
-				caster:AddNewModifier(caster, nil, "modifier_courier_flying", {duration = -1})
-			elseif level+1 == 10 then
-				local abil = caster:FindAbilityByName("courier_burst")
-				abil:SetActivated(true)
-				abil:SetLevel(abil:GetMaxLevel())
-			elseif level+1 == 20 then
-				local abil = caster:FindAbilityByName("courier_shield")
-				abil:SetActivated(true)
-				abil:SetLevel(abil:GetMaxLevel())
-			end
+			_G.CCouriers:LevelUp(caster)
 			host:AddNewModifier(caster, nil, "modifier_hero_exhausted", {duration = self:GetSpecialValueFor("recharge_cooldown")})
 		end
 	end

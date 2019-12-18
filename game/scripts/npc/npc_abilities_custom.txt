@@ -44,12 +44,12 @@
 			"05"
 			{	
 				"var_type"			"FIELD_INTEGER"
-				"hp_per_level"	"20"
+				"hp_per_level"	"10"
 			}
 			"06"
 			{	
 				"var_type"			"FIELD_INTEGER"
-				"speed_per_level"	"20"
+				"speed_per_level"	"10"
 			}
 				
 		}		
