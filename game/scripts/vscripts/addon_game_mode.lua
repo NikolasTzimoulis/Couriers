@@ -4,7 +4,6 @@ require("statcollection/init")
 
 if CCouriers == nil then
 	CCouriers = class({})
-	_G.CCouriers = CCouriers
 end
 
 function Precache( context )
@@ -35,6 +34,7 @@ function CCouriers:InitGameMode()
 	GameRules:GetGameModeEntity():SetRecommendedItemsDisabled(true)
 	GameRules:GetGameModeEntity():SetUseDefaultDOTARuneSpawnLogic(true)
 	GameRules:GetGameModeEntity():SetTowerBackdoorProtectionEnabled(true)
+	GameRules:GetGameModeEntity():SetFreeCourierModeEnabled(true)
 	self.draftTime = 30
 	GameRules:SetCustomGameSetupAutoLaunchDelay(self.draftTime)
 	GameRules:SetCustomGameSetupRemainingTime(0)
@@ -47,6 +47,7 @@ function CCouriers:InitGameMode()
 	self.courierList = {}
 	self.fakeHero = {}
 	self.oneTimeSetup = 0
+	self.hasEnoughCouriers = {[DOTA_TEAM_GOODGUYS] = false, [DOTA_TEAM_BADGUYS] = false}
 	self.draftPicks = {[DOTA_TEAM_GOODGUYS] = {}, [DOTA_TEAM_BADGUYS] = {}}
 	self.draftOptions = {[DOTA_TEAM_GOODGUYS] = true, [DOTA_TEAM_BADGUYS] = true}
 	CustomNetTables:SetTableValue( "draft", "picked", self.draftPicks)
@@ -142,7 +143,6 @@ function CCouriers:OnNPCSpawned( event )
 		self.fakeHero[spawnedUnit:GetTeamNumber()] = spawnedUnit
 		spawnedUnit:AddNewModifier(spawnedUnit, nil, "modifier_tutorial_hide_npc", {duration = -1})
 		Timers:CreateTimer(1, function()
-			CreateUnitByName("npc_dota_courier", spawnedUnit:GetAbsOrigin(), true, spawnedUnit, spawnedUnit, spawnedUnit:GetTeamNumber())
 			spawnedUnit:AddNewModifier(spawnedUnit, nil, "modifier_invulnerable", {duration = -1})
 			spawnedUnit:AddNewModifier(spawnedUnit, nil, "modifier_rooted", {duration = -1})
 			spawnedUnit:AddNewModifier(spawnedUnit, nil, "modifier_disarmed", {duration = -1})
@@ -157,26 +157,35 @@ function CCouriers:OnNPCSpawned( event )
 		end)
 		--if this is the first time this courier has spawned:
 		if spawnedUnit:FindAbilityByName("mind_control") == nil and self.fakeHero[spawnedUnit:GetTeamNumber()] then
-			table.insert(self.courierList, spawnedUnit)
-			local playerID = self.fakeHero[spawnedUnit:GetTeamNumber()]:GetPlayerOwnerID()
-			spawnedUnit:SetControllableByPlayer(playerID, true)
-			PlayerResource:SetDefaultSelectionEntity(playerID, spawnedUnit)
-			PlayerResource:ResetSelection(playerID)
-			local abil = spawnedUnit:AddAbility("mind_control")
-			abil:SetLevel(abil:GetMaxLevel())
-			if self.draftOptions[DOTA_TEAM_GOODGUYS] == 0 and self.draftOptions[DOTA_TEAM_BADGUYS] == 0 then
-				abil:SetActivated(false)
+			if self.hasEnoughCouriers[spawnedUnit:GetTeamNumber()] then
+				Timers:CreateTimer(0.1, function() 
+					spawnedUnit:RemoveSelf()
+				end)
+			else
+				self.hasEnoughCouriers[spawnedUnit:GetTeamNumber()] = true
+				table.insert(self.courierList, spawnedUnit)
+				local playerID = self.fakeHero[spawnedUnit:GetTeamNumber()]:GetPlayerOwnerID()
+				Timers:CreateTimer(0.01, function() 
+					spawnedUnit:SetControllableByPlayer(playerID, true)
+					PlayerResource:SetDefaultSelectionEntity(playerID, spawnedUnit)
+					PlayerResource:ResetSelection(playerID)
+				end)
+				local abil = spawnedUnit:AddAbility("mind_control")
+				abil:SetLevel(abil:GetMaxLevel())
+				if self.draftOptions[DOTA_TEAM_GOODGUYS] == 0 and self.draftOptions[DOTA_TEAM_BADGUYS] == 0 then
+					abil:SetActivated(false)
+				end
+				local abil = spawnedUnit:AddAbility("targetted_transfer_items")
+				abil:SetLevel(abil:GetMaxLevel())
+				spawnedUnit:SwapAbilities("courier_transfer_items", "mind_control", false, true)
+				spawnedUnit:SwapAbilities("courier_take_stash_items", "targetted_transfer_items", false, true)		
+				spawnedUnit:FindAbilityByName("courier_take_stash_items"):SetActivated(false)
+				spawnedUnit:FindAbilityByName("courier_take_stash_items"):SetHidden(true)
+				spawnedUnit:FindAbilityByName("courier_return_stash_items"):SetActivated(false)
+				spawnedUnit:FindAbilityByName("courier_return_stash_items"):SetHidden(true)
+				spawnedUnit:FindAbilityByName("courier_transfer_items"):SetActivated(false)
+				spawnedUnit:FindAbilityByName("courier_transfer_items"):SetHidden(true)
 			end
-			local abil = spawnedUnit:AddAbility("targetted_transfer_items")
-			abil:SetLevel(abil:GetMaxLevel())
-			spawnedUnit:SwapAbilities("courier_transfer_items", "mind_control", false, true)
-			spawnedUnit:SwapAbilities("courier_take_stash_items", "targetted_transfer_items", false, true)		
-			spawnedUnit:FindAbilityByName("courier_take_stash_items"):SetActivated(false)
-			spawnedUnit:FindAbilityByName("courier_take_stash_items"):SetHidden(true)
-			spawnedUnit:FindAbilityByName("courier_return_stash_items"):SetActivated(false)
-			spawnedUnit:FindAbilityByName("courier_return_stash_items"):SetHidden(true)
-			spawnedUnit:FindAbilityByName("courier_transfer_items"):SetActivated(false)
-			spawnedUnit:FindAbilityByName("courier_transfer_items"):SetHidden(true)
 		end
 	end
 end
@@ -434,32 +443,18 @@ end
 function CCouriers:OnHeroLevelUp(event)
 	local playerID = EntIndexToHScript(event.player):GetPlayerID()
 	--print(event.player, playerID, PlayerResource:GetPlayerName(playerID), PlayerResource:GetTeam(playerID), event.level)
-	for i, courier in pairs(self.courierList) do
-		if IsValidEntity(courier) and courier:GetTeamNumber() == PlayerResource:GetTeam(playerID) then
-			self:LevelUp(courier)
-		end
+	if self.fakeHero[PlayerResource:GetTeam(playerID)] and self.fakeHero[PlayerResource:GetTeam(playerID)]:GetPlayerOwnerID() ~= playerID then
+		self:LevelUp(PlayerResource:GetTeam(playerID))
 	end
 end
 
-function CCouriers:LevelUp(courier)
-	--EmitAnnouncerSoundForTeam("announcer_ann_custom_adventure_alerts_01", courier:GetTeamNumber())
-	EmitSoundOn("ui.trophy_levelup", courier:GetPlayerOwner())
-	local level = courier:GetModifierStackCount("modifier_courier_level", courier) 
-	courier:SetModifierStackCount("modifier_courier_level", courier, level+1)
-	courier:FindAbilityByName("courier_burst"):EndCooldown()
-	courier:FindAbilityByName("courier_shield"):EndCooldown()
-	courier:SetBaseMaxHealth( courier:GetBaseMaxHealth() + courier:FindAbilityByName("mind_control"):GetSpecialValueFor("hp_per_level") )
-	courier:SetBaseMoveSpeed( courier:GetBaseMoveSpeed() + courier:FindAbilityByName("mind_control"):GetSpecialValueFor("speed_per_level") )
-	if level+1 == 5 then			
-		courier:AddNewModifier(caster, nil, "modifier_courier_flying", {duration = -1})				
-	elseif level+1 == 10 then
-		local abil = courier:FindAbilityByName("courier_burst")
-		abil:SetActivated(true)
-		abil:SetLevel(abil:GetMaxLevel())
-	elseif level+1 == 20 then
-		local abil = courier:FindAbilityByName("courier_shield")
-		abil:SetActivated(true)
-		abil:SetLevel(abil:GetMaxLevel())
+function CCouriers:LevelUp(team)
+	self.fakeHero[team]:HeroLevelUp(false)
+	for i, courier in pairs(self.courierList) do
+		if IsValidEntity(courier) and courier:GetTeamNumber() == team then
+			courier:FindAbilityByName("courier_burst"):EndCooldown()
+			courier:FindAbilityByName("courier_shield"):EndCooldown()
+		end
 	end
 end
 
