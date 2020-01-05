@@ -208,7 +208,12 @@ function CCouriers:OnEntityHurt(event)
 	local damage = event.damagebits
 	if hurtUnit:IsCourier() then
 		if damage >= hurtUnit:GetHealth() then
-			hurtUnit:RespawnUnit()
+			Timers:CreateTimer(0.1, function() 
+				hurtUnit:AddNewModifier(hurtUnit, nil, "modifier_invulnerable", {duration = 1})
+				hurtUnit:AddNewModifier(hurtUnit, nil, "modifier_silence", {duration = 1})
+				hurtUnit:AddNewModifier(hurtUnit, nil, "modifier_no_healthbar", {duration = 1})
+			end)
+			hurtUnit:SetHealth(hurtUnit:GetMaxHealth())
 			EmitAnnouncerSoundForTeam("announcer_ann_custom_end_09", hurtUnit:GetTeamNumber())
 			self:GiveGold(self.CourierBounty, hurtUnit:GetOpposingTeamNumber(), DOTA_ModifyGold_Unspecified)
 			if self.fakeHero[hurtUnit:GetOpposingTeamNumber()] then 				
