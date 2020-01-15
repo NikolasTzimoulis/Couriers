@@ -35,8 +35,7 @@ function CCouriers:InitGameMode()
 	GameRules:GetGameModeEntity():SetUseDefaultDOTARuneSpawnLogic(true)
 	GameRules:GetGameModeEntity():SetTowerBackdoorProtectionEnabled(true)
 	GameRules:GetGameModeEntity():SetFreeCourierModeEnabled(true)
-	self.draftTime = 30
-	GameRules:SetCustomGameSetupAutoLaunchDelay(self.draftTime)
+	GameRules:SetCustomGameSetupAutoLaunchDelay(45)
 	GameRules:SetCustomGameSetupRemainingTime(0)
 	GameRules:SetStartingGold(0)
 	GameRules:SetGoldPerTick(0)
@@ -136,7 +135,7 @@ function CCouriers:DoOncePerSecond()
 	end
 end
 
-function CCouriers:OnNPCSpawned( event )
+function CCouriers:OnNPCSpawned(event)
 	local spawnedUnit = EntIndexToHScript( event.entindex )
 	-- spawn the courier and hide the fakehero
 	if spawnedUnit:IsRealHero() and PlayerResource:GetNumCouriersForTeam(spawnedUnit:GetTeamNumber()) == 0 and not PlayerResource:IsFakeClient(spawnedUnit:GetPlayerOwnerID()) then
@@ -380,6 +379,20 @@ function CCouriers:FilterExecuteOrder(event)
 		if unit:IsCourier() and self.fakeHero[unit:GetTeamNumber()] and self.fakeHero[unit:GetTeamNumber()]:GetPlayerID() ~= event.issuer_player_id_const then
 			return false
 		end
+		-- dropped items revert to courier ownership
+		if event.order_type == DOTA_UNIT_ORDER_DROP_ITEM and self.fakeHero[unit:GetTeamNumber()] then
+			local item = EntIndexToHScript(event.entindex_ability)
+			local fhero = self.fakeHero[unit:GetTeamNumber()]
+			if item:GetPurchaser() ~= fhero then
+				local charges = item:GetCurrentCharges()
+				local itemname = item:GetName()
+				item:RemoveSelf()
+				local pos = Vector(event.position_x, event.position_y, event.position_z)
+				if (pos - unit:GetAbsOrigin()):Length() > 500 then pos = unit:GetAbsOrigin() end
+				local newItem = CreateItemOnPositionSync(pos, CreateItem(itemname, fhero, fhero)) 
+				newItem:GetContainedItem():SetCurrentCharges(charges)
+			end
+		end
 	end
 	
 	-- refuse to buy another courier
@@ -472,7 +485,10 @@ function CCouriers:DoDraft(event)
 				table.insert(self.draftPicks[PlayerResource:GetTeam(event.PlayerID)], event.pick)
 				CustomNetTables:SetTableValue( "draft", "picked", self.draftPicks)
 			end
-			if #self.draftPicks[DOTA_TEAM_GOODGUYS] >= 5 and #self.draftPicks[DOTA_TEAM_BADGUYS] >=5 then
+			local numPlayersDone = 0
+			if #self.draftPicks[DOTA_TEAM_GOODGUYS] >= 5 then numPlayersDone = numPlayersDone + 1 end
+			if #self.draftPicks[DOTA_TEAM_BADGUYS] >= 5 then numPlayersDone = numPlayersDone + 1 end
+			if numPlayersDone >= PlayerResource:GetPlayerCount() then
 				GameRules:FinishCustomGameSetup()
 			end
 		end		
@@ -522,7 +538,11 @@ function CCouriers:DraftingCountdown()
 	Timers:CreateTimer(1, function()
 		local t = math.floor(GameRules:GetDOTATime(true, true))
 		--print(t)
-		if t == -16 then
+		if GameRules:State_Get() >= DOTA_GAMERULES_STATE_PRE_GAME then
+			return nil
+		elseif t == -31 then
+			EmitAnnouncerSound("announcer_ann_custom_timer_sec_30")
+		elseif t == -16 then
 			EmitAnnouncerSound("announcer_ann_custom_timer_sec_15")
 		elseif t == -11 then
 			EmitAnnouncerSound("announcer_ann_custom_timer_sec_10")
