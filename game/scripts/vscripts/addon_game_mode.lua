@@ -110,9 +110,11 @@ function CCouriers:DoOncePerSecond()
 	for i, courier in pairs(self.courierList) do
 		if IsValidEntity(courier) then 
 			local fhero = self.fakeHero[courier:GetTeamNumber()]
+			local itemCount = 0
 			for itemSlot = 0, 11, 1 do 
 				local item = courier:GetItemInSlot( itemSlot ) 
 				if IsValidEntity(item) then
+					itemCount = itemCount + 1
 					-- reset ownership of tp scrolls 
 					if item:GetName() == "item_tpscroll" then
 						item:SetPurchaser(nil)
@@ -126,6 +128,14 @@ function CCouriers:DoOncePerSecond()
 					end
 				end
 			end	
+			-- swap abilities if no item is held
+			if itemCount == 0 and not courier:FindAbilityByName("courier_return_to_base"):IsActivated() then
+				courier:SwapAbilities("targetted_transfer_items", "courier_return_to_base", false, true)		
+				courier:FindAbilityByName("courier_return_to_base"):SetActivated(true)
+			elseif itemCount > 0 and courier:FindAbilityByName("courier_return_to_base"):IsActivated() then
+				courier:SwapAbilities("courier_return_to_base", "targetted_transfer_items", false, true)
+				courier:FindAbilityByName("courier_return_to_base"):SetActivated(false)
+			end
    		end
 	end
 	-- give passive gold to each team
@@ -176,10 +186,12 @@ function CCouriers:OnNPCSpawned(event)
 				end
 				local abil = spawnedUnit:AddAbility("targetted_transfer_items")
 				abil:SetLevel(abil:GetMaxLevel())
+				local abil = spawnedUnit:AddAbility("courier_return_to_base")
+				abil:SetLevel(abil:GetMaxLevel())
+				abil:SetActivated(false)
 				spawnedUnit:SwapAbilities("courier_transfer_items", "mind_control", false, true)
 				spawnedUnit:SwapAbilities("courier_take_stash_items", "targetted_transfer_items", false, true)		
 				spawnedUnit:FindAbilityByName("courier_take_stash_items"):SetActivated(false)
-				spawnedUnit:FindAbilityByName("courier_take_stash_items"):SetHidden(true)
 				spawnedUnit:FindAbilityByName("courier_return_stash_items"):SetActivated(false)
 				spawnedUnit:FindAbilityByName("courier_return_stash_items"):SetHidden(true)
 				spawnedUnit:FindAbilityByName("courier_transfer_items"):SetActivated(false)
@@ -393,12 +405,6 @@ function CCouriers:FilterExecuteOrder(event)
 				newItem:GetContainedItem():SetCurrentCharges(charges)
 			end
 		end
-	end
-	
-	-- refuse to buy another courier
-	if event.order_type == DOTA_UNIT_ORDER_PURCHASE_ITEM and event.entindex_ability == 45 then
-		EmitSoundOn("General.InvalidTarget_Invulnerable", PlayerResource:GetPlayer(event.issuer_player_id_const))
-		return false
 	end
 	
 	-- use abilities & items when pinged

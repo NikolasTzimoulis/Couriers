@@ -70,7 +70,7 @@
 		"AbilityCastPoint"				"0.0"
 		"AbilityDuration" 				"0"
 		"AbilityCooldown"				"1"
-		"AbilityCastRange" 				"150"
+		"AbilityCastRange" 				"10"
 		"AbilityManaCost"				"0"
 		"AbilitySpecial"
 		{
