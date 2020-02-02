@@ -71,6 +71,8 @@ function CCouriers:OnThink()
 	end	
 	
 	if GameRules:State_Get() >= DOTA_GAMERULES_STATE_PRE_GAME and self.oneTimeSetup <= 1 and self:PlayersFullyLoaded() then
+		Entities:FindByName(nil, "radiant_neutral_item_stash"):RemoveSelf()
+		Entities:FindByName(nil, "dire_neutral_item_stash"):RemoveSelf()
 		self:SpawnBots()
 		self.oneTimeSetup = 2
 		self:StartingGold()
@@ -379,8 +381,7 @@ function CCouriers:PlayersFullyLoaded()
 	end
 end
 
-function CCouriers:FilterExecuteOrder(event)
-	
+function CCouriers:FilterExecuteOrder(event)	
 	for n,unit_index in pairs(event.units) do
 		local unit = EntIndexToHScript(unit_index)	
 		-- block orders from mind-controlled bots 
