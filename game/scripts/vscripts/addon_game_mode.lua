@@ -140,6 +140,24 @@ function CCouriers:DoOncePerSecond()
 			end
    		end
 	end
+	
+	-- dropped items revert to courier ownership
+	for _, itemContainer in pairs(Entities:FindAllByClassname("dota_item_drop")) do
+       local item = itemContainer:GetContainedItem()
+	   if self.fakeHero[item:GetTeam()] then
+			local fhero = self.fakeHero[item:GetTeam()]
+			if item:GetPurchaser() ~= fhero then
+				local charges = item:GetCurrentCharges()
+				local itemname = item:GetName()
+				local pos = itemContainer:GetAbsOrigin()
+				item:RemoveSelf()
+				itemContainer:RemoveSelf()
+				local newItem = CreateItemOnPositionSync(pos, CreateItem(itemname, fhero, fhero)) 
+				newItem:GetContainedItem():SetCurrentCharges(charges)
+			end
+		end
+	end
+	
 	-- give passive gold to each team
 	if GameRules:State_Get() == DOTA_GAMERULES_STATE_GAME_IN_PROGRESS then
 		self:GiveGold(self.PassiveGoldPerSecond, DOTA_TEAM_GOODGUYS, DOTA_ModifyGold_GameTick)
@@ -392,18 +410,18 @@ function CCouriers:FilterExecuteOrder(event)
 		if unit:IsCourier() and self.fakeHero[unit:GetTeamNumber()] and self.fakeHero[unit:GetTeamNumber()]:GetPlayerID() ~= event.issuer_player_id_const then
 			return false
 		end
-		-- dropped items revert to courier ownership
+		-- drop items from heroes without mind control 
 		if event.order_type == DOTA_UNIT_ORDER_DROP_ITEM and self.fakeHero[unit:GetTeamNumber()] then
-			local item = EntIndexToHScript(event.entindex_ability)
-			local fhero = self.fakeHero[unit:GetTeamNumber()]
-			if item:GetPurchaser() ~= fhero then
+			local item = EntIndexToHScript(event.entindex_ability)	
+			local carrier = item:GetParent()
+			if (carrier.isMindControlled == nil or not carrier.isMindControlled) and carrier:IsRealHero() and PlayerResource:GetTeam(event.issuer_player_id_const) == carrier:GetTeamNumber() then
 				local charges = item:GetCurrentCharges()
 				local itemname = item:GetName()
+				local pos = carrier:GetAbsOrigin()
 				item:RemoveSelf()
-				local pos = Vector(event.position_x, event.position_y, event.position_z)
-				if (pos - unit:GetAbsOrigin()):Length() > 500 then pos = unit:GetAbsOrigin() end
-				local newItem = CreateItemOnPositionSync(pos, CreateItem(itemname, fhero, fhero)) 
-				newItem:GetContainedItem():SetCurrentCharges(charges)
+				local newItem = CreateItemOnPositionSync(pos, CreateItem(itemname, carrier, carrier)) 
+				newItem:GetContainedItem():SetCurrentCharges(charges)			
+				return false
 			end
 		end
 	end
