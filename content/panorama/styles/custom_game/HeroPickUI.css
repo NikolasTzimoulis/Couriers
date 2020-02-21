@@ -184,7 +184,7 @@ DOTAHeroCard.Expanded #HeroName
 	letter-spacing: 10px;
 	color: #ccc;
 	text-transform: uppercase;
-	margin-top: 200px;
+	margin-top: 190px;
 	horizontal-align: center;
 }
 
@@ -201,7 +201,7 @@ DOTAHeroCard.Expanded #HeroName
 	vertical-align: bottom;
 	horizontal-align: left;
 	border-radius: 10px;
-	margin-bottom: 20px;
+	margin-bottom: 40px;
 	background-color: gradient( linear, 0% 0%, 0% 100%, from( #404D65dd ), to( #2B3445dd ) );
 	z-index: 3;
 }
@@ -219,20 +219,20 @@ DOTAHeroCard.Expanded #HeroName
 	horizontal-align: right;
 	vertical-align: bottom;
 	border-radius: 10px;
-	margin-bottom: 532px;
+	margin-bottom: 552px;
 	background-color: gradient( linear, 0% 0%, 0% 100%, from( #404D65dd ), to( #2B3445dd ) );
 	z-index: 3;
 }
 
-#MindControlToggle1 {
+#VariantDropdown1 {
 	horizontal-align: right;
 	vertical-align: bottom;
 	horizontal-align: left;
 	border-bottom: -5px;
 }
 
-#MindControlToggle2 {
-	margin-bottom: 598px;
+#VariantDropdown2 {
+	margin-bottom: 620px;
 	horizontal-align: right;
 	vertical-align: bottom;
 	
@@ -442,7 +442,7 @@ DOTAHeroCard.Expanded #HeroName
 	transition-timing-function: linear;
 	vertical-align: bottom;
 	horizontal-align: center;
-	margin-bottom: 90px;
+	margin-bottom: 110px;
 	margin-left: 950px;
 	z-index: 1;
 }

@@ -2,10 +2,8 @@
 { 
 	$("#R_BotLane1").style.visibility = 'visible';
 	$("#D_TopLane1").style.visibility = 'visible';
-	$("#MindControlToggle1").enabled = false;
-	$("#MindControlToggle2").enabled = false;
-	$("#MindControlToggle1").checked = true;
-	$("#MindControlToggle2").checked = true;
+	$("#VariantDropdown1").enabled = false;
+	$("#VariantDropdown2").enabled = false;
 	Game.AutoAssignPlayersToTeams()
 	CustomNetTables.SubscribeNetTableListener( "draft", OnDraftChanged );
 	timer();
@@ -40,20 +38,21 @@ function drawNamesAndAvatars()
 	
 	var localTeam =  Players.GetTeam(Players.GetLocalPlayer());
 	if (localTeam == DOTATeam_t.DOTA_TEAM_GOODGUYS) 
-		$("#MindControlToggle1").enabled = true;
+		$("#VariantDropdown1").enabled = true;
 	else 
-		$("#MindControlToggle2").enabled = true;
+		$("#VariantDropdown2").enabled = true;
 }
 
-function OnMindControlToggled()
+function OnOptionChanged()
 {
 	var localTeam =  Players.GetTeam(Players.GetLocalPlayer());
-	var toggleState = true;
+	var optionSelected = "";
 	if (localTeam == DOTATeam_t.DOTA_TEAM_GOODGUYS)
-		toggleState = $("#MindControlToggle1").checked;
+		optionSelected = $("#VariantDropdown1").GetSelected().id;
 	else
-		toggleState = $("#MindControlToggle2").checked;	
-	GameEvents.SendCustomGameEventToServer("mind_control_option", {checked:toggleState})
+		optionSelected = $("#VariantDropdown2").GetSelected().id;	
+	optionSelected = optionSelected.slice(0,-1);
+	GameEvents.SendCustomGameEventToServer("variant_option", {variant:optionSelected})
 }
 
 function OnSkipDraftButtonPressed()
@@ -109,8 +108,9 @@ function OnDraftChanged( table_name, key, data )
 	}
 	else if (key == "options")
 	{
-		$("#MindControlToggle1").checked = data[DOTATeam_t.DOTA_TEAM_GOODGUYS];
-		$("#MindControlToggle2").checked = data[DOTATeam_t.DOTA_TEAM_BADGUYS];
+		//$.Msg( data[DOTATeam_t.DOTA_TEAM_GOODGUYS], " ", data[DOTATeam_t.DOTA_TEAM_BADGUYS] );
+		$("#VariantDropdown1").SetSelected(data[DOTATeam_t.DOTA_TEAM_GOODGUYS]+"1");
+		$("#VariantDropdown2").SetSelected(data[DOTATeam_t.DOTA_TEAM_BADGUYS]+"2");
 	}
 
 }

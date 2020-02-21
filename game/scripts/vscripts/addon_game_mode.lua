@@ -52,6 +52,7 @@ function CCouriers:InitGameMode()
 	CustomNetTables:SetTableValue( "draft", "picked", self.draftPicks)
 	CustomNetTables:SetTableValue( "draft", "options", self.draftOptions)
 	GameRules:GetGameModeEntity():SetModifyGoldFilter(Dynamic_Wrap(CCouriers,"FilterModifyGold"),self)
+	GameRules:GetGameModeEntity():SetModifyExperienceFilter(Dynamic_Wrap(CCouriers,"FilterModifyXP"),self)
 	GameRules:GetGameModeEntity():SetBountyRunePickupFilter(Dynamic_Wrap(CCouriers, "BountyRunePickupFilter"), self)
 	GameRules:GetGameModeEntity():SetExecuteOrderFilter(Dynamic_Wrap(CCouriers,"FilterExecuteOrder"),self)
 	ListenToGameEvent("npc_spawned", Dynamic_Wrap( CCouriers, "OnNPCSpawned" ), self )
@@ -59,7 +60,7 @@ function CCouriers:InitGameMode()
 	ListenToGameEvent("entity_hurt", Dynamic_Wrap( CCouriers, 'OnEntityHurt' ), self )		
 	ListenToGameEvent("dota_player_gained_level", Dynamic_Wrap( CCouriers, 'OnHeroLevelUp' ), self )		
 	CustomGameEventManager:RegisterListener("draft", function(id, ...) Dynamic_Wrap(self, "DoDraft")(self, ...) end)
-	CustomGameEventManager:RegisterListener("mind_control_option", function(id, ...) Dynamic_Wrap(self, "OnDraftOptionChanged")(self, ...) end)
+	CustomGameEventManager:RegisterListener("variant_option", function(id, ...) Dynamic_Wrap(self, "OnDraftOptionChanged")(self, ...) end)
 end
 
 -- Evaluate the state of the game
@@ -201,7 +202,7 @@ function CCouriers:OnNPCSpawned(event)
 				end)
 				local abil = spawnedUnit:AddAbility("mind_control")
 				abil:SetLevel(abil:GetMaxLevel())
-				if self.draftOptions[DOTA_TEAM_GOODGUYS] == 0 and self.draftOptions[DOTA_TEAM_BADGUYS] == 0 then
+				if self.draftOptions[DOTA_TEAM_GOODGUYS] == "NoMindControl" and self.draftOptions[DOTA_TEAM_BADGUYS] == "NoMindControl" then
 					abil:SetActivated(false)
 				end
 				local abil = spawnedUnit:AddAbility("targetted_transfer_items")
@@ -373,6 +374,13 @@ function CCouriers:FilterModifyGold(event)
 	return true
 end
 
+function CCouriers:FilterModifyXP(event)
+	if self.draftOptions[DOTA_TEAM_GOODGUYS] == "DoubleXP" and self.draftOptions[DOTA_TEAM_BADGUYS] == "DoubleXP" then
+		event.experience = 2 * event.experience
+	end
+	return true
+end
+
 function CCouriers:BountyRunePickupFilter(event)
 	if self.fakeHero[PlayerResource:GetTeam(event.player_id_const)] then
 		local recepient = self.fakeHero[PlayerResource:GetTeam(event.player_id_const)]:GetPlayerOwnerID()
@@ -522,10 +530,10 @@ end
 
 function CCouriers:OnDraftOptionChanged(event)
 	if PlayerResource:GetPlayerCount() == 2 then
-		self.draftOptions[PlayerResource:GetTeam(event.PlayerID)]  = event.checked
+		self.draftOptions[PlayerResource:GetTeam(event.PlayerID)]  = event.variant
 	elseif PlayerResource:GetPlayerCount() == 1 then
-		self.draftOptions[DOTA_TEAM_GOODGUYS]  = event.checked
-		self.draftOptions[DOTA_TEAM_BADGUYS]  = event.checked
+		self.draftOptions[DOTA_TEAM_GOODGUYS]  = event.variant
+		self.draftOptions[DOTA_TEAM_BADGUYS]  = event.variant
 	else
 		print("This should literally never happen")
 	end

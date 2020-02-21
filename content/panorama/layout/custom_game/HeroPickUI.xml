@@ -123,7 +123,11 @@
 				<Panel hittest="false" class="SteamAvatarContainer" id="SteamAvatar1" />
 				<Label id="PlayerName1" class="PlayerName1" text=""/>
 			</Panel>
-			<ToggleButton checked="true" text="mind_control" id="MindControlToggle1" onactivate="OnMindControlToggled()"/>
+			<DropDown class="VariantDropdown" id="VariantDropdown1" oninputsubmit="OnOptionChanged()">
+				<Label text="no_variant" id="NoVariant1"/>
+				<Label text="no_mind_control" id="NoMindControl1"/>
+				<Label text="double_xp" id="DoubleXP1"/>
+			</DropDown>
 			<Panel hittest="false" class="PickedHeroesRow">
 				<Panel hittest="false" class="PickedHeroCard1">
 					<MoviePanel class="HeroImage" id="HeroImage21" src="file://{resources}/videos/heroes/npc_dota_hero_sven.webm" repeat="true" autoplay="onload"  />
@@ -147,7 +151,11 @@
 				<Panel hittest="false" class="SteamAvatarContainer" id="SteamAvatar2" />
 				<Label id="PlayerName2" class="PlayerName2" text=""/>	
 			</Panel>
-			<ToggleButton checked="true" text="mind_control" id="MindControlToggle2" onactivate="OnMindControlToggled()"/>
+			<DropDown class="VariantDropdown" id="VariantDropdown2" oninputsubmit="OnOptionChanged()">
+				<Label text="no_variant" id="NoVariant2"/>
+				<Label text="no_mind_control" id="NoMindControl2"/>
+				<Label text="double_xp" id="DoubleXP2"/>
+			</DropDown>
 			
 			<Panel hittest="false" class="PickedHeroesRow2">
 				<Panel hittest="false" class="PickedHeroCard1">
