@@ -16,5 +16,6 @@
 		"no_variant"												"Classic"
 		"no_mind_control"											"Disable mind control"
 		"double_xp"													"Double XP"
+		"ultra_late"												"Ultra-late game"
 	}
 }

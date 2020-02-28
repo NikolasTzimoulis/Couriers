@@ -516,3 +516,10 @@ DOTAHeroCard.Expanded #HeroName
 	margin-top: 225px;
 	margin-left: 375px;
 }
+
+.warning {
+	//saturation: 10;
+	border-color: #ff7700;
+	wash-color: #ff7700;
+	border-width: 1px;
+}

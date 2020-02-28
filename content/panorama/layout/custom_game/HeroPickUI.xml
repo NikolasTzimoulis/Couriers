@@ -127,6 +127,7 @@
 				<Label text="no_variant" id="NoVariant1"/>
 				<Label text="no_mind_control" id="NoMindControl1"/>
 				<Label text="double_xp" id="DoubleXP1"/>
+				<Label text="ultra_late" id="UltraLate1"/>
 			</DropDown>
 			<Panel hittest="false" class="PickedHeroesRow">
 				<Panel hittest="false" class="PickedHeroCard1">
@@ -155,6 +156,7 @@
 				<Label text="no_variant" id="NoVariant2"/>
 				<Label text="no_mind_control" id="NoMindControl2"/>
 				<Label text="double_xp" id="DoubleXP2"/>
+				<Label text="ultra_late" id="UltraLate2"/>
 			</DropDown>
 			
 			<Panel hittest="false" class="PickedHeroesRow2">

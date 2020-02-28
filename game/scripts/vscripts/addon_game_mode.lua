@@ -75,6 +75,9 @@ function CCouriers:OnThink()
 		Entities:FindByName(nil, "radiant_neutral_item_stash"):RemoveSelf()
 		Entities:FindByName(nil, "dire_neutral_item_stash"):RemoveSelf()
 		self:SpawnBots()
+		if self.draftOptions[DOTA_TEAM_GOODGUYS] == "UltraLate" and self.draftOptions[DOTA_TEAM_BADGUYS] == "UltraLate" then
+			self:UltraLate()
+		end
 		self.oneTimeSetup = 2
 		self:StartingGold()
 		Timers:CreateTimer(function()			
@@ -585,6 +588,26 @@ function CCouriers:DraftingCountdown()
 		end
 		return 1
 	end)
+end
+
+function CCouriers:UltraLate()
+	self.startGold = 100000
+	Timers:CreateTimer(10, function()
+		for _,hero in pairs(HeroList:GetAllHeroes()) do 
+			if IsValidEntity(hero) and hero:IsRealHero() then 
+				for _ = 1, 29 do
+					hero:HeroLevelUp(false)
+				end
+			end
+		end
+	end)
+	GameRules:GetGameModeEntity():SetBotsInLateGame(true)
+    for i, buildingClassname in pairs({ "npc_dota_tower", "npc_dota_barracks", "npc_dota_filler"}) do
+		for _, tower in pairs (Entities:FindAllByClassname(buildingClassname)) do
+			tower:ForceKill(false)
+		end
+	end
+	
 end
 
 function PrintTable(aTable)

@@ -78,7 +78,7 @@ function OnDraftChanged( table_name, key, data )
 		{
 			$("#SkipDraftButton").style.visibility = 'collapse';	
 		}
-		Game.EmitSound("General.SelectAction")
+		Game.EmitSound("Draft.PickMade")
 		for (var t in data)
 		{
 			for (var h in data[t])
@@ -111,6 +111,18 @@ function OnDraftChanged( table_name, key, data )
 		//$.Msg( data[DOTATeam_t.DOTA_TEAM_GOODGUYS], " ", data[DOTATeam_t.DOTA_TEAM_BADGUYS] );
 		$("#VariantDropdown1").SetSelected(data[DOTATeam_t.DOTA_TEAM_GOODGUYS]+"1");
 		$("#VariantDropdown2").SetSelected(data[DOTATeam_t.DOTA_TEAM_BADGUYS]+"2");
+		if ($("#VariantDropdown1").GetSelected().text == $("#VariantDropdown2").GetSelected().text)
+		{
+			$("#VariantDropdown1").RemoveClass("warning")
+			$("#VariantDropdown2").RemoveClass("warning")
+			Game.EmitSound("Relic.Highlight");
+		}
+		else
+		{
+			$("#VariantDropdown1").AddClass("warning");
+			$("#VariantDropdown2").AddClass("warning");
+			Game.EmitSound("General.InvalidTarget_Invulnerable");
+		}
 	}
 
 }
