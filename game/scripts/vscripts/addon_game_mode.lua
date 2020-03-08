@@ -43,6 +43,7 @@ function CCouriers:InitGameMode()
 	self.PassiveGoldPerSecond = 10
 	self.CourierBounty = 500
 	self.heroBountyMultiplier = 0.01
+	self.botGoldMultiplier = 1.0
 	self.courierList = {}
 	self.fakeHero = {}
 	self.oneTimeSetup = 0
@@ -61,6 +62,7 @@ function CCouriers:InitGameMode()
 	ListenToGameEvent("dota_player_gained_level", Dynamic_Wrap( CCouriers, 'OnHeroLevelUp' ), self )		
 	CustomGameEventManager:RegisterListener("draft", function(id, ...) Dynamic_Wrap(self, "DoDraft")(self, ...) end)
 	CustomGameEventManager:RegisterListener("variant_option", function(id, ...) Dynamic_Wrap(self, "OnDraftOptionChanged")(self, ...) end)
+	CustomGameEventManager:RegisterListener("handicap", function(id, ...) Dynamic_Wrap(self, "OnHandicapChanged")(self, ...) end)
 end
 
 -- Evaluate the state of the game
@@ -372,7 +374,9 @@ function CCouriers:FilterModifyGold(event)
 		local recepient = self.fakeHero[PlayerResource:GetTeam(playerID)]:GetPlayerOwnerID()		
 		PlayerResource:ModifyGold(recepient, gold, false, reason)
 		--print(gold.."("..reason..") from "..PlayerResource:GetPlayerName(playerID).." to "..PlayerResource:GetPlayerName(recepient))
-		return false		
+		return false	
+	else	
+		gold = gold * self.botGoldMultiplier
 	end
 	return true
 end
@@ -543,6 +547,13 @@ function CCouriers:OnDraftOptionChanged(event)
 	CustomNetTables:SetTableValue( "draft", "options", self.draftOptions)
 end
 
+function CCouriers:OnHandicapChanged(event)
+	if PlayerResource:GetPlayerCount() == 1 then
+		self.botGoldMultiplier = event.handicap
+	end
+end
+
+
 function CCouriers:HeroAlreadyPicked(heroName)
 	for _, team in ipairs({DOTA_TEAM_GOODGUYS, DOTA_TEAM_BADGUYS}) do
 		for k, v in pairs( self.draftPicks[team] ) do
@@ -562,7 +573,7 @@ function CCouriers:GiveGold(gold, team, reason)
 	else
 		for playerid = 0, DOTA_MAX_PLAYERS do
 			if PlayerResource:IsValidPlayer(playerid) and PlayerResource:IsFakeClient(playerid) and PlayerResource:GetTeam(playerid) == team then
-				PlayerResource:ModifyGold(playerid, gold/5, false, reason ) 
+				PlayerResource:ModifyGold(playerid, self.botGoldMultiplier*gold/5, false, reason ) 
 				--print((gold/5).." to "..PlayerResource:GetSelectedHeroName(playerid))
 			end
 		end

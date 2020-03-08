@@ -2,10 +2,12 @@
 { 
 	$("#R_BotLane1").style.visibility = 'visible';
 	$("#D_TopLane1").style.visibility = 'visible';
+	$("#HandicapPanel").style.visibility = 'collapse';
 	$("#VariantDropdown1").enabled = false;
 	$("#VariantDropdown2").enabled = false;
 	Game.AutoAssignPlayersToTeams()
 	CustomNetTables.SubscribeNetTableListener( "draft", OnDraftChanged );
+	handicap = 1.0;
 	timer();
 	$.Schedule(1, drawNamesAndAvatars);
 })();
@@ -20,6 +22,7 @@ function drawNamesAndAvatars()
 {
 	playerNameLabel = "#PlayerName1";
 	playerAvaLabel = "#SteamAvatar1";
+	playerCount = 0;
 	for (team =  DOTATeam_t.DOTA_TEAM_GOODGUYS; team <= DOTATeam_t.DOTA_TEAM_BADGUYS; team++)
 	{
 		for (id = 0; id <= DOTALimits_t.DOTA_MAX_TEAM_PLAYERS; id++)
@@ -29,6 +32,7 @@ function drawNamesAndAvatars()
 				$(playerNameLabel).text = Players.GetPlayerName(id);
 				$(playerAvaLabel).BCreateChildren('<DOTAAvatarImage hittest="false" id="player_avatar_' + id + '" class="UserAvatar"/>', false, false);
 				$("#player_avatar_" + id).steamid = Game.GetPlayerInfo(id).player_steamid; 
+				playerCount++;
 				break; 
 			}
 		}
@@ -41,6 +45,8 @@ function drawNamesAndAvatars()
 		$("#VariantDropdown1").enabled = true;
 	else 
 		$("#VariantDropdown2").enabled = true;
+	if (playerCount == 1)
+		$("#HandicapPanel").style.visibility = 'visible';
 }
 
 function OnOptionChanged()
@@ -53,6 +59,21 @@ function OnOptionChanged()
 		optionSelected = $("#VariantDropdown2").GetSelected().id;	
 	optionSelected = optionSelected.slice(0,-1);
 	GameEvents.SendCustomGameEventToServer("variant_option", {variant:optionSelected})
+}
+
+function HandicapPlus()
+{
+	handicap += 0.5;
+	$("#HandicapLabel").text = handicap*100+'%';
+	GameEvents.SendCustomGameEventToServer("handicap", {handicap:handicap});
+}
+
+function HandicapMinus()
+{
+	handicap -= 0.5;
+	if (handicap < 0) handicap = 0.0;
+	$("#HandicapLabel").text = handicap*100+'%';
+	GameEvents.SendCustomGameEventToServer("handicap", {handicap:handicap});
 }
 
 function OnSkipDraftButtonPressed()
