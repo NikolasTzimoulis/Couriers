@@ -47,6 +47,7 @@ function CCouriers:InitGameMode()
 	self.courierList = {}
 	self.fakeHero = {}
 	self.oneTimeSetup = 0
+	self.teamsReversed = false
 	self.hasEnoughCouriers = {[DOTA_TEAM_GOODGUYS] = false, [DOTA_TEAM_BADGUYS] = false}
 	self.draftPicks = {[DOTA_TEAM_GOODGUYS] = {}, [DOTA_TEAM_BADGUYS] = {}}
 	self.draftOptions = {[DOTA_TEAM_GOODGUYS] = true, [DOTA_TEAM_BADGUYS] = true}
@@ -71,8 +72,10 @@ function CCouriers:OnThink()
 		GameRules:LockCustomGameSetupTeamAssignment(true)
 		self.oneTimeSetup = 1
 		self:DraftingCountdown()
-	end	
-	
+		Timers:CreateTimer(-GameRules:GetDOTATime(true, true)-0.5, function() 
+			self:TeamReversionCheck()
+		end)
+	end		
 	if GameRules:State_Get() >= DOTA_GAMERULES_STATE_PRE_GAME and self.oneTimeSetup <= 1 and self:PlayersFullyLoaded() then
 		Entities:FindByName(nil, "radiant_neutral_item_stash"):RemoveSelf()
 		Entities:FindByName(nil, "dire_neutral_item_stash"):RemoveSelf()
@@ -86,9 +89,8 @@ function CCouriers:OnThink()
 			self:DoOncePerSecond()			
 			return 1
 		end)
-	elseif GameRules:State_Get() == DOTA_GAMERULES_STATE_GAME_IN_PROGRESS then
-
-	elseif GameRules:State_Get() >= DOTA_GAMERULES_STATE_POST_GAME then
+	end
+	if GameRules:State_Get() >= DOTA_GAMERULES_STATE_POST_GAME then
 		return nil
 	end
 	return 1
@@ -421,6 +423,11 @@ function CCouriers:FilterExecuteOrder(event)
 		if event.issuer_player_id_const == -1 and unit.isMindControlled ~= nil and unit.isMindControlled then	
 			return false
 		end
+		
+		if event.order_type == DOTA_UNIT_ORDER_STOP and unit.isMindControlled ~= nil and unit.isMindControlled then	
+			print("CANCEL", event.issuer_player_id_const, event.entindex_ability, unit.GetName())
+		end
+		
 		-- block orders from bots to human-controlled courier
 		if unit:IsCourier() and self.fakeHero[unit:GetTeamNumber()] and self.fakeHero[unit:GetTeamNumber()]:GetPlayerID() ~= event.issuer_player_id_const then
 			return false
@@ -440,6 +447,7 @@ function CCouriers:FilterExecuteOrder(event)
 			end
 		end
 	end
+
 	
 	-- use abilities & items when pinged
 	if event.order_type == DOTA_UNIT_ORDER_PING_ABILITY then
@@ -529,6 +537,7 @@ function CCouriers:DoDraft(event)
 			if #self.draftPicks[DOTA_TEAM_GOODGUYS] >= 5 then numPlayersDone = numPlayersDone + 1 end
 			if #self.draftPicks[DOTA_TEAM_BADGUYS] >= 5 then numPlayersDone = numPlayersDone + 1 end
 			if numPlayersDone >= PlayerResource:GetPlayerCount() then
+				self:TeamReversionCheck()
 				GameRules:FinishCustomGameSetup()
 			end
 		end		
@@ -599,6 +608,26 @@ function CCouriers:DraftingCountdown()
 		end
 		return 1
 	end)
+end
+
+function CCouriers:TeamReversionCheck()
+	if not self.teamsReversed and self.draftOptions[DOTA_TEAM_GOODGUYS] == "ReverseDraft" and self.draftOptions[DOTA_TEAM_BADGUYS] == "ReverseDraft" then
+		self.teamsReversed = true
+		for playerid = 0, DOTA_MAX_PLAYERS do
+			if PlayerResource:IsValidPlayer(playerid) then
+				if PlayerResource:GetCustomTeamAssignment(playerid) == DOTA_TEAM_GOODGUYS then 
+					PlayerResource:SetCustomTeamAssignment(playerid, DOTA_TEAM_BADGUYS)
+				elseif PlayerResource:GetCustomTeamAssignment(playerid) == DOTA_TEAM_BADGUYS then 
+					PlayerResource:SetCustomTeamAssignment(playerid, DOTA_TEAM_GOODGUYS)
+				end
+			end
+		end
+		Timers:CreateTimer(1, function()
+			if GameRules:State_Get() < DOTA_GAMERULES_STATE_PRE_GAME then
+				GameRules:FinishCustomGameSetup()
+			end
+		end)
+	end
 end
 
 function CCouriers:UltraLate()

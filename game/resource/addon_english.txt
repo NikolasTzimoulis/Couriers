@@ -17,6 +17,7 @@
 		"no_mind_control"											"Disable mind control"
 		"double_xp"													"Double XP"
 		"ultra_late"												"Ultra-late game"
+		"reverse_draft" 											"Reverse draft"
 		"gold_gain"													"Gold gain: "
 	}
 }
