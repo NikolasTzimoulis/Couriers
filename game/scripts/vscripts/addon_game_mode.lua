@@ -46,8 +46,10 @@ function CCouriers:InitGameMode()
 	self.botGoldMultiplier = 1.0
 	self.courierList = {}
 	self.fakeHero = {}
+	self.botHeroes = {}
 	self.oneTimeSetup = 0
 	self.teamsReversed = false
+	self.fountainPos = {[DOTA_TEAM_GOODGUYS] = Vector(-6935, -6385, 0), [DOTA_TEAM_BADGUYS] = Vector(7010, 6345, 0)}
 	self.hasEnoughCouriers = {[DOTA_TEAM_GOODGUYS] = false, [DOTA_TEAM_BADGUYS] = false}
 	self.draftPicks = {[DOTA_TEAM_GOODGUYS] = {}, [DOTA_TEAM_BADGUYS] = {}}
 	self.draftOptions = {[DOTA_TEAM_GOODGUYS] = true, [DOTA_TEAM_BADGUYS] = true}
@@ -239,6 +241,9 @@ function CCouriers:OnEntityKilled(event)
 		for _,hero in pairs(heroes) do 
 			self:CheckPassGold(hero)		
 		end
+		if self.draftOptions[DOTA_TEAM_GOODGUYS] == "Deathmatch" and self.draftOptions[DOTA_TEAM_BADGUYS] == "Deathmatch" then
+			self:Deathmatch(killedUnit)
+		end
 	end
 end
 
@@ -264,91 +269,91 @@ function CCouriers:OnEntityHurt(event)
 end
 
 function CCouriers:SpawnBots() 
-	local botHeroes = {'npc_dota_hero_bane', 'npc_dota_hero_bounty_hunter', 'npc_dota_hero_bloodseeker', 'npc_dota_hero_bristleback', 'npc_dota_hero_chaos_knight', 'npc_dota_hero_crystal_maiden', 'npc_dota_hero_dazzle', 'npc_dota_hero_death_prophet', 'npc_dota_hero_drow_ranger', 'npc_dota_hero_earthshaker', 'npc_dota_hero_jakiro', 'npc_dota_hero_kunkka', 'npc_dota_hero_lina', 'npc_dota_hero_lion', 'npc_dota_hero_luna', 'npc_dota_hero_necrolyte', 'npc_dota_hero_omniknight', 'npc_dota_hero_oracle', 'npc_dota_hero_phantom_assassin', 'npc_dota_hero_pudge', 'npc_dota_hero_sand_king', 'npc_dota_hero_nevermore', 'npc_dota_hero_skywrath_mage', 'npc_dota_hero_sniper', 'npc_dota_hero_sven', 'npc_dota_hero_tiny', 'npc_dota_hero_viper', 'npc_dota_hero_warlock', 'npc_dota_hero_windrunner', 'npc_dota_hero_zuus'}
+	self.botHeroes = {'npc_dota_hero_bane', 'npc_dota_hero_bounty_hunter', 'npc_dota_hero_bloodseeker', 'npc_dota_hero_bristleback', 'npc_dota_hero_chaos_knight', 'npc_dota_hero_crystal_maiden', 'npc_dota_hero_dazzle', 'npc_dota_hero_death_prophet', 'npc_dota_hero_drow_ranger', 'npc_dota_hero_earthshaker', 'npc_dota_hero_jakiro', 'npc_dota_hero_kunkka', 'npc_dota_hero_lina', 'npc_dota_hero_lion', 'npc_dota_hero_luna', 'npc_dota_hero_necrolyte', 'npc_dota_hero_omniknight', 'npc_dota_hero_oracle', 'npc_dota_hero_phantom_assassin', 'npc_dota_hero_pudge', 'npc_dota_hero_sand_king', 'npc_dota_hero_nevermore', 'npc_dota_hero_skywrath_mage', 'npc_dota_hero_sniper', 'npc_dota_hero_sven', 'npc_dota_hero_tiny', 'npc_dota_hero_viper', 'npc_dota_hero_warlock', 'npc_dota_hero_windrunner', 'npc_dota_hero_zuus'}
 	GameRules:SetCustomGameTeamMaxPlayers( DOTA_TEAM_GOODGUYS, 6 )
 	GameRules:SetCustomGameTeamMaxPlayers( DOTA_TEAM_BADGUYS, 6 )
 	Tutorial:StartTutorialMode()	
-	local heroNumber = RandomInt(1, #botHeroes)	
+	local heroNumber = RandomInt(1, #self.botHeroes)	
 	if self.draftPicks[DOTA_TEAM_GOODGUYS][1] then
 		Tutorial:AddBot( self.draftPicks[DOTA_TEAM_GOODGUYS][1], "bot", "hard", true )
-		table.remove(botHeroes, tablefind(botHeroes, self.draftPicks[DOTA_TEAM_GOODGUYS][1]))
+		table.remove(self.botHeroes, tablefind(self.botHeroes, self.draftPicks[DOTA_TEAM_GOODGUYS][1]))
 	else
-		Tutorial:AddBot( botHeroes[heroNumber], "bot", "hard", true )
-		table.remove(botHeroes, heroNumber)
-		heroNumber = RandomInt(1, #botHeroes)
+		Tutorial:AddBot( self.botHeroes[heroNumber], "bot", "hard", true )
+		table.remove(self.botHeroes, heroNumber)
+		heroNumber = RandomInt(1, #self.botHeroes)
 	end
 	if self.draftPicks[DOTA_TEAM_GOODGUYS][2] then
 		Tutorial:AddBot( self.draftPicks[DOTA_TEAM_GOODGUYS][2], "top", "hard", true )
-		table.remove(botHeroes, tablefind(botHeroes, self.draftPicks[DOTA_TEAM_GOODGUYS][2]))
+		table.remove(self.botHeroes, tablefind(self.botHeroes, self.draftPicks[DOTA_TEAM_GOODGUYS][2]))
 	else
-		Tutorial:AddBot( botHeroes[heroNumber], "top", "hard", true )
-		table.remove(botHeroes, heroNumber)
-		heroNumber = RandomInt(1, #botHeroes)
+		Tutorial:AddBot( self.botHeroes[heroNumber], "top", "hard", true )
+		table.remove(self.botHeroes, heroNumber)
+		heroNumber = RandomInt(1, #self.botHeroes)
 	end
 	if self.draftPicks[DOTA_TEAM_GOODGUYS][3] then
 		Tutorial:AddBot( self.draftPicks[DOTA_TEAM_GOODGUYS][3], "top", "hard", true )
-		table.remove(botHeroes, tablefind(botHeroes, self.draftPicks[DOTA_TEAM_GOODGUYS][3]))
+		table.remove(self.botHeroes, tablefind(self.botHeroes, self.draftPicks[DOTA_TEAM_GOODGUYS][3]))
 	else
-		Tutorial:AddBot( botHeroes[heroNumber], "top", "hard", true )
-		table.remove(botHeroes, heroNumber)
-		heroNumber = RandomInt(1, #botHeroes)
+		Tutorial:AddBot( self.botHeroes[heroNumber], "top", "hard", true )
+		table.remove(self.botHeroes, heroNumber)
+		heroNumber = RandomInt(1, #self.botHeroes)
 	end
 	if self.draftPicks[DOTA_TEAM_GOODGUYS][4] then
 		Tutorial:AddBot( self.draftPicks[DOTA_TEAM_GOODGUYS][4], "mid", "hard", true )
-		table.remove(botHeroes, tablefind(botHeroes, self.draftPicks[DOTA_TEAM_GOODGUYS][4]))
+		table.remove(self.botHeroes, tablefind(self.botHeroes, self.draftPicks[DOTA_TEAM_GOODGUYS][4]))
 	else
-		Tutorial:AddBot( botHeroes[heroNumber], "mid", "hard", true )
-		table.remove(botHeroes, heroNumber)
-		heroNumber = RandomInt(1, #botHeroes)
+		Tutorial:AddBot( self.botHeroes[heroNumber], "mid", "hard", true )
+		table.remove(self.botHeroes, heroNumber)
+		heroNumber = RandomInt(1, #self.botHeroes)
 	end
 	if self.draftPicks[DOTA_TEAM_GOODGUYS][5] then
 		Tutorial:AddBot( self.draftPicks[DOTA_TEAM_GOODGUYS][5], "bot", "hard", true )
-		table.remove(botHeroes, tablefind(botHeroes, self.draftPicks[DOTA_TEAM_GOODGUYS][5]))
+		table.remove(self.botHeroes, tablefind(self.botHeroes, self.draftPicks[DOTA_TEAM_GOODGUYS][5]))
 	else
-		Tutorial:AddBot( botHeroes[heroNumber], "bot", "hard", true )
-		table.remove(botHeroes, heroNumber)
-		heroNumber = RandomInt(1, #botHeroes)
+		Tutorial:AddBot( self.botHeroes[heroNumber], "bot", "hard", true )
+		table.remove(self.botHeroes, heroNumber)
+		heroNumber = RandomInt(1, #self.botHeroes)
 	end	
 	
 	if self.draftPicks[DOTA_TEAM_BADGUYS][1] then
 		Tutorial:AddBot( self.draftPicks[DOTA_TEAM_BADGUYS][1], "top", "hard", false )
-		table.remove(botHeroes, tablefind(botHeroes, self.draftPicks[DOTA_TEAM_BADGUYS][1]))
+		table.remove(self.botHeroes, tablefind(self.botHeroes, self.draftPicks[DOTA_TEAM_BADGUYS][1]))
 	else
-		Tutorial:AddBot( botHeroes[heroNumber], "top", "hard", false )
-		table.remove(botHeroes, heroNumber)
-		heroNumber = RandomInt(1, #botHeroes)
+		Tutorial:AddBot( self.botHeroes[heroNumber], "top", "hard", false )
+		table.remove(self.botHeroes, heroNumber)
+		heroNumber = RandomInt(1, #self.botHeroes)
 	end
 	if self.draftPicks[DOTA_TEAM_BADGUYS][2] then
 		Tutorial:AddBot( self.draftPicks[DOTA_TEAM_BADGUYS][2], "bot", "hard", false )
-		table.remove(botHeroes, tablefind(botHeroes, self.draftPicks[DOTA_TEAM_BADGUYS][2]))
+		table.remove(self.botHeroes, tablefind(self.botHeroes, self.draftPicks[DOTA_TEAM_BADGUYS][2]))
 	else
-		Tutorial:AddBot( botHeroes[heroNumber], "bot", "hard", false )
-		table.remove(botHeroes, heroNumber)
-		heroNumber = RandomInt(1, #botHeroes)
+		Tutorial:AddBot( self.botHeroes[heroNumber], "bot", "hard", false )
+		table.remove(self.botHeroes, heroNumber)
+		heroNumber = RandomInt(1, #self.botHeroes)
 	end
 	if self.draftPicks[DOTA_TEAM_BADGUYS][3] then
 		Tutorial:AddBot( self.draftPicks[DOTA_TEAM_BADGUYS][3], "bot", "hard", false )
-		table.remove(botHeroes, tablefind(botHeroes, self.draftPicks[DOTA_TEAM_BADGUYS][3]))
+		table.remove(self.botHeroes, tablefind(self.botHeroes, self.draftPicks[DOTA_TEAM_BADGUYS][3]))
 	else
-		Tutorial:AddBot( botHeroes[heroNumber], "bot", "hard", false )
-		table.remove(botHeroes, heroNumber)
-		heroNumber = RandomInt(1, #botHeroes)
+		Tutorial:AddBot( self.botHeroes[heroNumber], "bot", "hard", false )
+		table.remove(self.botHeroes, heroNumber)
+		heroNumber = RandomInt(1, #self.botHeroes)
 	end
 	if self.draftPicks[DOTA_TEAM_BADGUYS][4] then
 		Tutorial:AddBot( self.draftPicks[DOTA_TEAM_BADGUYS][4], "mid", "hard", false )
-		table.remove(botHeroes, tablefind(botHeroes, self.draftPicks[DOTA_TEAM_BADGUYS][4]))
+		table.remove(self.botHeroes, tablefind(self.botHeroes, self.draftPicks[DOTA_TEAM_BADGUYS][4]))
 	else
-		Tutorial:AddBot( botHeroes[heroNumber], "mid", "hard", false )
-		table.remove(botHeroes, heroNumber)
-		heroNumber = RandomInt(1, #botHeroes)
+		Tutorial:AddBot( self.botHeroes[heroNumber], "mid", "hard", false )
+		table.remove(self.botHeroes, heroNumber)
+		heroNumber = RandomInt(1, #self.botHeroes)
 	end			
 	if self.draftPicks[DOTA_TEAM_BADGUYS][5] then
 		Tutorial:AddBot( self.draftPicks[DOTA_TEAM_BADGUYS][5], "top", "hard", false )
-		table.remove(botHeroes, tablefind(botHeroes, self.draftPicks[DOTA_TEAM_BADGUYS][5]))
+		table.remove(self.botHeroes, tablefind(self.botHeroes, self.draftPicks[DOTA_TEAM_BADGUYS][5]))
 	else
-		Tutorial:AddBot( botHeroes[heroNumber], "top", "hard", false )
-		table.remove(botHeroes, heroNumber)
-		heroNumber = RandomInt(1, #botHeroes)
+		Tutorial:AddBot( self.botHeroes[heroNumber], "top", "hard", false )
+		table.remove(self.botHeroes, heroNumber)
+		heroNumber = RandomInt(1, #self.botHeroes)
 	end	
 	
 	GameRules:GetGameModeEntity():SetBotThinkingEnabled(true)
@@ -622,11 +627,9 @@ function CCouriers:TeamReversionCheck()
 				end
 			end
 		end
-		Timers:CreateTimer(1, function()
-			if GameRules:State_Get() < DOTA_GAMERULES_STATE_PRE_GAME then
-				GameRules:FinishCustomGameSetup()
-			end
-		end)
+		if GameRules:State_Get() < DOTA_GAMERULES_STATE_PRE_GAME then
+			GameRules:FinishCustomGameSetup()
+		end
 	end
 end
 
@@ -648,6 +651,45 @@ function CCouriers:UltraLate()
 		end
 	end
 	
+end
+
+function CCouriers:Deathmatch(hero)
+	Timers:CreateTimer(0.1, function()
+		if #self.botHeroes > 0 then
+			local oldLevel = hero:GetLevel()
+			local heroNumber = RandomInt(1, #self.botHeroes)
+			local oldItems = {}
+			for itemSlot = 0, 11, 1 do 
+				local item = hero:GetItemInSlot( itemSlot ) 
+				if IsValidEntity(item) then 
+					table.insert(oldItems, item:GetName())
+				end
+			end
+			newHero = PlayerResource:ReplaceHeroWith(hero:GetPlayerID(), self.botHeroes[heroNumber], 0, 0)
+			table.remove(self.botHeroes, heroNumber)
+			FindClearSpaceForUnit(newHero, self.fountainPos[newHero:GetTeamNumber()], true)
+			newHero:AddNewModifier(spawnedUnit, nil, "modifier_invulnerable", {duration = 5})
+			newHero:AddNewModifier(spawnedUnit, nil, "modifier_stunned", {duration = 5})
+			for _ = 2, oldLevel do
+				newHero:HeroLevelUp(false)
+			end
+			for i, itemname in pairs(oldItems) do
+				newHero:AddItem(CreateItem(itemname, newHero, newHero))
+			end
+			if #self.botHeroes == 10 then
+				EmitAnnouncerSound("announcer_ann_custom_countdown_10")
+			elseif #self.botHeroes >= 1 and #self.botHeroes <= 9 then
+				EmitAnnouncerSound("announcer_ann_custom_countdown_0"..tostring(#self.botHeroes))
+			elseif #self.botHeroes == 0 then
+				EmitAnnouncerSound("announcer_ann_custom_sudden_death")
+				for _,hero in pairs(HeroList:GetAllHeroes()) do 
+					if IsValidEntity(hero) and hero:IsRealHero() then 
+						hero:SetRespawnsDisabled(true)
+					end
+				end				
+			end
+		end
+	end)
 end
 
 function PrintTable(aTable)

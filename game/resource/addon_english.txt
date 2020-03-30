@@ -18,6 +18,7 @@
 		"double_xp"													"Double XP"
 		"ultra_late"												"Ultra-late game"
 		"reverse_draft" 											"Reverse draft"
+		"deathmatch"												"All random deathmatch"
 		"gold_gain"													"Gold gain: "
 	}
 }
