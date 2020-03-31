@@ -635,6 +635,7 @@ end
 
 function CCouriers:UltraLate()
 	self.startGold = 100000
+	GameRules:SetUseUniversalShopMode(true)
 	Timers:CreateTimer(10, function()
 		for _,hero in pairs(HeroList:GetAllHeroes()) do 
 			if IsValidEntity(hero) and hero:IsRealHero() then 
@@ -666,6 +667,7 @@ function CCouriers:Deathmatch(hero)
 				end
 			end
 			newHero = PlayerResource:ReplaceHeroWith(hero:GetPlayerID(), self.botHeroes[heroNumber], 0, 0)
+			UTIL_Remove(hero)
 			table.remove(self.botHeroes, heroNumber)
 			FindClearSpaceForUnit(newHero, self.fountainPos[newHero:GetTeamNumber()], true)
 			newHero:AddNewModifier(spawnedUnit, nil, "modifier_invulnerable", {duration = 5})
