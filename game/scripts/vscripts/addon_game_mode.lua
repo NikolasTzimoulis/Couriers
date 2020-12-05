@@ -65,6 +65,8 @@ function CCouriers:InitGameMode()
 	CustomGameEventManager:RegisterListener("draft", function(id, ...) Dynamic_Wrap(self, "DoDraft")(self, ...) end)
 	CustomGameEventManager:RegisterListener("variant_option", function(id, ...) Dynamic_Wrap(self, "OnDraftOptionChanged")(self, ...) end)
 	CustomGameEventManager:RegisterListener("handicap", function(id, ...) Dynamic_Wrap(self, "OnHandicapChanged")(self, ...) end)
+	GameRules:GetGameModeEntity():SetCustomRadiantScore(0)
+	GameRules:GetGameModeEntity():SetCustomDireScore(0)
 end
 
 -- Evaluate the state of the game
@@ -92,7 +94,7 @@ function CCouriers:OnThink()
 		end)
 	end
 	if GameRules:State_Get() >= DOTA_GAMERULES_STATE_POST_GAME then
-		CreateHTTPRequest("GET","http://tzimoulis.eu/dotastats/"..tostring(PlayerResource:GetPlayerCount()).."/"..self.draftOptions[DOTA_TEAM_GOODGUYS].."/"..self.draftOptions[DOTA_TEAM_BADGUYS].."/"..tostring(math.floor(GameRules:GetDOTATime(false, false)/60))):Send(nil)		
+		CreateHTTPRequest("GET","http://tzimoulis.eu/dota_couriers/"..tostring(PlayerResource:GetPlayerCount()-10).."/"..tostring(self.draftOptions[DOTA_TEAM_GOODGUYS]).."/"..tostring(self.draftOptions[DOTA_TEAM_BADGUYS]).."/"..tostring(math.floor(GameRules:GetDOTATime(false, false)/60))):Send(nil)		
 		return nil
 	end
 	return 1
@@ -173,6 +175,10 @@ function CCouriers:DoOncePerSecond()
 		self:GiveGold(self.PassiveGoldPerSecond, DOTA_TEAM_GOODGUYS, DOTA_ModifyGold_GameTick)
 		self:GiveGold(self.PassiveGoldPerSecond, DOTA_TEAM_BADGUYS, DOTA_ModifyGold_GameTick)
 	end
+	
+	-- fix scoreboard
+	GameRules:GetGameModeEntity():SetCustomRadiantScore(GetTeamHeroKills(DOTA_TEAM_GOODGUYS))
+	GameRules:GetGameModeEntity():SetCustomDireScore(GetTeamHeroKills(DOTA_TEAM_BADGUYS))
 end
 
 function CCouriers:OnNPCSpawned(event)

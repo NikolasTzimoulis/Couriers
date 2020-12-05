@@ -149,10 +149,10 @@
 	opacity: 2;
 }
 
-DOTAHeroCard.Expanded #HeroName
+/* DOTAHeroCard.Expanded #HeroName
 {
     opacity: 1.0;
-}
+} */
 
 .SelectedHeroContainer {
 	width: 450px;
