@@ -47,6 +47,7 @@ function CCouriers:InitGameMode()
 	self.fakeHero = {}
 	self.botHeroes = {}
 	self.oneTimeSetup = 0
+	self.spawnCount = 0
 	self.teamsReversed = false
 	self.fountainPos = {[DOTA_TEAM_GOODGUYS] = Vector(-6935, -6385, 0), [DOTA_TEAM_BADGUYS] = Vector(7010, 6345, 0)}
 	self.hasEnoughCouriers = {[DOTA_TEAM_GOODGUYS] = false, [DOTA_TEAM_BADGUYS] = false}
@@ -105,7 +106,7 @@ function CCouriers:DoOncePerSecond()
    	for _,hero in pairs(heroes) do 
    		if IsValidEntity(hero) and hero:IsRealHero() then 
 			-- appropriate items in each hero's possession
-			for itemSlot = 0, 11, 1 do 
+			for itemSlot = 0, 20 do 
 				local item = hero:GetItemInSlot( itemSlot ) 
 				if IsValidEntity(item) and item:GetPurchaser() ~= hero then 
 					--print(item:GetName().." "..item:GetOwnerEntity():GetName())
@@ -114,6 +115,7 @@ function CCouriers:DoOncePerSecond()
 					item:RemoveSelf()
 					local newItem = hero:AddItem(CreateItem(itemname, hero, hero))
 					newItem:SetCurrentCharges(charges)
+					hero:EjectItemFromStash(newItem)
 				end
 			end	
    		end
@@ -192,7 +194,11 @@ function CCouriers:OnNPCSpawned(event)
 			spawnedUnit:AddNewModifier(spawnedUnit, nil, "modifier_rooted", {duration = -1})
 			spawnedUnit:AddNewModifier(spawnedUnit, nil, "modifier_disarmed", {duration = -1})
 		end)
+	elseif spawnedUnit:IsRealHero() then 
+	--bot hero spawn counter
+		self.spawnCount = self.spawnCount + 1
 	end
+	
 	--when the courier/leader spawns:
 	if spawnedUnit:IsCourier() then
 		--make it briefly invulnerable but silenced
@@ -475,9 +481,9 @@ function CCouriers:FilterExecuteOrder(event)
 					local targets = FindUnitsInRadius(pingedTeam, ability:GetOwner():GetAbsOrigin(), nil, 1000, ability:GetAbilityTargetTeam(), targetType, DOTA_UNIT_TARGET_FLAG_FOW_VISIBLE, 0, false) 
 					if #targets > 0 then
 						if behaviour % DOTA_ABILITY_BEHAVIOR_UNIT_TARGET == 0 then
-							ability:GetOwner():CastAbilityOnTarget(targets[RandomInt(1, #targets )], ability, -1)
+							ability:GetOwner():CastAbilityOnTarget(GetRandomUnit(targets), ability, -1)
 						else
-							ability:GetOwner():CastAbilityOnPosition(targets[RandomInt(1, #targets )]:GetAbsOrigin(), ability, -1)
+							ability:GetOwner():CastAbilityOnPosition(GetRandomUnit(targets):GetAbsOrigin(), ability, -1)
 						end
 					end
 				end
@@ -643,11 +649,15 @@ end
 function CCouriers:UltraLate()
 	self.startGold = 100000
 	GameRules:SetUseUniversalShopMode(true)
-	Timers:CreateTimer(10, function()
-		for _,hero in pairs(HeroList:GetAllHeroes()) do 
-			if IsValidEntity(hero) and hero:IsRealHero() then 
-				for _ = 1, 29 do
-					hero:HeroLevelUp(false)
+	Timers:CreateTimer(1, function()
+		if self.spawnCount < 10 then
+			return 1
+		else
+			for _,hero in pairs(HeroList:GetAllHeroes()) do 
+				if IsValidEntity(hero) and hero:IsRealHero() then 
+					for _ = 1, 29 do
+						hero:HeroLevelUp(false)
+					end
 				end
 			end
 		end
@@ -699,6 +709,21 @@ function CCouriers:Deathmatch(hero)
 			end
 		end
 	end)
+end
+
+function GetRandomUnit(units) 
+	--prioritise heroes
+	local heroes = {}
+	for _, u in pairs(units) do
+		if u:IsHero() then
+			table.insert(heroes, u)
+		end
+	end
+	if #heroes > 0 then
+		return heroes[RandomInt(1, #heroes)]
+	else
+		return units[RandomInt(1, #units)]
+	end
 end
 
 function PrintTable(aTable)

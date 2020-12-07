@@ -70,7 +70,7 @@
 		"AbilityCastPoint"				"0.0"
 		"AbilityDuration" 				"0"
 		"AbilityCooldown"				"1"
-		"AbilityCastRange" 				"10"
+		"AbilityCastRange" 				"100"
 		"AbilityManaCost"				"0"
 		"AbilitySpecial"
 		{
@@ -86,7 +86,7 @@
 			"03"
 			{	
 				"var_type"			"FIELD_INTEGER"
-				"range_tooltip"		"150"
+				"range_tooltip"		"100"
 			}			
 				
 		}		
