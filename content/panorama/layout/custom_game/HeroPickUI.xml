@@ -131,6 +131,7 @@
 				<Label text="ultra_late" id="UltraLate1"/>
 				<Label text="reverse_draft" id="ReverseDraft1"/>
 				<Label text="deathmatch" id="Deathmatch1"/>
+				<Label text="bb_deathmatch" id="BuybackDeathmatch1"/>
 			</DropDown>
 			<Panel hittest="false" class="PickedHeroesRow">
 				<Panel hittest="false" class="PickedHeroCard1">
@@ -172,6 +173,7 @@
 				<Label text="ultra_late" id="UltraLate2"/>
 				<Label text="reverse_draft" id="ReverseDraft2"/>
 				<Label text="deathmatch" id="Deathmatch2"/>
+				<Label text="bb_deathmatch" id="BuybackDeathmatch2"/>
 			</DropDown>
 			
 			<Panel hittest="false" class="PickedHeroesRow2">

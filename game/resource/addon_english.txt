@@ -19,6 +19,7 @@
 		"ultra_late"												"Ultra-late game"
 		"reverse_draft" 											"Reverse draft"
 		"deathmatch"												"All random deathmatch"
+		"bb_deathmatch"												"Buyback deathmatch"
 		"gold_gain"													"Gold gain: "
 	}
 }

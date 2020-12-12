@@ -256,6 +256,9 @@ function CCouriers:OnEntityKilled(event)
 		if self.draftOptions[DOTA_TEAM_GOODGUYS] == "Deathmatch" and self.draftOptions[DOTA_TEAM_BADGUYS] == "Deathmatch" then
 			self:Deathmatch(killedUnit)
 		end
+		if self.draftOptions[DOTA_TEAM_GOODGUYS] == "BuybackDeathmatch" and self.draftOptions[DOTA_TEAM_BADGUYS] == "BuybackDeathmatch" then
+			self:BuybackDeathmatch(killedUnit)
+		end
 	end
 end
 
@@ -478,7 +481,7 @@ function CCouriers:FilterExecuteOrder(event)
 				if behaviour % DOTA_ABILITY_BEHAVIOR_UNIT_TARGET > 0 and behaviour % DOTA_ABILITY_BEHAVIOR_POINT > 0 then
 					ability:GetOwner():CastAbilityNoTarget(ability, -1)
 				else
-					local targets = FindUnitsInRadius(pingedTeam, ability:GetOwner():GetAbsOrigin(), nil, 1000, ability:GetAbilityTargetTeam(), targetType, DOTA_UNIT_TARGET_FLAG_FOW_VISIBLE, 0, false) 
+					local targets = FindUnitsInRadius(pingedTeam, ability:GetOwner():GetAbsOrigin(), nil, 1500, ability:GetAbilityTargetTeam(), targetType, DOTA_UNIT_TARGET_FLAG_FOW_VISIBLE, 0, false) 
 					if #targets > 0 then
 						if behaviour % DOTA_ABILITY_BEHAVIOR_UNIT_TARGET == 0 then
 							ability:GetOwner():CastAbilityOnTarget(GetRandomUnit(targets), ability, -1)
@@ -709,6 +712,26 @@ function CCouriers:Deathmatch(hero)
 			end
 		end
 	end)
+end
+
+function CCouriers:BuybackDeathmatch(hero)
+	hero:SetBuybackCooldownTime(0)
+	if self.fakeHero[hero:GetTeamNumber()] then 
+		if self.fakeHero[hero:GetTeamNumber()]:GetGold() >= hero:GetBuybackCost(false) then
+			--print(hero:GetName()..": My courier has "..tostring(self.fakeHero[hero:GetTeamNumber()]:GetGold()).." so we can afford the buyback cost of "..tostring(hero:GetBuybackCost(false)))
+			PlayerResource:ModifyGold(self.fakeHero[hero:GetTeamNumber()]:GetPlayerOwnerID(), -(hero:GetBuybackCost(false)), false, DOTA_ModifyGold_Buyback)
+			Timers:CreateTimer(0.25, function() 
+				hero:SetGold(hero:GetBuybackCost(false), true)
+				hero:Buyback() 			
+			end)
+		else
+			--print(hero:GetName()..": My courier has "..tostring(self.fakeHero[hero:GetTeamNumber()]:GetGold()).." so we CANNOT afford the buyback cost of "..tostring(hero:GetBuybackCost(false)))
+			self:Deathmatch(hero)
+		end
+	elseif hero:GetGold() < hero:GetBuybackCost(false) then
+		--print(hero:GetName()..": I have "..tostring(hero:GetGold()).." so I CANNOT afford the buyback cost of "..tostring(hero:GetBuybackCost(false)))
+		self:Deathmatch(hero)
+	end		 
 end
 
 function GetRandomUnit(units) 
