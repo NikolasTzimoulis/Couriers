@@ -153,6 +153,8 @@ function HeroSelected(hero_name)
 	GameEvents.SendCustomGameEventToServer("draft", {pick:hero_name})
 }
 
+
+function AxeSelected() { HeroSelected("npc_dota_hero_axe"); }
 function BaneSelected() { HeroSelected("npc_dota_hero_bane"); }
 function BHSelected() { HeroSelected("npc_dota_hero_bounty_hunter"); }
 function BloodSeekerSelected() { HeroSelected("npc_dota_hero_bloodseeker"); }
@@ -161,10 +163,13 @@ function ChaosKnightSelected() { HeroSelected("npc_dota_hero_chaos_knight"); }
 function CrystalMaidenSelected() { HeroSelected("npc_dota_hero_crystal_maiden"); }
 function DazzleSelected() { HeroSelected("npc_dota_hero_dazzle"); }
 function DeathProphetSelected() { HeroSelected("npc_dota_hero_death_prophet"); }
+function DKSelected() { HeroSelected("npc_dota_hero_dragon_knight"); }
 function DrowRangerSelected() { HeroSelected("npc_dota_hero_drow_ranger"); }
 function EarthshakerSelected() { HeroSelected("npc_dota_hero_earthshaker"); }
 function JakiroSelected() { HeroSelected("npc_dota_hero_jakiro"); }
+function JuggSelected() { HeroSelected("npc_dota_hero_juggernaut"); }
 function KunkkaSelected() { HeroSelected("npc_dota_hero_kunkka"); }
+function LichSelected() { HeroSelected("npc_dota_hero_lich"); }
 function LinaSelected() { HeroSelected("npc_dota_hero_lina"); }
 function LionSelected() { HeroSelected("npc_dota_hero_lion"); }
 function LunaSelected() { HeroSelected("npc_dota_hero_luna"); }
@@ -179,9 +184,12 @@ function SkywrathSelected() { HeroSelected("npc_dota_hero_skywrath_mage"); }
 function SniperSelected() { HeroSelected("npc_dota_hero_sniper"); }
 function SvenSelected() { HeroSelected("npc_dota_hero_sven"); }
 function TinySelected() { HeroSelected("npc_dota_hero_tiny"); }
+function VengeSelected() { HeroSelected("npc_dota_hero_vengefulspirit"); }
 function ViperSelected() { HeroSelected("npc_dota_hero_viper"); }
 function WarlockSelected() { HeroSelected("npc_dota_hero_warlock"); }
 function WindrangerSelected() { HeroSelected("npc_dota_hero_windrunner"); }
+function WDSelected() { HeroSelected("npc_dota_hero_witch_doctor"); }
+function SkeletonKingSelected() { HeroSelected("npc_dota_hero_skeleton_king"); }
 function ZeusSelected() { HeroSelected("npc_dota_hero_zuus"); }
 
 

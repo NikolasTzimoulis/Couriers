@@ -18,7 +18,7 @@ function hideFakeHeroes()
 	if (fakeheroDire && teamBalance <= 0) fakeheroDire.style.visibility = "collapse"; 
 	
 	//make neutral stash invisible
-	$.GetContextPanel().GetParent().GetParent().FindChildTraverse("HUDElements").FindChildTraverse("shop").FindChildTraverse("Main").FindChildTraverse("HeightLimiter").FindChildTraverse("GridMainShop").FindChildTraverse("GridShopHeaders").FindChildTraverse("GridMainTabs").GetChild(2).style.visibility = "collapse";
+	$.GetContextPanel().GetParent().GetParent().FindChildTraverse("HUDElements").FindChildTraverse("shop").FindChildTraverse("Main").FindChildTraverse("HeightLimiter").FindChildTraverse("GridMainShop").FindChildTraverse("GridShopHeaders").FindChildTraverse("GridMainTabs").GetChild(3).style.visibility = "collapse";
 	$.GetContextPanel().GetParent().GetParent().FindChildTraverse("HUDElements").FindChildTraverse("shop").FindChildTraverse("Main").FindChildTraverse("HeightLimiter").FindChildTraverse("GridMainShop").FindChildTraverse("GridMainShopContents").FindChildTraverse("GridNeutralsCategory").style.visibility = "collapse";
 	
 	if (Game.GameStateIsBefore(DOTA_GameState.DOTA_GAMERULES_STATE_GAME_IN_PROGRESS))
