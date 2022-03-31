@@ -30,7 +30,8 @@ function drawNamesAndAvatars()
 			if (Players.IsValidPlayerID(id) && Players.GetTeam(id) == team)
 			{
 				$(playerNameLabel).text = Players.GetPlayerName(id);
-				$(playerAvaLabel).BCreateChildren('<DOTAAvatarImage hittest="false" id="player_avatar_' + id + '" class="UserAvatar"/>', false, false);
+				//$(playerAvaLabel).BCreateChildren('<DOTAAvatarImage hittest="false" id="player_avatar_' + id + '" class="UserAvatar"/>', false, false);
+				$.CreatePanelWithProperties("DOTAAvatarImage", $(playerAvaLabel), "player_avatar_"+id, {hittest: "false"} );
 				$("#player_avatar_" + id).steamid = Game.GetPlayerInfo(id).player_steamid; 
 				playerCount++;
 				break; 
@@ -39,7 +40,6 @@ function drawNamesAndAvatars()
 		playerNameLabel = "#PlayerName2";
 		playerAvaLabel = "#SteamAvatar2";
 	}	
-	
 	var localTeam =  Players.GetTeam(Players.GetLocalPlayer());
 	if (localTeam == DOTATeam_t.DOTA_TEAM_GOODGUYS) 
 		$("#VariantDropdown1").enabled = true;

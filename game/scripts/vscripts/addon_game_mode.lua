@@ -81,8 +81,8 @@ function CCouriers:OnThink()
 		end)
 	end		
 	if GameRules:State_Get() >= DOTA_GAMERULES_STATE_PRE_GAME and self.oneTimeSetup <= 1 and self:PlayersFullyLoaded() then
-		Entities:FindByName(nil, "radiant_neutral_item_stash"):RemoveSelf()
-		Entities:FindByName(nil, "dire_neutral_item_stash"):RemoveSelf()
+		--Entities:FindByName(nil, "radiant_neutral_item_stash"):RemoveSelf()
+		--Entities:FindByName(nil, "dire_neutral_item_stash"):RemoveSelf()
 		self:SpawnBots()
 		if self.draftOptions[DOTA_TEAM_GOODGUYS] == "UltraLate" and self.draftOptions[DOTA_TEAM_BADGUYS] == "UltraLate" then
 			self:UltraLate()
