@@ -445,7 +445,7 @@ function CCouriers:FilterExecuteOrder(event)
 			return false
 		end
 		-- block orders from player to not mind controlled heroes
-		if event.order_type ~= DOTA_UNIT_ORDER_PING_ABILITY and event.order_type ~= DOTA_UNIT_ORDER_TRAIN_ABILITY and event.order_type ~= DOTA_UNIT_ORDER_DROP_ITEM and event.order_type ~= DOTA_UNIT_ORDER_BUYBACK and event.order_type ~= DOTA_UNIT_ORDER_RADAR and event.order_type ~= DOTA_UNIT_ORDER_GLYPH and event.order_type ~= DOTA_UNIT_ORDER_EJECT_ITEM_FROM_STASH and event.order_type ~= DOTA_UNIT_ORDER_TAKE_ITEM_FROM_NEUTRAL_ITEM_STASH and  self.fakeHero[unit:GetTeamNumber()] and event.issuer_player_id_const == self.fakeHero[unit:GetTeamNumber()]:GetPlayerID() and unit:IsRealHero() and unit.isMindControlled == nil or unit.isMindControlled == false then
+		if event.order_type ~= DOTA_UNIT_ORDER_PING_ABILITY and event.order_type ~= DOTA_UNIT_ORDER_TRAIN_ABILITY and event.order_type ~= DOTA_UNIT_ORDER_DROP_ITEM and event.order_type ~= DOTA_UNIT_ORDER_BUYBACK and event.order_type ~= DOTA_UNIT_ORDER_RADAR and event.order_type ~= DOTA_UNIT_ORDER_GLYPH and event.order_type ~= DOTA_UNIT_ORDER_EJECT_ITEM_FROM_STASH and event.order_type ~= DOTA_UNIT_ORDER_TAKE_ITEM_FROM_NEUTRAL_ITEM_STASH and  self.fakeHero[unit:GetTeamNumber()] and event.issuer_player_id_const == self.fakeHero[unit:GetTeamNumber()]:GetPlayerID() and unit:IsRealHero() and (unit.isMindControlled == nil or unit.isMindControlled == false) then
 			return false
 		end
 		
