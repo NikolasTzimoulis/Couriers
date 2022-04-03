@@ -146,13 +146,13 @@
 			</Panel>
 
 			<DropDown class="VariantDropdown" id="VariantDropdown1" oninputsubmit="OnOptionChanged()">
-				<Label text="no_variant" id="NoVariant1"/>
-				<Label text="no_mind_control" id="NoMindControl1"/>
-				<Label text="double_xp" id="DoubleXP1"/>
-				<Label text="ultra_late" id="UltraLate1"/>
-				<Label text="reverse_draft" id="ReverseDraft1"/>
-				<Label text="deathmatch" id="Deathmatch1"/>
-				<Label text="bb_deathmatch" id="BuybackDeathmatch1"/>
+				<Label text="#no_variant" id="NoVariant1"/>
+				<Label text="#no_mind_control" id="NoMindControl1"/>
+				<Label text="#double_xp" id="DoubleXP1"/>
+				<Label text="#ultra_late" id="UltraLate1"/>
+				<Label text="#reverse_draft" id="ReverseDraft1"/>
+				<Label text="#deathmatch" id="Deathmatch1"/>
+				<Label text="#bb_deathmatch" id="BuybackDeathmatch1"/>
 			</DropDown>
 			<Panel hittest="false" class="PickedHeroesRow">
 				<Panel hittest="false" class="PickedHeroCard1">
@@ -188,13 +188,13 @@
 				</Panel>
 			</Panel>
 			<DropDown class="VariantDropdown" id="VariantDropdown2" oninputsubmit="OnOptionChanged()">
-				<Label text="no_variant" id="NoVariant2"/>
-				<Label text="no_mind_control" id="NoMindControl2"/>
-				<Label text="double_xp" id="DoubleXP2"/>
-				<Label text="ultra_late" id="UltraLate2"/>
-				<Label text="reverse_draft" id="ReverseDraft2"/>
-				<Label text="deathmatch" id="Deathmatch2"/>
-				<Label text="bb_deathmatch" id="BuybackDeathmatch2"/>
+				<Label text="#no_variant" id="NoVariant2"/>
+				<Label text="#no_mind_control" id="NoMindControl2"/>
+				<Label text="#double_xp" id="DoubleXP2"/>
+				<Label text="#ultra_late" id="UltraLate2"/>
+				<Label text="#reverse_draft" id="ReverseDraft2"/>
+				<Label text="#deathmatch" id="Deathmatch2"/>
+				<Label text="#bb_deathmatch" id="BuybackDeathmatch2"/>
 			</DropDown>
 			
 			<Panel hittest="false" class="PickedHeroesRow2">

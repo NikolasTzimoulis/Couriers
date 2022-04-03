@@ -444,6 +444,10 @@ function CCouriers:FilterExecuteOrder(event)
 		if event.issuer_player_id_const == -1 and unit.isMindControlled ~= nil and unit.isMindControlled then	
 			return false
 		end
+		-- block orders from player to not mind controlled heroes
+		if event.order_type ~= DOTA_UNIT_ORDER_PING_ABILITY and event.order_type ~= DOTA_UNIT_ORDER_TRAIN_ABILITY and event.order_type ~= DOTA_UNIT_ORDER_DROP_ITEM and event.order_type ~= DOTA_UNIT_ORDER_BUYBACK and event.order_type ~= DOTA_UNIT_ORDER_RADAR and event.order_type ~= DOTA_UNIT_ORDER_GLYPH and event.order_type ~= DOTA_UNIT_ORDER_EJECT_ITEM_FROM_STASH and event.order_type ~= DOTA_UNIT_ORDER_TAKE_ITEM_FROM_NEUTRAL_ITEM_STASH and  self.fakeHero[unit:GetTeamNumber()] and event.issuer_player_id_const == self.fakeHero[unit:GetTeamNumber()]:GetPlayerID() and unit:IsRealHero() and unit.isMindControlled == nil or unit.isMindControlled == false then
+			return false
+		end
 		
 		if event.order_type == DOTA_UNIT_ORDER_STOP and unit.isMindControlled ~= nil and unit.isMindControlled then	
 			print("CANCEL", event.issuer_player_id_const, event.entindex_ability, unit.GetName())
@@ -478,17 +482,27 @@ function CCouriers:FilterExecuteOrder(event)
 			Timers:CreateTimer(1, function()
 				local behaviour = ability:GetBehavior()
 				local targetType = ability:GetAbilityTargetType()			
-				if behaviour % DOTA_ABILITY_BEHAVIOR_UNIT_TARGET > 0 and behaviour % DOTA_ABILITY_BEHAVIOR_POINT > 0 then
-					ability:GetOwner():CastAbilityNoTarget(ability, -1)
+				if bit.band(behaviour, DOTA_ABILITY_BEHAVIOR_UNIT_TARGET) ~= DOTA_ABILITY_BEHAVIOR_UNIT_TARGET and bit.band(behaviour, DOTA_ABILITY_BEHAVIOR_POINT) ~= DOTA_ABILITY_BEHAVIOR_POINT then
+					if bit.band(behaviour, DOTA_ABILITY_BEHAVIOR_TOGGLE) == DOTA_ABILITY_BEHAVIOR_TOGGLE then
+						ability:GetOwner():CastAbilityToggle(ability, -1)
+					elseif bit.band(behaviour, DOTA_ABILITY_BEHAVIOR_NO_TARGET) == DOTA_ABILITY_BEHAVIOR_NO_TARGET then
+						ability:GetOwner():CastAbilityNoTarget(ability, -1)
+					end
 				else
-					local targets = FindUnitsInRadius(pingedTeam, ability:GetOwner():GetAbsOrigin(), nil, 1500, ability:GetAbilityTargetTeam(), targetType, DOTA_UNIT_TARGET_FLAG_FOW_VISIBLE, 0, false) 
+					local targets = FindUnitsInRadius(pingedTeam, ability:GetOwner():GetAbsOrigin(), nil, ability:GetCastRange()*2, ability:GetAbilityTargetTeam(), targetType, DOTA_UNIT_TARGET_FLAG_FOW_VISIBLE, 0, false) 
+					if #targets == 0 then
+						targets = FindUnitsInRadius(pingedTeam, ability:GetOwner():GetAbsOrigin(), nil, 1500, ability:GetOwner():GetTeamNumber(), DOTA_UNIT_TARGET_HERO, DOTA_UNIT_TARGET_FLAG_FOW_VISIBLE, 0, false)
+					end
 					if #targets > 0 then
-						if behaviour % DOTA_ABILITY_BEHAVIOR_UNIT_TARGET == 0 then
+						if bit.band(behaviour, DOTA_ABILITY_BEHAVIOR_UNIT_TARGET) == DOTA_ABILITY_BEHAVIOR_UNIT_TARGET then
 							ability:GetOwner():CastAbilityOnTarget(GetRandomUnit(targets), ability, -1)
 						else
 							ability:GetOwner():CastAbilityOnPosition(GetRandomUnit(targets):GetAbsOrigin(), ability, -1)
 						end
+					elseif bit.band(behaviour, DOTA_ABILITY_BEHAVIOR_POINT) == DOTA_ABILITY_BEHAVIOR_POINT then
+						ability:GetOwner():CastAbilityOnPosition(ability:GetOwner():GetAbsOrigin(), ability, -1)
 					end
+				
 				end
 			end)
 		end
@@ -660,6 +674,14 @@ function CCouriers:UltraLate()
 				if IsValidEntity(hero) and hero:IsRealHero() then 
 					for _ = 1, 29 do
 						hero:HeroLevelUp(false)
+					end
+					for i=0, hero:GetAbilityCount()-1 do
+						local abil = hero:GetAbilityByIndex(i)
+						if abil ~= nil and not abil:IsTrained() and not abil:IsHidden() then
+							while abil:GetLevel() < abil:GetMaxLevel() do
+								hero:UpgradeAbility(abil)
+							end
+						end
 					end
 				end
 			end

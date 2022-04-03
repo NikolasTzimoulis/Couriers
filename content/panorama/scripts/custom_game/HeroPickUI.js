@@ -30,9 +30,8 @@ function drawNamesAndAvatars()
 			if (Players.IsValidPlayerID(id) && Players.GetTeam(id) == team)
 			{
 				$(playerNameLabel).text = Players.GetPlayerName(id);
-				//$(playerAvaLabel).BCreateChildren('<DOTAAvatarImage hittest="false" id="player_avatar_' + id + '" class="UserAvatar"/>', false, false);
-				$.CreatePanelWithProperties("DOTAAvatarImage", $(playerAvaLabel), "player_avatar_"+id, {hittest: "false"} );
-				$("#player_avatar_" + id).steamid = Game.GetPlayerInfo(id).player_steamid; 
+				var steamID = Game.GetPlayerInfo(id).player_steamid;
+				$.CreatePanelWithProperties("DOTAAvatarImage", $(playerAvaLabel), "player_avatar_"+id, {class:"UserAvatar", hittest: "false", steamid:steamID, style:"width:100%;height:100%;"} ); 
 				playerCount++;
 				break; 
 			}
